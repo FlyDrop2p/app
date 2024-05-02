@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import com.example.flydrop2p.R
 import com.example.flydrop2p.data.DataSource
 import com.example.flydrop2p.domain.model.Chat
+import com.example.flydrop2p.domain.model.ChatInfo
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,7 +46,7 @@ import com.example.flydrop2p.domain.model.Chat
 fun HomeScreen(
     modifier: Modifier = Modifier,
     // viewModel: HomeViewModel = viewModel(),
-    onChatClick : (Int) -> Unit
+    onChatClick : (ChatInfo) -> Unit
 ){
 
     val chats = DataSource.getChats()
@@ -97,7 +98,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun ChatList(chats: List<Chat>, onChatClick : (Int) -> Unit) {
+fun ChatList(chats: List<Chat>, onChatClick : (ChatInfo) -> Unit) {
     LazyColumn{
         items(chats) { chat ->
             ChatItem(chat = chat, onChatClick = onChatClick)
@@ -108,13 +109,13 @@ fun ChatList(chats: List<Chat>, onChatClick : (Int) -> Unit) {
 
 
 @Composable
-fun ChatItem(chat: Chat, onChatClick : (Int) -> Unit) {
+fun ChatItem(chat: Chat, onChatClick : (ChatInfo) -> Unit) {
     Row(
         modifier = Modifier
             .padding(vertical = 8.dp, horizontal = 16.dp)
             .fillMaxWidth()
             .clickable {
-                onChatClick(chat.id)
+                onChatClick(ChatInfo(chat.id, chat.name, listOf()))
             },
         verticalAlignment = Alignment.CenterVertically
     ) {

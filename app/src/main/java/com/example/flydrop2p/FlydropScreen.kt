@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -22,7 +23,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.flydrop2p.domain.model.ChatInfo
 import com.example.flydrop2p.ui.screen.Chat.ChatScreen
+import com.example.flydrop2p.ui.screen.Chat.ChatViewModel
 import com.example.flydrop2p.ui.screen.Home.HomeScreen
 
 enum class FlydropScreen(@StringRes val title: Int) {
@@ -47,6 +50,7 @@ fun FlydropAppBar(
 @Composable
 fun FlydropApp(
     viewModel: HomeViewModel = viewModel(),
+    chatViewModel: ChatViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ){
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -56,7 +60,8 @@ fun FlydropApp(
 
     Scaffold(
     ){ innerPadding ->
-        // val uiState by viewModel.uiState.collectAsState()
+        val chatInfoState = chatViewModel.uiState.collectAsState() // collectAsStateWithLifecycle()
+
 
         NavHost(
             navController = navController,
@@ -70,12 +75,15 @@ fun FlydropApp(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(dimensionResource(R.dimen.padding_medium)),
-                    onChatClick = { navController.navigate(FlydropScreen.Chat.name) }
+                    onChatClick = { chatInfo ->
+                        chatViewModel.setChatInfo(chatInfo)
+                        navController.navigate(FlydropScreen.Chat.name)
+                    }
                 )
             }
             composable(route = FlydropScreen.Chat.name) {
                 ChatScreen(
-                    chatId = 0,
+                    chatViewModel = chatViewModel,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(dimensionResource(R.dimen.padding_medium))

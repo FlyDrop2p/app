@@ -12,6 +12,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,17 +31,18 @@ import com.example.flydrop2p.domain.model.Message
 
 
 @Composable
-fun ChatScreen(chatId: Int, modifier: Modifier = Modifier) {
-    val chatInfo = DataSource.placeholderChatInfos.getOrNull(chatId) ?: return
+fun ChatScreen(chatViewModel: ChatViewModel, modifier: Modifier = Modifier) {
+    // fetch the chat info from the repository
 
+    val chatInfoState by chatViewModel.uiState.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
 
-        ChatHeader(chatInfo = chatInfo)
+        ChatHeader(chatInfo = chatInfoState.chatInfo)
 
-        MessagesList(messages = chatInfo.messages, modifier = Modifier.weight(1f))
+        MessagesList(messages = chatInfoState.chatInfo.messages, modifier = Modifier.weight(1f))
 
         SendMessageInput(onSendMessage = { message ->
             // Aggiorna la lista dei messaggi della chat con il nuovo messaggio
