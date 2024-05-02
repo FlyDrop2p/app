@@ -16,8 +16,15 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,26 +36,63 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.flydrop2p.R
+import com.example.flydrop2p.data.DataSource
+import com.example.flydrop2p.domain.model.Chat
 
 
-data class Chat(val id: Int, val name: String, val message: String, val time: String)
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    // viewModel: HomeViewModel = viewModel(),
     onChatClick : (Int) -> Unit
 ){
 
-        val chats = listOf(
-            Chat(1, "Alice", "Hello", "10:00 AM"),
-            Chat(2, "Bob", "Hi", "10:01 AM"),
-            Chat(3, "Charlie", "Hey", "10:02 AM"),
-            Chat(4, "David", "Hola", "10:03 AM"),
-            Chat(5, "Eve", "Bonjour", "10:04 AM"),
-            Chat(6, "Frank", "Ciao", "10:05 AM"),
-            Chat(7, "Grace", "Namaste, how are you?", "10:06 AM"),
+    val chats = DataSource.getChats()
+
+    Column {
+        TopAppBar(
+            title = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Chat",
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    IconButton(
+                        onClick = { /* Action for custom icon */ }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.wifi_tethering_24px),
+                            contentDescription = "Settings",
+                            modifier = Modifier.size(36.dp)
+                        )
+                    }
+                    IconButton(
+                        onClick = { /* Action for settings icon */ }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = "Settings",
+                            modifier = Modifier.size(36.dp)
+                        )
+                    }
+                }
+            },
+            colors =  TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.White,
+            ),
+            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
         )
-    ChatList(chats, onChatClick)
+
+        ChatItem(chat = Chat(0, "Group Chat", "Ciao a tutti", "now", R.drawable.campaign_24px), onChatClick = onChatClick)
+        Divider()
+        ChatList(chats, onChatClick)
+    }
 
 }
 
@@ -68,13 +112,14 @@ fun ChatItem(chat: Chat, onChatClick : (Int) -> Unit) {
     Row(
         modifier = Modifier
             .padding(vertical = 8.dp, horizontal = 16.dp)
-            .fillMaxWidth().clickable {
+            .fillMaxWidth()
+            .clickable {
                 onChatClick(chat.id)
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = painterResource(id = R.drawable.account_circle_24px),
+            painter = painterResource(id = chat.imgId),
             colorFilter = ColorFilter.tint(Color.Black),
             contentDescription = null,
             modifier = Modifier
@@ -89,14 +134,14 @@ fun ChatItem(chat: Chat, onChatClick : (Int) -> Unit) {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = chat.message,
+                text = chat.lastMessage,
                 fontSize = 14.sp,
                 color = Color.Gray
             )
         }
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = chat.time,
+            text = chat.timestamp,
             fontSize = 12.sp,
             color = Color.Gray
         )

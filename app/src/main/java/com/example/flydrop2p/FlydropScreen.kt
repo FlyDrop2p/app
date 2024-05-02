@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.flydrop2p.ui.screen.Home.HomeViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -54,11 +55,6 @@ fun FlydropApp(
     )
 
     Scaffold(
-        topBar = {
-            FlydropAppBar(
-                currentScreen = currentScreen,
-            )
-        }
     ){ innerPadding ->
         // val uiState by viewModel.uiState.collectAsState()
 
@@ -87,4 +83,10 @@ fun FlydropApp(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun FlydropAppPreview(){
+    FlydropApp()
 }
