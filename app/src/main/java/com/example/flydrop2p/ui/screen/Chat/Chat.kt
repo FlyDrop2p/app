@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.flydrop2p.data.DataSource
@@ -40,47 +41,19 @@ fun ChatScreen(chatViewModel: ChatViewModel, modifier: Modifier = Modifier) {
         modifier = Modifier.fillMaxSize()
     ) {
 
-        ChatHeader(chatInfo = chatInfoState.chatInfo)
-
         MessagesList(messages = chatInfoState.chatInfo.messages, modifier = Modifier.weight(1f))
 
         SendMessageInput(onSendMessage = { message ->
-            // Aggiorna la lista dei messaggi della chat con il nuovo messaggio
+            val currentTimeMillis = System.currentTimeMillis()
+            chatViewModel.addMessage(Message(
+                messageId = 0,
+                senderId = 0,
+                timestamp = currentTimeMillis.toString(),
+                receiverId = 0, // ID del destinatario
+                message = message
+            ))
         })
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ChatHeader(chatInfo: ChatInfo) {
-    val coroutineScope = rememberCoroutineScope()
-
-    TopAppBar(
-        navigationIcon = {
-            IconButton(onClick = {
-                // torna alla schermata delle chats
-
-
-            }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Go back"
-                )
-            }
-        },
-        title = {
-            Text(
-                text = chatInfo.name,
-                fontSize = 26.sp,
-                color = Color.Black,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(16.dp)
-            )
-        },
-        colors =  TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White,
-        ),
-    )
 }
 
 @Composable
@@ -149,4 +122,10 @@ fun SendMessageInput(onSendMessage: (String) -> Unit) {
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun ChatScreenPreview() {
+    ChatScreen(chatViewModel = ChatViewModel())
 }

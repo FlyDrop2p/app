@@ -1,6 +1,7 @@
 package com.example.flydrop2p.ui.screen.Chat
 
 import androidx.lifecycle.ViewModel
+import com.example.flydrop2p.data.DataSource
 import com.example.flydrop2p.domain.model.ChatInfo
 import com.example.flydrop2p.domain.model.Message
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +14,13 @@ class ChatViewModel: ViewModel() {
 
     fun setChatInfo(chatInfo: ChatInfo) {
         _uiState.value = ChatViewState(chatInfo = chatInfo)
+        loadMessagesForChat(chatInfo.id)
+    }
+
+    private fun loadMessagesForChat(chatId: Int) {
+        val messages = DataSource.getMessages(chatId)
+        _uiState.value = _uiState.value.copy(chatInfo = _uiState.value.chatInfo.copy(messages = messages))
+
     }
 
     fun setNewMessage(newMessage: String) {

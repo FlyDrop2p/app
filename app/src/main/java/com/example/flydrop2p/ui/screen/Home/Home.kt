@@ -52,43 +52,6 @@ fun HomeScreen(
     val chats = DataSource.getChats()
 
     Column {
-        TopAppBar(
-            title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Chat",
-                        fontSize = 30.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    IconButton(
-                        onClick = { /* Action for custom icon */ }
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.wifi_tethering_24px),
-                            contentDescription = "Settings",
-                            modifier = Modifier.size(36.dp)
-                        )
-                    }
-                    IconButton(
-                        onClick = { /* Action for settings icon */ }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = "Settings",
-                            modifier = Modifier.size(36.dp)
-                        )
-                    }
-                }
-            },
-            colors =  TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White,
-            ),
-            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-        )
 
         ChatItem(chat = Chat(0, "Group Chat", "Ciao a tutti", "now", R.drawable.campaign_24px), onChatClick = onChatClick)
         Divider()
