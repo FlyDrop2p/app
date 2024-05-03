@@ -26,6 +26,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,26 +47,26 @@ import com.example.flydrop2p.domain.model.ChatInfo
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    // viewModel: HomeViewModel = viewModel(),
-    onChatClick : (ChatInfo) -> Unit
+    homeViewModel: HomeViewModel,
+    onChatClick : (Int) -> Unit
 ){
 
-    val chats = DataSource.getChats()
+    val chatsState by homeViewModel.chatsInfoState.collectAsState()
 
     Column {
 
-        ChatItem(chat = Chat(0, "Group Chat", "Ciao a tutti", "now", R.drawable.campaign_24px), onChatClick = onChatClick)
+        ChatItem(chatInfo = ChatInfo(0, "Group Chat", "Ciao a tutti", "now", R.drawable.campaign_24px), onChatClick = onChatClick)
         Divider()
-        ChatList(chats, onChatClick)
+        ChatList(chatsState.chats, onChatClick)
     }
 
 }
 
 @Composable
-fun ChatList(chats: List<Chat>, onChatClick : (ChatInfo) -> Unit) {
+fun ChatList(chatsInfo: List<ChatInfo>, onChatClick : (Int) -> Unit) {
     LazyColumn{
-        items(chats) { chat ->
-            ChatItem(chat = chat, onChatClick = onChatClick)
+        items(chatsInfo) { chatInfo ->
+            ChatItem(chatInfo = chatInfo, onChatClick = onChatClick)
             Divider()
         }
     }
@@ -72,18 +74,18 @@ fun ChatList(chats: List<Chat>, onChatClick : (ChatInfo) -> Unit) {
 
 
 @Composable
-fun ChatItem(chat: Chat, onChatClick : (ChatInfo) -> Unit) {
+fun ChatItem(chatInfo: ChatInfo, onChatClick : (Int) -> Unit) {
     Row(
         modifier = Modifier
             .padding(vertical = 8.dp, horizontal = 16.dp)
             .fillMaxWidth()
             .clickable {
-                onChatClick(ChatInfo(chat.id, chat.name, listOf()))
+                onChatClick(chatInfo.id)
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = painterResource(id = chat.imgId),
+            painter = painterResource(id = chatInfo.imgId),
             colorFilter = ColorFilter.tint(Color.Black),
             contentDescription = null,
             modifier = Modifier
@@ -93,19 +95,19 @@ fun ChatItem(chat: Chat, onChatClick : (ChatInfo) -> Unit) {
         Spacer(modifier = Modifier.width(16.dp))
         Column {
             Text(
-                text = chat.name,
+                text = chatInfo.name,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = chat.lastMessage,
+                text = chatInfo.lastMessage,
                 fontSize = 14.sp,
                 color = Color.Gray
             )
         }
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = chat.timestamp,
+            text = chatInfo.timestamp,
             fontSize = 12.sp,
             color = Color.Gray
         )

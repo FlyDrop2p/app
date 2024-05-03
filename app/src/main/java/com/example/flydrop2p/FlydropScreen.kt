@@ -1,6 +1,11 @@
 package com.example.flydrop2p
 
+import android.util.Log
 import androidx.annotation.StringRes
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 
@@ -19,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -38,7 +44,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.flydrop2p.domain.model.ChatInfo
+import com.example.flydrop2p.data.repository.ChatRepositoryImpl
+import com.example.flydrop2p.data.repository.ChatsInfoRepositoryImpl
 import com.example.flydrop2p.ui.screen.Chat.ChatScreen
 import com.example.flydrop2p.ui.screen.Chat.ChatViewModel
 import com.example.flydrop2p.ui.screen.Home.HomeScreen
@@ -53,7 +60,7 @@ enum class FlydropScreen(@StringRes val title: Int) {
 @Composable
 fun FlydropAppBar(
     currentScreen: FlydropScreen,
-    chatInfoState: ChatInfo,
+    chatName: String,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ){
@@ -73,7 +80,7 @@ fun FlydropAppBar(
         title = {
             if (currentScreen == FlydropScreen.Chat) {
                 Text(
-                    text = chatInfoState.name,
+                    text = chatName,
                     fontSize = 26.sp,
                     color = Color.Black,
                     fontWeight = FontWeight.Medium,
@@ -129,8 +136,8 @@ fun FlydropAppBar(
 
 @Composable
 fun FlydropApp(
-    viewModel: HomeViewModel = viewModel(),
-    chatViewModel: ChatViewModel = viewModel(),
+    homeViewModel: HomeViewModel = HomeViewModel(ChatsInfoRepositoryImpl()),
+    chatViewModel: ChatViewModel = ChatViewModel(ChatRepositoryImpl()),
     navController: NavHostController = rememberNavController()
 ){
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -138,22 +145,32 @@ fun FlydropApp(
         backStackEntry?.destination?.route ?: FlydropScreen.Home.name
     )
 
-    val chatInfoState = chatViewModel.uiState.collectAsState() // collectAsStateWithLifecycle()
+    val chatState = chatViewModel.uiState.collectAsState() // collectAsStateWithLifecycle()
+
 
     Scaffold(
         topBar = {
             FlydropAppBar(
                 currentScreen = currentScreen,
-                chatInfoState = chatInfoState.value.chatInfo,
+                chatName = chatState.value.chat.name,
                 navController = navController
             )
         }
     ){ innerPadding ->
 
+        Log.d("FlydropApp", "ChatState: $chatState")
+
 
         NavHost(
             navController = navController,
             startDestination = FlydropScreen.Home.name,
+            enterTransition = {
+                EnterTransition.None
+                // slideInHorizontally(animationSpec = tween(500))
+            },
+            exitTransition = {
+                ExitTransition.None
+            },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
@@ -163,14 +180,16 @@ fun FlydropApp(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(dimensionResource(R.dimen.padding_medium)),
-                    onChatClick = { chatInfo ->
-                        chatViewModel.setChatInfo(chatInfo)
+                    homeViewModel = homeViewModel,
+                    onChatClick = { chatId ->
+                        chatViewModel.setChat(chatId)
                         navController.navigate(FlydropScreen.Chat.name)
                     }
                 )
             }
             composable(route = FlydropScreen.Chat.name) {
                 ChatScreen(
+                    chatName = chatState.value.chat.name,
                     chatViewModel = chatViewModel,
                     modifier = Modifier
                         .fillMaxWidth()

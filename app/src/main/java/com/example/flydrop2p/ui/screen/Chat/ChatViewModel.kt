@@ -1,49 +1,40 @@
 package com.example.flydrop2p.ui.screen.Chat
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.flydrop2p.data.DataSource
-import com.example.flydrop2p.domain.model.ChatInfo
+import com.example.flydrop2p.domain.model.Chat
 import com.example.flydrop2p.domain.model.Message
+import com.example.flydrop2p.domain.repository.ChatRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
-class ChatViewModel: ViewModel() {
+class ChatViewModel(private val chatRepository: ChatRepository): ViewModel() {
     private val _uiState = MutableStateFlow(ChatViewState())
     val uiState: StateFlow<ChatViewState> = _uiState.asStateFlow()
 
-    fun setChatInfo(chatInfo: ChatInfo) {
-        _uiState.value = ChatViewState(chatInfo = chatInfo)
-        loadMessagesForChat(chatInfo.id)
+    init {
+        Log.d("!!ChatViewModel!!", "ChatViewModel created")
     }
 
-    private fun loadMessagesForChat(chatId: Int) {
-        val messages = DataSource.getMessages(chatId)
-        _uiState.value = _uiState.value.copy(chatInfo = _uiState.value.chatInfo.copy(messages = messages))
+    fun setChat(chatId: Int) {
+        viewModelScope.launch {
+            try {
+                val chat = chatRepository.getChat(chatId)
+                _uiState.value = _uiState.value.copy(chat = chat)
+                Log.d("ChatViewModel", "Chat: $chat")
+                Log.d("ChatViewModel STATE", "${_uiState.value.chat}")
+            } catch (e: Exception) {
 
+            }
+        }
     }
 
-    fun setNewMessage(newMessage: String) {
-        _uiState.value = _uiState.value.copy(newMessage = newMessage)
-    }
-
-    fun clearNewMessage() {
-        _uiState.value = _uiState.value.copy(newMessage = "")
-    }
-
-    fun addMessage(message: Message) {
-        val chatInfo = _uiState.value.chatInfo
-        val newMessages = chatInfo.messages.toMutableList()
-        newMessages.add(message)
-        _uiState.value = _uiState.value.copy(chatInfo = chatInfo.copy(messages = newMessages))
-    }
-
-    fun clearChat() {
-        _uiState.value = ChatViewState()
-    }
-
-    fun updateChatInfo(chatInfo: ChatInfo) {
-        _uiState.value = _uiState.value.copy(chatInfo = chatInfo)
+    fun getSenderName(senderId: Int): String {
+        return DataSource.getSenderNameById(senderId)
     }
 
 }

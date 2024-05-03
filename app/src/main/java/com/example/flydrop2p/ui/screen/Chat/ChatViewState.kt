@@ -1,8 +1,9 @@
 package com.example.flydrop2p.ui.screen.Chat
 
-import com.example.flydrop2p.domain.model.ChatInfo
+import com.example.flydrop2p.domain.model.Chat
+
 
 data class ChatViewState (
-    val chatInfo: ChatInfo = ChatInfo(0, "", emptyList()),
+    val chat: Chat = Chat(0, "Default", emptyList()),
     val newMessage: String = ""
 )
