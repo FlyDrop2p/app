@@ -16,17 +16,11 @@ class ChatViewModel(private val chatRepository: ChatRepository): ViewModel() {
     private val _uiState = MutableStateFlow(ChatViewState())
     val uiState: StateFlow<ChatViewState> = _uiState.asStateFlow()
 
-    init {
-        Log.d("!!ChatViewModel!!", "ChatViewModel created")
-    }
-
     fun setChat(chatId: Int) {
         viewModelScope.launch {
             try {
                 val chat = chatRepository.getChat(chatId)
                 _uiState.value = _uiState.value.copy(chat = chat)
-                Log.d("ChatViewModel", "Chat: $chat")
-                Log.d("ChatViewModel STATE", "${_uiState.value.chat}")
             } catch (e: Exception) {
 
             }
@@ -35,6 +29,20 @@ class ChatViewModel(private val chatRepository: ChatRepository): ViewModel() {
 
     fun getSenderName(senderId: Int): String {
         return DataSource.getSenderNameById(senderId)
+    }
+
+    fun addMessage(message: Message) {
+        viewModelScope.launch {
+            try {
+                // chatRepository.addMessage(message)
+                val chat = _uiState.value.chat
+                val updatedMessages = chat.messages + message
+                val updatedChat = chat.copy(messages = updatedMessages)
+                _uiState.value = _uiState.value.copy(chat = updatedChat)
+            } catch (e: Exception) {
+                Log.e("ChatViewModel", "Error adding message", e)
+            }
+        }
     }
 
 }

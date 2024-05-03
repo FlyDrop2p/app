@@ -55,7 +55,7 @@ fun HomeScreen(
 
     Column {
 
-        ChatItem(chatInfo = ChatInfo(0, "Group Chat", "Ciao a tutti", "now", R.drawable.campaign_24px), onChatClick = onChatClick)
+        ChatItem(chatInfo = ChatInfo(-1, "Group Chat", "Ciao a tutti", "now", R.drawable.campaign_24px), onChatClick = onChatClick)
         Divider()
         ChatList(chatsState.chats, onChatClick)
     }

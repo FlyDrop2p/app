@@ -6,46 +6,59 @@ import com.example.flydrop2p.domain.model.Message
 
 object DataSource {
     private val chatsInfoList = listOf(
-        ChatInfo(1, "Alice", "Hello", "10:00 AM"),
-        ChatInfo(2, "Bob", "Hi", "10:01 AM"),
-        ChatInfo(3, "Charlie", "Hey", "10:02 AM"),
-        ChatInfo(4, "David", "Hola", "10:03 AM"),
-        ChatInfo(5, "Eve", "Bonjour", "10:04 AM"),
-        ChatInfo(6, "Frank", "Ciao", "10:05 AM"),
-        ChatInfo(7, "Grace", "Namaste, how are you?", "10:06 AM"),
+        // ChatInfo(0, "Chat Pubblica", "Benvenuti nella chat pubblica!", "10:00 AM"), // Chat di gruppo
+        ChatInfo(1, "Alice", "Sembra una bella giornata!", "10:00 AM"),
+        ChatInfo(2, "Bob", "Hai sentito le ultime notizie?", "10:01 AM"),
+        ChatInfo(3, "Charlie", "Domani abbiamo una riunione importante.", "10:02 AM"),
+        ChatInfo(4, "David", "Ho appena finito di cucinare la cena.", "10:03 AM"),
+        ChatInfo(5, "Eve", "Guarda questo meme divertente!", "10:04 AM"),
+        ChatInfo(6, "Frank", "Ho bisogno del tuo aiuto con il progetto.", "10:05 AM"),
+        ChatInfo(7, "Grace", "Sto pensando di fare una vacanza.", "10:06 AM")
     )
 
     private val placeholderMessages = mapOf(
+        // Messaggi per la Chat Pubblica
+        -1 to listOf(
+            Message(0, "Benvenuti nella chat pubblica!", "10:00 AM", 0, 1),
+            Message(1, "Ciao a tutti!", "10:05 AM", 1, 2)
+        ),
+        // Messaggi per la chat con Alice
         1 to listOf(
-            Message(1, "Ciao!", "10:00 AM", 1, 2),
-            Message(2, "Come stai?", "10:05 AM", 1, 2),
-            Message(3, "Tutto bene, grazie!", "10:10 AM", 2, 1)
+            Message(2, "Ciao Alice!", "10:00 AM", 0, 1),
+            Message(3, "Come stai?", "10:05 AM", 1, 0),
+            Message(4, "Tutto bene, grazie!", "10:10 AM", 0, 1)
         ),
+        // Messaggi per la chat con Bob
         2 to listOf(
-            Message(4, "Hey!", "10:01 AM", 2, 1),
-            Message(5, "Bene, tu?", "10:06 AM", 1, 2),
-            Message(6, "Anch'io bene, grazie!", "10:11 AM", 2, 1)
+            Message(5, "Hey Bob!", "10:01 AM", 0, 2),
+            Message(6, "Ciao!", "10:06 AM", 2, 0),
+            Message(7, "Anch'io bene, grazie!", "10:11 AM", 0, 2)
         ),
+        // Messaggi per la chat con Charlie
         3 to listOf(
-            Message(7, "Hey", "10:02 AM", 3, 1),
-            Message(8, "Salve!", "10:07 AM", 1, 3)
+            Message(8, "Ciao Charlie!", "10:02 AM", 0, 3),
+            Message(9, "Salve!", "10:07 AM", 3, 0)
         ),
+        // Messaggi per la chat con David
         4 to listOf(
-            Message(9, "Hola", "10:03 AM", 4, 1),
-            Message(10, "Hola!", "10:08 AM", 1, 4)
+            Message(10, "Ciao David!", "10:03 AM", 0, 4),
+            Message(11, "Hola!", "10:08 AM", 4, 0)
         ),
+        // Messaggi per la chat con Eve
         5 to listOf(
-            Message(11, "Bonjour", "10:04 AM", 5, 1),
-            Message(12, "Bonjour!", "10:09 AM", 1, 5)
+            Message(12, "Ciao Eve!", "10:04 AM", 0, 5),
+            Message(13, "Bonjour!", "10:09 AM", 5, 0)
         ),
+        // Messaggi per la chat con Frank
         6 to listOf(
-            Message(13, "Ciao", "10:05 AM", 6, 1),
-            Message(14, "Ciao!", "10:10 AM", 1, 6)
+            Message(14, "Ciao Frank!", "10:05 AM", 0, 6),
+            Message(15, "Ciao!", "10:10 AM", 6, 0)
         ),
+        // Messaggi per la chat con Grace
         7 to listOf(
-            Message(15, "Namaste", "10:06 AM", 7, 1),
-            Message(16, "Namaste, come stai?", "10:11 AM", 1, 7),
-            Message(17, "Tutto bene, grazie!", "10:16 AM", 7, 1)
+            Message(16, "Ciao Grace!", "10:06 AM", 0, 7),
+            Message(17, "Namaste, come stai?", "10:11 AM", 7, 0),
+            Message(18, "Tutto bene, grazie!", "10:16 AM", 0, 7)
         )
     )
 
@@ -56,10 +69,10 @@ object DataSource {
     fun getChat(chatId: Int): Chat {
         val chatInfo = chatsInfoList.firstOrNull { it.id == chatId }
         val messages = placeholderMessages[chatId] ?: emptyList()
-        return chatInfo?.let { Chat(chatInfo.id, chatInfo.name, messages) } ?: Chat(0, "Unknown chat", emptyList())
+        return chatInfo?.let { Chat(chatInfo.id, chatInfo.name, messages) } ?: Chat(0, "Group Chat", messages) // FIXME: Group Chat
     }
     fun getSenderNameById(senderId: Int): String {
-        // Replace this with your own implementation
+        if (senderId == 0) return "Me"
         val sender = chatsInfoList.firstOrNull { it.id == senderId }
         return sender?.name ?: "Unknown sender"
     }

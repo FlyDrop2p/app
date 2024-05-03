@@ -25,10 +25,10 @@ import com.example.flydrop2p.domain.model.Message
 
 
 @Composable
-fun ChatScreen(chatName: String, chatViewModel: ChatViewModel, modifier: Modifier = Modifier) {
+fun ChatScreen(chatViewModel: ChatViewModel, modifier: Modifier = Modifier) {
 
     val chatState by chatViewModel.uiState.collectAsState()
-    Log.d("ChatScreen", "ChatScreen: $chatName ${chatState.chat}")
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -37,13 +37,13 @@ fun ChatScreen(chatName: String, chatViewModel: ChatViewModel, modifier: Modifie
 
         SendMessageInput(onSendMessage = { message ->
             val currentTimeMillis = System.currentTimeMillis()
-//            chatViewModel.addMessage(Message(
-//                messageId = 0,
-//                senderId = 0,
-//                timestamp = currentTimeMillis.toString(),
-//                receiverId = 0, // ID del destinatario
-//                message = message
-//            ))
+            chatViewModel.addMessage(Message(
+                messageId = 0,
+                senderId = 0,
+                timestamp = currentTimeMillis.toString(),
+                receiverId = 0, // ID del destinatario
+                message = message
+            ))
         })
     }
 }

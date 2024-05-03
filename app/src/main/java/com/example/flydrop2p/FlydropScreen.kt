@@ -158,9 +158,6 @@ fun FlydropApp(
         }
     ){ innerPadding ->
 
-        Log.d("FlydropApp", "ChatState: $chatState")
-
-
         NavHost(
             navController = navController,
             startDestination = FlydropScreen.Home.name,
@@ -189,7 +186,6 @@ fun FlydropApp(
             }
             composable(route = FlydropScreen.Chat.name) {
                 ChatScreen(
-                    chatName = chatState.value.chat.name,
                     chatViewModel = chatViewModel,
                     modifier = Modifier
                         .fillMaxWidth()
