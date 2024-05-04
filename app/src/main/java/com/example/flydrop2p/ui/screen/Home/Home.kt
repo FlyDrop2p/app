@@ -1,5 +1,6 @@
 package com.example.flydrop2p.ui.screen.Home
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -17,11 +18,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -41,6 +46,9 @@ import com.example.flydrop2p.R
 import com.example.flydrop2p.data.DataSource
 import com.example.flydrop2p.domain.model.Chat
 import com.example.flydrop2p.domain.model.ChatInfo
+import com.example.flydrop2p.domain.model.Message
+import com.example.flydrop2p.ui.AppViewModelProvider
+import com.example.flydrop2p.ui.screen.Chat.ChatViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,23 +56,49 @@ import com.example.flydrop2p.domain.model.ChatInfo
 fun HomeScreen(
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel,
-    onChatClick : (Int) -> Unit
-){
+    chatViewModel: ChatViewModel,
+    onChatClick: (ChatInfo) -> Unit
+) {
 
     val chatsState by homeViewModel.chatsInfoState.collectAsState()
 
-    Column {
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    Log.d("ChatScreen", "FloatingActionButton onClick")
+                    chatViewModel.populateDatabase()
+                    homeViewModel.populateDatabase()
+                },
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add",
+                )
+            }
+        },
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier.padding(innerPadding)
+        ) {
 
-        ChatItem(chatInfo = ChatInfo(-1, "Group Chat", "Ciao a tutti", "now", R.drawable.campaign_24px), onChatClick = onChatClick)
-        Divider()
-        ChatList(chatsState.chats, onChatClick)
+            ChatItem(
+                chatInfo = ChatInfo(-1, "Group Chat", R.drawable.campaign_24px),
+                onChatClick = onChatClick
+            )
+            Divider()
+            ChatList(chatsState.chats, onChatClick)
+        }
+
     }
 
 }
 
 @Composable
-fun ChatList(chatsInfo: List<ChatInfo>, onChatClick : (Int) -> Unit) {
-    LazyColumn{
+fun ChatList(chatsInfo: List<ChatInfo>, onChatClick: (ChatInfo) -> Unit) {
+    LazyColumn {
         items(chatsInfo) { chatInfo ->
             ChatItem(chatInfo = chatInfo, onChatClick = onChatClick)
             Divider()
@@ -74,13 +108,13 @@ fun ChatList(chatsInfo: List<ChatInfo>, onChatClick : (Int) -> Unit) {
 
 
 @Composable
-fun ChatItem(chatInfo: ChatInfo, onChatClick : (Int) -> Unit) {
+fun ChatItem(chatInfo: ChatInfo, onChatClick: (ChatInfo) -> Unit) {
     Row(
         modifier = Modifier
             .padding(vertical = 8.dp, horizontal = 16.dp)
             .fillMaxWidth()
             .clickable {
-                onChatClick(chatInfo.id)
+                onChatClick(chatInfo)
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -100,14 +134,14 @@ fun ChatItem(chatInfo: ChatInfo, onChatClick : (Int) -> Unit) {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = chatInfo.lastMessage,
+                text = "Ultimo messaggio",
                 fontSize = 14.sp,
                 color = Color.Gray
             )
         }
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = chatInfo.timestamp,
+            text = "10:00",
             fontSize = 12.sp,
             color = Color.Gray
         )

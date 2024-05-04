@@ -1,23 +1,23 @@
 package com.example.flydrop2p.domain.model
 
 import com.example.flydrop2p.R
-import com.example.flydrop2p.data.local.ChatInfoEntity
+import com.example.flydrop2p.data.local.ContactEntity
 
-data class ChatInfo(
+data class Contact (
     val id: Int,
     val name: String,
     val imgId: Int = R.drawable.account_circle_24px
 )
 
-fun ChatInfo.toChatInfoEntity(): ChatInfoEntity {
-    return ChatInfoEntity(
+fun Contact.toContactEntity(): ContactEntity {
+    return ContactEntity(
         name = name,
         imgId = imgId
     )
 }
 
-fun ChatInfoEntity.toChatInfo(): ChatInfo {
-    return ChatInfo(
+fun ContactEntity.toContact(): Contact {
+    return Contact(
         id = id,
         name = name,
         imgId = imgId

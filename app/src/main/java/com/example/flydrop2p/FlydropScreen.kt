@@ -1,11 +1,8 @@
 package com.example.flydrop2p
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 
@@ -24,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -44,8 +40,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.flydrop2p.data.repository.ChatRepositoryImpl
-import com.example.flydrop2p.data.repository.ChatsInfoRepositoryImpl
+import com.example.flydrop2p.ui.AppViewModelProvider
 import com.example.flydrop2p.ui.screen.Chat.ChatScreen
 import com.example.flydrop2p.ui.screen.Chat.ChatViewModel
 import com.example.flydrop2p.ui.screen.Home.HomeScreen
@@ -136,8 +131,8 @@ fun FlydropAppBar(
 
 @Composable
 fun FlydropApp(
-    homeViewModel: HomeViewModel = HomeViewModel(ChatsInfoRepositoryImpl()),
-    chatViewModel: ChatViewModel = ChatViewModel(ChatRepositoryImpl()),
+    homeViewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    chatViewModel: ChatViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController = rememberNavController()
 ){
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -178,6 +173,7 @@ fun FlydropApp(
                         .fillMaxWidth()
                         .padding(dimensionResource(R.dimen.padding_medium)),
                     homeViewModel = homeViewModel,
+                    chatViewModel = chatViewModel, // TODO: used only for populating chat
                     onChatClick = { chatId ->
                         chatViewModel.setChat(chatId)
                         navController.navigate(FlydropScreen.Chat.name)

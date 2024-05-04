@@ -1,13 +1,18 @@
 package com.example.flydrop2p.domain.repository
 
+import com.example.flydrop2p.data.local.ChatInfoEntity
 import com.example.flydrop2p.domain.model.ChatInfo
+import kotlinx.coroutines.flow.Flow
 
 interface ChatsInfoRepository {
-    suspend fun getChatsInfo(): List<ChatInfo>
+    fun getChatsInfo(): Flow<List<ChatInfoEntity>>
 
-    suspend fun getChatInfo(chatId: Int): ChatInfo
+    fun getChatInfo(chatId: Int): Flow<ChatInfoEntity>
 
-    suspend fun addChatInfo(chatInfo: ChatInfo)
+    suspend fun addChatInfo(chatInfo: ChatInfoEntity)
 
-    suspend fun updateChatInfo(chatInfo: ChatInfo)
+    suspend fun updateChatInfo(chatInfo: ChatInfoEntity)
+
+    // TODO: Only for testing purposes
+    suspend fun populateDatabase()
 }

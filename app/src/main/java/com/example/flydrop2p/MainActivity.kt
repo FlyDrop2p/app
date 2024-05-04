@@ -11,13 +11,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.flydrop2p.data.repository.ChatRepositoryImpl
-import com.example.flydrop2p.data.repository.ChatsInfoRepositoryImpl
 import com.example.flydrop2p.ui.screen.Chat.ChatViewModel
 import com.example.flydrop2p.ui.screen.Home.HomeViewModel
 import com.example.flydrop2p.ui.theme.FlyDrop2pTheme
 
 class MainActivity : ComponentActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            FlyDrop2pTheme {
+                FlydropApp()
+            }
+        }
+    }
+
 
     override fun onStart() {
         super.onStart()
@@ -44,16 +52,4 @@ class MainActivity : ComponentActivity() {
         Log.d("MainActivity", "onDestroy")
     }
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            // TODO: figure out why this is the only way to create the viewmodels
-            val homeViewModel: HomeViewModel = HomeViewModel(ChatsInfoRepositoryImpl())
-            val chatViewModel: ChatViewModel = ChatViewModel(ChatRepositoryImpl())
-            FlyDrop2pTheme {
-                FlydropApp(homeViewModel = homeViewModel, chatViewModel = chatViewModel)
-            }
-        }
-    }
 }
