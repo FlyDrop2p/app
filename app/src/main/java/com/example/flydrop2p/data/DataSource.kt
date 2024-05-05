@@ -1,6 +1,5 @@
 package com.example.flydrop2p.data
 
-import com.example.flydrop2p.domain.model.Chat
 import com.example.flydrop2p.domain.model.ChatInfo
 import com.example.flydrop2p.domain.model.Contact
 import com.example.flydrop2p.domain.model.Message

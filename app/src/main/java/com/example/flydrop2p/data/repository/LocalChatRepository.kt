@@ -3,7 +3,6 @@ package com.example.flydrop2p.data.repository
 import com.example.flydrop2p.data.DataSource
 import com.example.flydrop2p.data.local.MessageEntity
 import com.example.flydrop2p.data.local.MessageDAO
-import com.example.flydrop2p.domain.model.Chat
 import com.example.flydrop2p.domain.model.toMessageEntity
 import com.example.flydrop2p.domain.repository.ChatRepository
 import kotlinx.coroutines.Dispatchers

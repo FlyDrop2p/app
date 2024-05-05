@@ -1,7 +1,6 @@
 package com.example.flydrop2p.domain.repository
 
 import com.example.flydrop2p.data.local.MessageEntity
-import com.example.flydrop2p.domain.model.Chat
 import kotlinx.coroutines.flow.Flow
 
 interface ChatRepository {

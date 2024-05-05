@@ -6,7 +6,6 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.flydrop2p.FlydropApplication
-import com.example.flydrop2p.MainActivity
 import com.example.flydrop2p.ui.screen.Chat.ChatViewModel
 import com.example.flydrop2p.ui.screen.Home.HomeViewModel
 
