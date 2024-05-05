@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.flydrop2p"
+    namespace = "com.flydrop2p.flydrop2p"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.flydrop2p"
+        applicationId = "com.flydrop2p.flydrop2p"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
