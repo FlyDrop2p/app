@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">FlyDrop2p</string>
     <string name="chat_screen">Chat Screen</string>
+    <string name="back_button">Back</string>
 </resources>
