@@ -10,20 +10,12 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import com.flydrop2p.flydrop2p.network.ClientService
 import com.flydrop2p.flydrop2p.network.ServerService
 import com.flydrop2p.flydrop2p.network.WiFiDirectBroadcastReceiver
 import com.flydrop2p.flydrop2p.ui.theme.FlyDrop2pTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.newCoroutineContext
-import kotlinx.coroutines.withContext
-import kotlin.coroutines.coroutineContext
 
 class MainActivity : ComponentActivity() {
     private val intentFilter = IntentFilter().apply {
