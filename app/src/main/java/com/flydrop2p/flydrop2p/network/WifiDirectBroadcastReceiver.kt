@@ -13,8 +13,6 @@ class WiFiDirectBroadcastReceiver(
 ) : BroadcastReceiver() {
     private val manager = WiFiDirectManager(activity)
     private val devices = mutableSetOf<WifiP2pDevice>()
-    val serverService = ServerService()
-    val clientService = ClientService()
 
     init {
         updateDevices()

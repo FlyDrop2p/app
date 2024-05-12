@@ -10,8 +10,20 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.lifecycleScope
+import com.flydrop2p.flydrop2p.network.ClientService
+import com.flydrop2p.flydrop2p.network.ServerService
 import com.flydrop2p.flydrop2p.network.WiFiDirectBroadcastReceiver
 import com.flydrop2p.flydrop2p.ui.theme.FlyDrop2pTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.newCoroutineContext
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.coroutineContext
 
 class MainActivity : ComponentActivity() {
     private val intentFilter = IntentFilter().apply {
@@ -21,11 +33,15 @@ class MainActivity : ComponentActivity() {
         addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
     }
 
-    private val receiver = WiFiDirectBroadcastReceiver(this)
+    private lateinit var receiver: WiFiDirectBroadcastReceiver
+    private val serverService = ServerService()
+    private val clientService = ClientService()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestPermissions()
+
+        receiver = WiFiDirectBroadcastReceiver(this)
 
         setContent {
             FlyDrop2pTheme {
@@ -37,6 +53,10 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
         Log.d("MainActivity", "onStart")
+
+        lifecycleScope.launch {
+            serverService.startConnection()
+        }
     }
 
     override fun onResume() {
@@ -57,6 +77,8 @@ class MainActivity : ComponentActivity() {
     override fun onStop() {
         super.onStop()
         Log.d("MainActivity", "onStop")
+
+        serverService.stopConnection()
     }
 
     override fun onDestroy() {

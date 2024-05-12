@@ -20,9 +20,8 @@ class WiFiDirectManager(private val activity: MainActivity) {
     private var channel: WifiP2pManager.Channel? = null
 
     init {
-        if(checkDeviceCompatibility()) {
-            channel = manager?.initialize(activity, activity.mainLooper, null)
-        }
+        channel = manager?.initialize(activity, activity.mainLooper, null)
+        checkDeviceCompatibility()
     }
 
     fun discoverPeers(listener: WifiP2pManager.ActionListener) {
@@ -70,31 +69,23 @@ class WiFiDirectManager(private val activity: MainActivity) {
         manager?.connect(channel, config, listener)
     }
 
-    private fun checkDeviceCompatibility(): Boolean {
-        var ret = true
-
+    private fun checkDeviceCompatibility() {
         if (!activity.packageManager.hasSystemFeature(PackageManager.FEATURE_WIFI_DIRECT)) {
             Toast.makeText(activity, "Wi-Fi Direct is not supported by this device.", Toast.LENGTH_SHORT).show()
-            ret = false
         }
 
         val wifiManager = activity.getSystemService(Activity.WIFI_SERVICE) as WifiManager
         if (!wifiManager.isP2pSupported) {
             Toast.makeText(activity, "Wi-Fi Direct is not supported by the hardware or Wi-Fi is off.", Toast.LENGTH_SHORT).show()
-            ret = false
         }
 
         if (manager == null) {
             Toast.makeText(activity, "Cannot get Wi-Fi Direct system service.", Toast.LENGTH_SHORT).show()
-            ret = false
 
         }
 
         if (channel == null) {
             Toast.makeText(activity, "Cannot initialize Wi-Fi Direct.", Toast.LENGTH_SHORT).show()
-            ret = false
         }
-
-        return ret
     }
 }
