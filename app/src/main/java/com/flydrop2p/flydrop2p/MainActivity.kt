@@ -10,6 +10,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import com.flydrop2p.flydrop2p.network.WiFiDirectBroadcastReceiver
 import com.flydrop2p.flydrop2p.ui.theme.FlyDrop2pTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,6 +20,8 @@ class MainActivity : ComponentActivity() {
         addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION)
         addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
     }
+
+    private val receiver = WiFiDirectBroadcastReceiver(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,11 +42,16 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         Log.d("MainActivity", "onResume")
+
+        registerReceiver(receiver, intentFilter)
+        receiver.discoverPeers()
     }
 
     override fun onPause() {
         super.onPause()
         Log.d("MainActivity", "onPause")
+
+        unregisterReceiver(receiver)
     }
 
     override fun onStop() {
