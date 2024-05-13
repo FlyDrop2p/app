@@ -11,7 +11,6 @@ import com.flydrop2p.flydrop2p.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.net.InetAddress
 
 class WiFiDirectBroadcastReceiver(
     activity: MainActivity
@@ -23,9 +22,7 @@ class WiFiDirectBroadcastReceiver(
     private val clientService = ClientService()
 
     init {
-        coroutineScope.launch {
-            serverService.startConnection()
-        }
+        serverService.startConnection()
     }
 
     fun discoverPeers() {
@@ -46,6 +43,16 @@ class WiFiDirectBroadcastReceiver(
                 devices.add(device)
             }
         }
+
+        manager.requestGroupInfo(object : WifiP2pManager.GroupInfoListener {
+            override fun onGroupInfoAvailable(info: WifiP2pGroup?) {
+                if(info?.isGroupOwner != true) {
+                    coroutineScope.launch {
+                        clientService.connectToServer()
+                    }
+                }
+            }
+        })
     }
 
     fun connectToDevice(device: WifiP2pDevice) {
@@ -73,16 +80,6 @@ class WiFiDirectBroadcastReceiver(
             WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION -> {
                 Log.d("WifiDirectBroadcastReceiver", "WIFI_P2P_PEERS_CHANGED_ACTION")
                 updateDevices()
-
-                manager.requestGroupInfo(object : WifiP2pManager.GroupInfoListener {
-                    override fun onGroupInfoAvailable(info: WifiP2pGroup?) {
-                        if(info?.isGroupOwner == false) {
-                            coroutineScope.launch {
-                                clientService.connectToServer()
-                            }
-                        }
-                    }
-                })
             }
 
             WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
