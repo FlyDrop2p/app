@@ -26,8 +26,6 @@ class MainActivity : ComponentActivity() {
     }
 
     private lateinit var receiver: WiFiDirectBroadcastReceiver
-    private val serverService = ServerService()
-    private val clientService = ClientService()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,10 +43,6 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
         Log.d("MainActivity", "onStart")
-
-        lifecycleScope.launch {
-            serverService.startConnection()
-        }
     }
 
     override fun onResume() {
@@ -69,8 +63,6 @@ class MainActivity : ComponentActivity() {
     override fun onStop() {
         super.onStop()
         Log.d("MainActivity", "onStop")
-
-        serverService.stopConnection()
     }
 
     override fun onDestroy() {

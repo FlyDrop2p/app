@@ -52,6 +52,20 @@ class WiFiDirectManager(private val activity: MainActivity) {
         manager?.requestPeers(channel, listener)
     }
 
+    fun requestGroupInfo(listener: WifiP2pManager.GroupInfoListener) {
+        if (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+            return
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (activity.checkSelfPermission(Manifest.permission.NEARBY_WIFI_DEVICES) == PackageManager.PERMISSION_DENIED) {
+                return
+            }
+        }
+
+        manager?.requestGroupInfo(channel, listener)
+    }
+
     fun connectToDevice(device: WifiP2pDevice, listener: WifiP2pManager.ActionListener) {
         if (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
             return

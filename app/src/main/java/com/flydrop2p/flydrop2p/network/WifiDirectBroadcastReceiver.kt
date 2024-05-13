@@ -4,18 +4,28 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.net.wifi.p2p.WifiP2pDevice
+import android.net.wifi.p2p.WifiP2pGroup
 import android.net.wifi.p2p.WifiP2pManager
 import android.util.Log
 import com.flydrop2p.flydrop2p.MainActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.net.InetAddress
 
 class WiFiDirectBroadcastReceiver(
     activity: MainActivity
 ) : BroadcastReceiver() {
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val manager = WiFiDirectManager(activity)
     private val devices = mutableSetOf<WifiP2pDevice>()
+    private val serverService = ServerService()
+    private val clientService = ClientService()
 
     init {
-        updateDevices()
+        coroutineScope.launch {
+            serverService.startConnection()
+        }
     }
 
     fun discoverPeers() {
@@ -56,18 +66,32 @@ class WiFiDirectBroadcastReceiver(
 
         when (action) {
             WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION -> {
+                Log.d("WifiDirectBroadcastReceiver", "WIFI_P2P_STATE_CHANGED_ACTION")
                 updateDevices()
             }
 
             WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION -> {
+                Log.d("WifiDirectBroadcastReceiver", "WIFI_P2P_PEERS_CHANGED_ACTION")
                 updateDevices()
+
+                manager.requestGroupInfo(object : WifiP2pManager.GroupInfoListener {
+                    override fun onGroupInfoAvailable(info: WifiP2pGroup?) {
+                        if(info?.isGroupOwner == false) {
+                            coroutineScope.launch {
+                                clientService.connectToServer()
+                            }
+                        }
+                    }
+                })
             }
 
             WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
+                Log.d("WifiDirectBroadcastReceiver", "WIFI_P2P_CONNECTION_CHANGED_ACTION")
                 updateDevices()
             }
 
             WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {
+                Log.d("WifiDirectBroadcastReceiver", "WIFI_P2P_THIS_DEVICE_CHANGED_ACTION")
                 updateDevices()
             }
         }

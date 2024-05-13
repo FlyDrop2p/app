@@ -1,5 +1,6 @@
 package com.flydrop2p.flydrop2p.network
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.InetAddress
@@ -20,8 +21,8 @@ class ClientService {
                 val outputStream = socket.getOutputStream()
                 outputStream.write(socket.localAddress.address)
                 outputStream.close()
-            } catch (_: Exception) {
-
+            } catch (e: Exception) {
+                Log.d("ClientService", e.toString())
             }
         }
     }
