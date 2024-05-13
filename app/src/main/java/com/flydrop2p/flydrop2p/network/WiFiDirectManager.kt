@@ -10,6 +10,7 @@ import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import com.flydrop2p.flydrop2p.MainActivity
 
 class WiFiDirectManager(private val activity: MainActivity) {
@@ -38,7 +39,7 @@ class WiFiDirectManager(private val activity: MainActivity) {
         manager?.discoverPeers(channel, listener)
     }
 
-    fun requestPeers(listener: WifiP2pManager.PeerListListener) {
+    fun requestConnectionInfo(listener: WifiP2pManager.ConnectionInfoListener) {
         if (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
             return
         }
@@ -49,7 +50,22 @@ class WiFiDirectManager(private val activity: MainActivity) {
             }
         }
 
-        manager?.requestPeers(channel, listener)
+        manager?.requestConnectionInfo(channel, listener)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun requestDeviceInfo(listener: WifiP2pManager.DeviceInfoListener) {
+        if (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+            return
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (activity.checkSelfPermission(Manifest.permission.NEARBY_WIFI_DEVICES) == PackageManager.PERMISSION_DENIED) {
+                return
+            }
+        }
+
+        channel?.let { manager?.requestDeviceInfo(it, listener) }
     }
 
     fun requestGroupInfo(listener: WifiP2pManager.GroupInfoListener) {
@@ -64,6 +80,35 @@ class WiFiDirectManager(private val activity: MainActivity) {
         }
 
         manager?.requestGroupInfo(channel, listener)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun requestNetworkInfo(listener: WifiP2pManager.NetworkInfoListener) {
+        if (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+            return
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (activity.checkSelfPermission(Manifest.permission.NEARBY_WIFI_DEVICES) == PackageManager.PERMISSION_DENIED) {
+                return
+            }
+        }
+
+        channel?.let { manager?.requestNetworkInfo(it, listener) }
+    }
+
+    fun requestPeers(listener: WifiP2pManager.PeerListListener) {
+        if (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+            return
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (activity.checkSelfPermission(Manifest.permission.NEARBY_WIFI_DEVICES) == PackageManager.PERMISSION_DENIED) {
+                return
+            }
+        }
+
+        manager?.requestPeers(channel, listener)
     }
 
     fun connectToDevice(device: WifiP2pDevice, listener: WifiP2pManager.ActionListener) {
