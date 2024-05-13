@@ -52,7 +52,7 @@ fun ChatScreen(chatViewModel: ChatViewModel, navController: NavHostController, m
 
     Log.d("ChatScreen", "ChatScreen chatId: ${chatId}")
     if (chatId != null) {
-        chatViewModel.setChat(chatId)
+        chatViewModel.getChat(chatId)
     }
     val chatState by chatViewModel.uiState.collectAsState()
 
@@ -60,7 +60,10 @@ fun ChatScreen(chatViewModel: ChatViewModel, navController: NavHostController, m
         topBar = {
             FlydropTopAppBar(
                 title = chatState.chat.name,
-                canNavigateBack = false,
+                canNavigateBack = true,
+                navigateUp = {
+                    navController.navigateUp()
+                },
                 modifier = modifier,
                 scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
             )

@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.singleOrNull
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -27,26 +28,25 @@ class ChatViewModel(private val chatRepository: ChatRepository,
         Log.d("ChatViewModel", "ChatViewModel created")
     }
 
-    fun setChat(chatId: Int) {
-//        viewModelScope.launch {
-//            try {
-//                chatRepository.getChatMessages(chatId)
-//                    .collect { messagesEntity ->
-//                        val messages = messagesEntity.map { it.toMessage() }
-//
-//                        val updatedChat = Chat(
-//                            id = chatId,
-//                            name = "Chat $chatId",
-//                            messages = messages
-//                        )
-//                        Log.d("ChatViewModel", "Chat messages: $updatedChat")
-//                        _uiState.value = _uiState.value.copy(chat = updatedChat)
-//                    }
-//            } catch (e: Exception) {
-//                Log.e("ChatViewModel", "Error getting chat messages", e)
-//            }
-//        }
-        _uiState.value = _uiState.value.copy(chat = Chat(id = chatId, name = "Chat $chatId", messages = emptyList()))
+    fun getChat(chatId: Int) {
+        viewModelScope.launch {
+            try {
+                chatRepository.getChatMessages(chatId)
+                    .collect { messagesEntity ->
+                        val messages = messagesEntity.map { it.toMessage() }
+
+                        val updatedChat = Chat(
+                            id = chatId,
+                            name = "Chat $chatId",
+                            messages = messages
+                        )
+                        Log.d("ChatViewModel", "Chat messages: $updatedChat")
+                        _uiState.update { it.copy(chat = updatedChat) }
+                    }
+            } catch (e: Exception) {
+                Log.e("ChatViewModel", "Error getting chat messages", e)
+            }
+        }
     }
 
     fun setChat(chatInfo: ChatInfo) {
