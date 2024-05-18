@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,10 +18,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,8 +36,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.flydrop2p.flydrop2p.FlydropTopAppBar
 import com.flydrop2p.flydrop2p.R
-import com.flydrop2p.flydrop2p.domain.model.Message
+import com.flydrop2p.flydrop2p.data.local.MessageEntity
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
+import kotlinx.coroutines.launch
 
 
 object ChatDestination : NavigationDestination {
@@ -45,21 +50,14 @@ object ChatDestination : NavigationDestination {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(chatViewModel: ChatViewModel, navController: NavHostController, modifier: Modifier = Modifier) {
-
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val chatId = navBackStackEntry?.arguments?.getInt(ChatDestination.itemIdArg)
-
-    Log.d("ChatScreen", "ChatScreen chatId: ${chatId}")
-    if (chatId != null) {
-        chatViewModel.getChat(chatId)
-    }
+fun ChatScreen(chatId: Int, chatViewModel: ChatViewModel, navController: NavHostController, modifier: Modifier = Modifier) {
     val chatState by chatViewModel.uiState.collectAsState()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
 
     Scaffold(
         topBar = {
             FlydropTopAppBar(
-                title = chatState.chat.name,
+                title = chatState.chatInfo.name,
                 canNavigateBack = true,
                 navigateUp = {
                     navController.navigateUp()
@@ -76,22 +74,24 @@ fun ChatScreen(chatViewModel: ChatViewModel, navController: NavHostController, m
         ) {
 
             MessagesList(
-                messages = chatState.chat.messages,
+                messages = chatState.messageList,
                 chatViewModel,
                 modifier = Modifier.weight(1f)
             )
 
-            SendMessageInput(onSendMessage = { message ->
+            SendMessageInput(onSendMessage = { messageText ->
                 val currentTimeMillis = System.currentTimeMillis()
-                chatViewModel.addMessage(
-                    Message(
-                        messageId = 0,
-                        chatState.chat.id,
-                        senderId = 0,
-                        timestamp = currentTimeMillis.toString(),
-                        message = message
-                    )
+                val message = MessageEntity(
+                    messageId = 0,
+                    chatState.chatInfo.id,
+                    senderId = 0,
+                    timestamp = currentTimeMillis.toString(),
+                    message = messageText
                 )
+                chatViewModel.addMessage(
+                    message
+                )
+                Log.d("New message", "Message added to chat ${chatState}")
             })
         }
     }
@@ -100,25 +100,34 @@ fun ChatScreen(chatViewModel: ChatViewModel, navController: NavHostController, m
 }
 
 @Composable
-fun MessagesList(messages: List<Message>, chatViewModel: ChatViewModel, modifier: Modifier) {
-    Column(
+fun MessagesList(messages: MutableList<MessageEntity>, chatViewModel: ChatViewModel, modifier: Modifier) {
+    LazyColumn (
         modifier = modifier
             .padding(horizontal = 16.dp)
-    ) {
-        messages.forEach { message ->
+    ){
+        items(messages) { message ->
             MessageItem(message = message, chatViewModel = chatViewModel)
         }
+
     }
 }
 
 @Composable
-fun MessageItem(message: Message, chatViewModel: ChatViewModel) {
+fun MessageItem(message: MessageEntity, chatViewModel: ChatViewModel) {
+    val coroutineScope = rememberCoroutineScope()
+    var senderName by remember { mutableStateOf("") }
+
+    LaunchedEffect(key1 = message.senderId) {
+        coroutineScope.launch {
+            senderName = chatViewModel.getSenderName(message.senderId)
+        }
+    }
     Column(
         modifier = Modifier
             .padding(vertical = 8.dp)
     ) {
         Text(
-            text = chatViewModel.getSenderName(message.senderId),
+            text = senderName,
             fontSize = 16.sp,
             color = Color.Gray
         )

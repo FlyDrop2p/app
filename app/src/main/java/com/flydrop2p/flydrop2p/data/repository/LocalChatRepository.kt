@@ -3,7 +3,6 @@ package com.flydrop2p.flydrop2p.data.repository
 import com.flydrop2p.flydrop2p.data.DataSource
 import com.flydrop2p.flydrop2p.data.local.MessageDAO
 import com.flydrop2p.flydrop2p.data.local.MessageEntity
-import com.flydrop2p.flydrop2p.domain.model.toMessageEntity
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -25,7 +24,7 @@ class LocalChatRepository (private val messageDAO: MessageDAO) : ChatRepository 
         withContext(Dispatchers.IO) {
             for ((chatId, messages) in DataSource.placeholderMessages) {
                 for (message in messages) {
-                    messageDAO.insertMessage(message.toMessageEntity())
+                    messageDAO.insertMessage(message)
                 }
             }
         }

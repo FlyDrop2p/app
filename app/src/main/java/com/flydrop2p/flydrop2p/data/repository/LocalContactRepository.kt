@@ -15,7 +15,7 @@ class LocalContactRepository (private val contactDAO: ContactDAO): ContactReposi
         return contactDAO.getContacts()
     }
 
-    override fun getContact(contactId: Int): Flow<ContactEntity> {
+    override fun getContact(contactId: Int): Flow<ContactEntity?> {
         return contactDAO.getContactById(contactId)
     }
 

@@ -36,6 +36,7 @@ fun FlydropNavHost(
         modifier = modifier
     ) {
         composable(route = HomeDestination.route) {
+            chatViewModel.resetChat()
             HomeScreen(
                 onChatClick = {
                     navController.navigate("${ChatDestination.route}/${it.id}") },
@@ -48,11 +49,18 @@ fun FlydropNavHost(
             arguments = listOf(navArgument(ChatDestination.itemIdArg) {
                 type = NavType.IntType
             })
+
         ) {
-            ChatScreen(
-                chatViewModel = chatViewModel,
-                navController = navController
-            )
+                backStackEntry ->
+            val chatId = backStackEntry.arguments?.getInt(ChatDestination.itemIdArg)
+            chatId?.let {
+                chatViewModel.getChat(chatId)
+                ChatScreen(
+                    chatId = it, // Passare direttamente l'ID della chat a ChatScreen
+                    chatViewModel = chatViewModel,
+                    navController = navController
+                )
+            }
         }
     }
 }

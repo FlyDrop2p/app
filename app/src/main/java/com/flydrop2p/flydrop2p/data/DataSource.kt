@@ -1,8 +1,8 @@
 package com.flydrop2p.flydrop2p.data
 
+import com.flydrop2p.flydrop2p.data.local.MessageEntity
 import com.flydrop2p.flydrop2p.domain.model.ChatInfo
 import com.flydrop2p.flydrop2p.domain.model.Contact
-import com.flydrop2p.flydrop2p.domain.model.Message
 
 object DataSource {
     val contacts = listOf(
@@ -30,46 +30,46 @@ object DataSource {
     val placeholderMessages = mapOf(
         // Messages for the Group Chat
         -1 to listOf(
-            Message(0, -1, "Welcome to the group chat!", "10:00 AM", 0),
-            Message(1, -1, "Hello everyone!", "10:05 AM", 1)
+            MessageEntity(0, -1, "Welcome to the group chat!", "10:00 AM", 0),
+            MessageEntity(1, -1, "Hello everyone!", "10:05 AM", 1)
         ),
         // Messages for the chat with Alice
         1 to listOf(
-            Message(2, 1, "Hi Alice!", "10:00 AM", 0),
-            Message(3, 1, "How are you?", "10:05 AM", 1),
-            Message(4, 1, "I'm fine, thank you!", "10:10 AM", 0)
+            MessageEntity(2, 1, "Hi Alice!", "10:00 AM", 0),
+            MessageEntity(3, 1, "How are you?", "10:05 AM", 1),
+            MessageEntity(4, 1, "I'm fine, thank you!", "10:10 AM", 0)
         ),
         // Messages for the chat with Bob
         2 to listOf(
-            Message(5, 2, "Hey Bob!", "10:01 AM", 0),
-            Message(6, 2, "Hi!", "10:06 AM", 2),
-            Message(7, 2, "I'm also fine, thank you!", "10:11 AM", 0)
+            MessageEntity(5, 2, "Hey Bob!", "10:01 AM", 0),
+            MessageEntity(6, 2, "Hi!", "10:06 AM", 2),
+            MessageEntity(7, 2, "I'm also fine, thank you!", "10:11 AM", 0)
         ),
         // Messages for the chat with Charlie
         3 to listOf(
-            Message(8, 3, "Hi Charlie!", "10:02 AM", 0),
-            Message(9, 3, "Hello!", "10:07 AM", 3)
+            MessageEntity(8, 3, "Hi Charlie!", "10:02 AM", 0),
+            MessageEntity(9, 3, "Hello!", "10:07 AM", 3)
         ),
         // Messages for the chat with David
         4 to listOf(
-            Message(10, 4, "Hello David!", "10:03 AM", 0),
-            Message(11, 4, "Hola!", "10:08 AM", 4)
+            MessageEntity(10, 4, "Hello David!", "10:03 AM", 0),
+            MessageEntity(11, 4, "Hola!", "10:08 AM", 4)
         ),
         // Messages for the chat with Eve
         5 to listOf(
-            Message(12, 5, "Hi Eve!", "10:04 AM", 0),
-            Message(13, 5, "Bonjour!", "10:09 AM", 5)
+            MessageEntity(12, 5, "Hi Eve!", "10:04 AM", 0),
+            MessageEntity(13, 5, "Bonjour!", "10:09 AM", 5)
         ),
         // Messages for the chat with Frank
         6 to listOf(
-            Message(14, 6, "Hi Frank!", "10:05 AM", 0),
-            Message(15, 6, "Hello!", "10:10 AM", 6)
+            MessageEntity(14, 6, "Hi Frank!", "10:05 AM", 0),
+            MessageEntity(15, 6, "Hello!", "10:10 AM", 6)
         ),
         // Messages for the chat with Grace
         7 to listOf(
-            Message(16, 7, "Hi Grace!", "10:06 AM", 0),
-            Message(17, 7, "Namaste, how are you?", "10:11 AM", 7),
-            Message(18, 7, "I'm fine, thank you!", "10:16 AM", 0)
+            MessageEntity(16, 7, "Hi Grace!", "10:06 AM", 0),
+            MessageEntity(17, 7, "Namaste, how are you?", "10:11 AM", 7),
+            MessageEntity(18, 7, "I'm fine, thank you!", "10:16 AM", 0)
         )
     )
 
