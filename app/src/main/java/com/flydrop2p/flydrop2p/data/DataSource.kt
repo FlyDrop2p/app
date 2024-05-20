@@ -30,48 +30,49 @@ object DataSource {
     val placeholderMessages = mapOf(
         // Messages for the Group Chat
         -1 to listOf(
-            MessageEntity(0, -1, "Welcome to the group chat!", "10:00 AM", 0),
-            MessageEntity(1, -1, "Hello everyone!", "10:05 AM", 1)
+            MessageEntity(chatId = -1, message = "Welcome to the group chat!", timestamp = "10:00 AM", senderId = 0),
+            MessageEntity(chatId = -1, message = "Hello everyone!", timestamp = "10:05 AM", senderId = 1)
         ),
         // Messages for the chat with Alice
         1 to listOf(
-            MessageEntity(2, 1, "Hi Alice!", "10:00 AM", 0),
-            MessageEntity(3, 1, "How are you?", "10:05 AM", 1),
-            MessageEntity(4, 1, "I'm fine, thank you!", "10:10 AM", 0)
+            MessageEntity(chatId = 1, message = "Hi Alice!", timestamp = "10:00 AM", senderId = 0),
+            MessageEntity(chatId = 1, message = "How are you?", timestamp = "10:05 AM", senderId = 1),
+            MessageEntity(chatId = 1, message = "I'm fine, thank you!", timestamp = "10:10 AM", senderId = 0)
         ),
         // Messages for the chat with Bob
         2 to listOf(
-            MessageEntity(5, 2, "Hey Bob!", "10:01 AM", 0),
-            MessageEntity(6, 2, "Hi!", "10:06 AM", 2),
-            MessageEntity(7, 2, "I'm also fine, thank you!", "10:11 AM", 0)
+            MessageEntity(chatId = 2, message = "Hey Bob!", timestamp = "10:01 AM", senderId = 0),
+            MessageEntity(chatId = 2, message = "Hi!", timestamp = "10:06 AM", senderId = 2),
+            MessageEntity(chatId = 2, message = "I'm also fine, thank you!", timestamp = "10:11 AM", senderId = 0)
         ),
         // Messages for the chat with Charlie
         3 to listOf(
-            MessageEntity(8, 3, "Hi Charlie!", "10:02 AM", 0),
-            MessageEntity(9, 3, "Hello!", "10:07 AM", 3)
+            MessageEntity(chatId = 3, message = "Hi Charlie!", timestamp = "10:02 AM", senderId = 0),
+            MessageEntity(chatId = 3, message = "Hello!", timestamp = "10:07 AM", senderId = 3)
         ),
         // Messages for the chat with David
         4 to listOf(
-            MessageEntity(10, 4, "Hello David!", "10:03 AM", 0),
-            MessageEntity(11, 4, "Hola!", "10:08 AM", 4)
+            MessageEntity(chatId = 4, message = "Hello David!", timestamp = "10:03 AM", senderId = 0),
+            MessageEntity(chatId = 4, message = "Hola!", timestamp = "10:08 AM", senderId = 4)
         ),
         // Messages for the chat with Eve
         5 to listOf(
-            MessageEntity(12, 5, "Hi Eve!", "10:04 AM", 0),
-            MessageEntity(13, 5, "Bonjour!", "10:09 AM", 5)
+            MessageEntity(chatId = 5, message = "Hi Eve!", timestamp = "10:04 AM", senderId = 0),
+            MessageEntity(chatId = 5, message = "Bonjour!", timestamp = "10:09 AM", senderId = 5)
         ),
         // Messages for the chat with Frank
         6 to listOf(
-            MessageEntity(14, 6, "Hi Frank!", "10:05 AM", 0),
-            MessageEntity(15, 6, "Hello!", "10:10 AM", 6)
+            MessageEntity(chatId = 6, message = "Hi Frank!", timestamp = "10:05 AM", senderId = 0),
+            MessageEntity(chatId = 6, message = "Hello!", timestamp = "10:10 AM", senderId = 6)
         ),
         // Messages for the chat with Grace
         7 to listOf(
-            MessageEntity(16, 7, "Hi Grace!", "10:06 AM", 0),
-            MessageEntity(17, 7, "Namaste, how are you?", "10:11 AM", 7),
-            MessageEntity(18, 7, "I'm fine, thank you!", "10:16 AM", 0)
+            MessageEntity(chatId = 7, message = "Hi Grace!", timestamp = "10:06 AM", senderId = 0),
+            MessageEntity(chatId = 7, message = "Namaste, how are you?", timestamp = "10:11 AM", senderId = 7),
+            MessageEntity(chatId = 7, message = "I'm fine, thank you!", timestamp = "10:16 AM", senderId = 0)
         )
     )
+
 
 
 }
