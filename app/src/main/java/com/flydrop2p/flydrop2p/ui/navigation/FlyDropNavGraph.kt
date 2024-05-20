@@ -1,5 +1,6 @@
 package com.flydrop2p.flydrop2p.ui.navigation
 
+import android.util.Log
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable

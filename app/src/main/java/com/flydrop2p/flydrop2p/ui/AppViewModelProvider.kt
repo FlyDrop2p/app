@@ -22,7 +22,8 @@ object AppViewModelProvider {
         initializer {
             ChatViewModel(
                 flydropApplication().container.chatRepository,
-                flydropApplication().container.contactRepository
+                flydropApplication().container.contactRepository,
+                flydropApplication().container.chatsInfoRepository
             )
         }
 

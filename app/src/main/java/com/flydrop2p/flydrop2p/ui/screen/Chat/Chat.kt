@@ -37,6 +37,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.flydrop2p.flydrop2p.FlydropTopAppBar
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.data.local.MessageEntity
+import com.flydrop2p.flydrop2p.ui.components.PrivateMessage
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
 
@@ -126,16 +127,7 @@ fun MessageItem(message: MessageEntity, chatViewModel: ChatViewModel) {
         modifier = Modifier
             .padding(vertical = 8.dp)
     ) {
-        Text(
-            text = senderName,
-            fontSize = 16.sp,
-            color = Color.Gray
-        )
-        Text(
-            text = message.message,
-            fontSize = 18.sp,
-            color = Color.Black
-        )
+        PrivateMessage(senderName, message.message, message.timestamp, true)
     }
 }
 

@@ -30,6 +30,10 @@ class HomeViewModel(private val chatsInfoRepository: ChatsInfoRepository) : View
         }
     }
 
+    fun getChatName(chatId: Int): String {
+        return _chatsInfoState.value.chats.find { it.id == chatId }?.name ?: "Unknown"
+    }
+
     // TODO: Only for testing purposes
     fun populateDatabase() {
         viewModelScope.launch {

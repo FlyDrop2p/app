@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.flydrop2p.flydrop2p.data.local.MessageEntity
 import com.flydrop2p.flydrop2p.domain.model.ChatInfo
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
+import com.flydrop2p.flydrop2p.domain.repository.ChatsInfoRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +17,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ChatViewModel(private val chatRepository: ChatRepository,
-                    private val contactRepository: ContactRepository
+                    private val contactRepository: ContactRepository,
+                    private val chatsInfoRepository: ChatsInfoRepository,
     ): ViewModel() {
     private val _uiState = MutableStateFlow(ChatViewState())
     val uiState: StateFlow<ChatViewState> = _uiState.asStateFlow()
@@ -29,7 +31,8 @@ class ChatViewModel(private val chatRepository: ChatRepository,
         viewModelScope.launch {
             try {
                 val chatMessages = chatRepository.getChatMessages(chatId).first().toMutableList()
-                val chatInfo = ChatInfo(chatId, "Chat $chatId")
+                val chatName = chatsInfoRepository.getChatInfo(chatId).first().name
+                val chatInfo = ChatInfo(chatId, chatName)
                 _uiState.value = _uiState.value.copy(chatInfo = chatInfo, messageList = chatMessages)
             } catch (e: Exception) {
                 Log.e("ChatViewModel", "Error getting chat", e)
