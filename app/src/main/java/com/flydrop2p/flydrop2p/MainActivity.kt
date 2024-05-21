@@ -13,8 +13,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import com.flydrop2p.flydrop2p.network.ClientService
 import com.flydrop2p.flydrop2p.network.ServerService
+import com.flydrop2p.flydrop2p.network.ServicesManager
 import com.flydrop2p.flydrop2p.network.WiFiDirectBroadcastReceiver
 import com.flydrop2p.flydrop2p.ui.theme.FlyDrop2pTheme
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -26,16 +28,24 @@ class MainActivity : ComponentActivity() {
     }
 
     private lateinit var receiver: WiFiDirectBroadcastReceiver
+    private lateinit var servicesManager: ServicesManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestPermissions()
 
         receiver = WiFiDirectBroadcastReceiver(this)
+        servicesManager = ServicesManager()
 
         setContent {
             FlyDrop2pTheme {
                 FlydropApp()
+            }
+        }
+
+        servicesManager.serverService.isHandshakeSocketOpen.onEach {
+            if (!it) {
+                servicesManager.serverService.startConnection()
             }
         }
     }

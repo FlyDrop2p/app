@@ -4,26 +4,17 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.net.wifi.p2p.WifiP2pDevice
+import android.net.wifi.p2p.WifiP2pDeviceList
 import android.net.wifi.p2p.WifiP2pGroup
 import android.net.wifi.p2p.WifiP2pManager
 import android.util.Log
 import com.flydrop2p.flydrop2p.MainActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class WiFiDirectBroadcastReceiver(
     activity: MainActivity
 ) : BroadcastReceiver() {
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val manager = WiFiDirectManager(activity)
     private val devices = mutableSetOf<WifiP2pDevice>()
-    private val serverService = ServerService()
-    private val clientService = ClientService()
-
-    init {
-        serverService.startConnection()
-    }
 
     fun discoverPeers() {
         manager.discoverPeers(object : WifiP2pManager.ActionListener {
@@ -46,9 +37,19 @@ class WiFiDirectBroadcastReceiver(
 
         manager.requestGroupInfo(object : WifiP2pManager.GroupInfoListener {
             override fun onGroupInfoAvailable(info: WifiP2pGroup?) {
-                if(info?.isGroupOwner != true) {
-                    coroutineScope.launch {
-                        clientService.connectToServer()
+                if (info != null) {
+                    for(client in info.clientList) {
+                        Log.d("requestGroupInfo()", client.toString())
+                    }
+                }
+            }
+        })
+
+        manager.requestPeers(object : WifiP2pManager.PeerListListener {
+            override fun onPeersAvailable(peers: WifiP2pDeviceList?) {
+                if (peers != null) {
+                    for(device in peers.deviceList) {
+                        Log.d("requestPeers()", device.toString())
                     }
                 }
             }
