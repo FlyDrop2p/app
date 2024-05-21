@@ -4,7 +4,6 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.core.text.isDigitsOnly
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -21,7 +20,7 @@ import com.flydrop2p.flydrop2p.ui.screen.settings.SettingsScreen
 import com.flydrop2p.flydrop2p.ui.screen.settings.SettingsViewModel
 
 @Composable
-fun FlydropNavHost(
+fun FlyDropNavHost(
     navController: NavHostController,
     homeViewModel: HomeViewModel,
     chatViewModel: ChatViewModel,
@@ -50,15 +49,14 @@ fun FlydropNavHost(
                 onSettingsButtonClick = { navController.navigate(SettingsDestination.route) },
             )
         }
-        
+
         composable(
             route = ChatDestination.routeWithArgs,
             arguments = listOf(navArgument(ChatDestination.itemIdArg) {
                 type = NavType.IntType
             })
 
-        ) {
-                backStackEntry ->
+        ) { backStackEntry ->
             val chatId = backStackEntry.arguments?.getInt(ChatDestination.itemIdArg)
             chatId?.let {
                 chatViewModel.getChat(chatId)
@@ -71,7 +69,7 @@ fun FlydropNavHost(
                 )
             }
         }
-        
+
         composable(
             route = SettingsDestination.route
         ) {

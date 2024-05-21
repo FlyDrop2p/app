@@ -12,7 +12,7 @@ class ClientService {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     fun connectToServer() {
-       coroutineScope.launch {
+        coroutineScope.launch {
             try {
                 // Create a client socket with the host, port, and timeout information.
                 val socket = Socket()

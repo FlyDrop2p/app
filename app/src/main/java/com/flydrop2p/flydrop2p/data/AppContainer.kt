@@ -1,7 +1,7 @@
 package com.flydrop2p.flydrop2p.data
 
 import android.content.Context
-import com.flydrop2p.flydrop2p.data.local.FlydropDatabase
+import com.flydrop2p.flydrop2p.data.local.FlyDropDatabase
 import com.flydrop2p.flydrop2p.data.repository.LocalChatInfoRepository
 import com.flydrop2p.flydrop2p.data.repository.LocalChatRepository
 import com.flydrop2p.flydrop2p.data.repository.LocalContactRepository
@@ -26,20 +26,20 @@ class AppDataContainer(private val context: Context) : AppContainer {
      * Implementation for [ChatRepository]
      */
     override val chatRepository: ChatRepository by lazy {
-        LocalChatRepository(FlydropDatabase.getDatabase(context).messageDao())
+        LocalChatRepository(FlyDropDatabase.getDatabase(context).messageDao())
     }
 
     /**
      * Implementation for [ChatsInfoRepository]
      */
     override val chatsInfoRepository: ChatsInfoRepository by lazy {
-        LocalChatInfoRepository(FlydropDatabase.getDatabase(context).chatInfoDao())
+        LocalChatInfoRepository(FlyDropDatabase.getDatabase(context).chatInfoDao())
     }
 
     /**
      * Implementation for [ContactRepository]
      */
     override val contactRepository: ContactRepository by lazy {
-        LocalContactRepository(FlydropDatabase.getDatabase(context).contactDao())
+        LocalContactRepository(FlyDropDatabase.getDatabase(context).contactDao())
     }
 }

@@ -30,26 +30,26 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.flydrop2p.flydrop2p.ui.AppViewModelProvider
-import com.flydrop2p.flydrop2p.ui.navigation.FlydropNavHost
+import com.flydrop2p.flydrop2p.ui.navigation.FlyDropNavHost
 import com.flydrop2p.flydrop2p.ui.screen.chat.ChatViewModel
 import com.flydrop2p.flydrop2p.ui.screen.home.HomeViewModel
 import com.flydrop2p.flydrop2p.ui.screen.settings.SettingsViewModel
 
 
 @Composable
-fun FlydropApp(
+fun FlyDropApp(
     homeViewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     chatViewModel: ChatViewModel = viewModel(factory = AppViewModelProvider.Factory),
     settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController = rememberNavController()
-){
+) {
     val backStackEntry by navController.currentBackStackEntryAsState()
 
     val chatState = chatViewModel.uiState.collectAsState() // collectAsStateWithLifecycle()
 
 
     Scaffold { innerPadding ->
-        FlydropNavHost(
+        FlyDropNavHost(
             navController = navController,
             homeViewModel = homeViewModel,
             chatViewModel = chatViewModel,
@@ -64,7 +64,7 @@ fun FlydropApp(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FlydropTopAppBar(
+fun FlyDropTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     onConnectionButtonClick: () -> Unit,
@@ -75,7 +75,7 @@ fun FlydropTopAppBar(
 
     TopAppBar(
         navigationIcon = {
-            if (canNavigateBack){
+            if (canNavigateBack) {
                 IconButton(onClick = {
                     navigateUp()
                 }) {
@@ -118,7 +118,7 @@ fun FlydropTopAppBar(
             }
 
         },
-        colors =  TopAppBarDefaults.topAppBarColors(
+        colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.White,
         ),
         modifier = modifier.padding(top = 16.dp, bottom = 8.dp)
@@ -127,6 +127,6 @@ fun FlydropTopAppBar(
 
 @Preview
 @Composable
-fun FlydropAppPreview(){
-    FlydropApp()
+fun FlyDropAppPreview() {
+    FlyDropApp()
 }

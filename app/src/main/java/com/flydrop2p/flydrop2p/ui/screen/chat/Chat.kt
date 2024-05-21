@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.flydrop2p.flydrop2p.FlydropTopAppBar
+import com.flydrop2p.flydrop2p.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.data.local.MessageEntity
 import com.flydrop2p.flydrop2p.ui.components.PrivateMessage
@@ -60,7 +60,7 @@ fun ChatScreen(
 
     Scaffold(
         topBar = {
-            FlydropTopAppBar(
+            FlyDropTopAppBar(
                 title = chatState.chatInfo.name,
                 canNavigateBack = true,
                 onConnectionButtonClick = onConnectionButtonClick,

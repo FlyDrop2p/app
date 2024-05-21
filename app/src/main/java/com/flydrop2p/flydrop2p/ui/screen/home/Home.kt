@@ -34,7 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.flydrop2p.flydrop2p.FlydropTopAppBar
+import com.flydrop2p.flydrop2p.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.ChatInfo
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
@@ -60,7 +60,7 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            FlydropTopAppBar(
+            FlyDropTopAppBar(
                 title = "Chat",
                 canNavigateBack = false,
                 onConnectionButtonClick = onConnectionButtonClick,

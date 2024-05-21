@@ -5,7 +5,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import com.flydrop2p.flydrop2p.FlydropTopAppBar
+import com.flydrop2p.flydrop2p.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 
@@ -25,7 +25,7 @@ fun SettingsScreen(
 ) {
     Scaffold(
         topBar = {
-            FlydropTopAppBar(
+            FlyDropTopAppBar(
                 title = "Settings",
                 canNavigateBack = true,
                 onConnectionButtonClick = onConnectionButtonClick,

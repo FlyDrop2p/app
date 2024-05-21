@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
-class LocalChatRepository (private val messageDAO: MessageDAO) : ChatRepository {
+class LocalChatRepository(private val messageDAO: MessageDAO) : ChatRepository {
 
     override suspend fun getChatMessages(chatId: Int): Flow<List<MessageEntity>> {
         return messageDAO.getMessagesByChatId(chatId)

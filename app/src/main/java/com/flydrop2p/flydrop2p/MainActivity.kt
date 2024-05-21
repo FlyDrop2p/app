@@ -10,14 +10,10 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.lifecycle.lifecycleScope
-import com.flydrop2p.flydrop2p.network.ClientService
-import com.flydrop2p.flydrop2p.network.ServerService
 import com.flydrop2p.flydrop2p.network.ServicesManager
 import com.flydrop2p.flydrop2p.network.WiFiDirectBroadcastReceiver
 import com.flydrop2p.flydrop2p.ui.theme.FlyDrop2pTheme
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private val intentFilter = IntentFilter().apply {
@@ -39,7 +35,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             FlyDrop2pTheme {
-                FlydropApp()
+                FlyDropApp()
             }
         }
 

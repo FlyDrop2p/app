@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(entities = [MessageEntity::class, ChatInfoEntity::class, ContactEntity::class], version = 1, exportSchema = false)
-abstract class FlydropDatabase : RoomDatabase() {
+abstract class FlyDropDatabase : RoomDatabase() {
 
     abstract fun messageDao(): MessageDAO
 
@@ -16,14 +16,14 @@ abstract class FlydropDatabase : RoomDatabase() {
 
     companion object {
         @Volatile
-        private var Instance: FlydropDatabase? = null
+        private var Instance: FlyDropDatabase? = null
 
-        fun getDatabase(context: Context): FlydropDatabase {
+        fun getDatabase(context: Context): FlyDropDatabase {
             // if the Instance is not null, return it, otherwise create a new database instance.
             return Instance ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    FlydropDatabase::class.java,
+                    FlyDropDatabase::class.java,
                     "flydrop_database"
                 ).build()
                 Instance = instance

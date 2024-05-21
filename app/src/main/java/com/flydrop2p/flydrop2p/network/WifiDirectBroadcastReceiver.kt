@@ -38,7 +38,7 @@ class WiFiDirectBroadcastReceiver(
         manager.requestGroupInfo(object : WifiP2pManager.GroupInfoListener {
             override fun onGroupInfoAvailable(info: WifiP2pGroup?) {
                 if (info != null) {
-                    for(client in info.clientList) {
+                    for (client in info.clientList) {
                         Log.d("requestGroupInfo()", client.toString())
                     }
                 }
@@ -48,7 +48,7 @@ class WiFiDirectBroadcastReceiver(
         manager.requestPeers(object : WifiP2pManager.PeerListListener {
             override fun onPeersAvailable(peers: WifiP2pDeviceList?) {
                 if (peers != null) {
-                    for(device in peers.deviceList) {
+                    for (device in peers.deviceList) {
                         Log.d("requestPeers()", device.toString())
                     }
                 }

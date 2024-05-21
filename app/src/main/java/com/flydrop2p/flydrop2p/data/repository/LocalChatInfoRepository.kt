@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
-class LocalChatInfoRepository (private val chatInfoDAO: ChatInfoDAO): ChatsInfoRepository {
+class LocalChatInfoRepository(private val chatInfoDAO: ChatInfoDAO) : ChatsInfoRepository {
 
     override fun getChatsInfo(): Flow<List<ChatInfoEntity>> {
         return chatInfoDAO.getChatsInfo()
@@ -36,7 +36,6 @@ class LocalChatInfoRepository (private val chatInfoDAO: ChatInfoDAO): ChatsInfoR
             }
         }
     }
-
 
 
 }

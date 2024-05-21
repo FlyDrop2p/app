@@ -45,7 +45,7 @@ fun GroupMessage() {
 }
 
 @Composable
-fun PrivateMessage(name : String, message : String, time : String, visualized : Boolean) {
+fun PrivateMessage(name: String, message: String, time: String, visualized: Boolean) {
     Surface(
         shape = RoundedCornerShape(16.dp), color = Color.LightGray,
         modifier = Modifier

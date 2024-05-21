@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
-class LocalContactRepository (private val contactDAO: ContactDAO): ContactRepository {
+class LocalContactRepository(private val contactDAO: ContactDAO) : ContactRepository {
 
     override fun getContacts(): Flow<List<ContactEntity>> {
         return contactDAO.getContacts()
