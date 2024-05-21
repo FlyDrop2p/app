@@ -35,7 +35,11 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             FlyDrop2pTheme {
-                FlyDropApp()
+                FlyDropApp(
+                    onConnectionButtonClick = {
+                        receiver.connectToDevices()
+                    }
+                )
             }
         }
 
@@ -56,7 +60,6 @@ class MainActivity : ComponentActivity() {
         Log.d("MainActivity", "onResume")
 
         registerReceiver(receiver, intentFilter)
-        receiver.discoverPeers()
     }
 
     override fun onPause() {

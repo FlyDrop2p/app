@@ -38,18 +38,19 @@ import com.flydrop2p.flydrop2p.ui.screen.settings.SettingsViewModel
 
 @Composable
 fun FlyDropApp(
+    onConnectionButtonClick: () -> Unit,
     homeViewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     chatViewModel: ChatViewModel = viewModel(factory = AppViewModelProvider.Factory),
     settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController = rememberNavController()
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
-
     val chatState = chatViewModel.uiState.collectAsState() // collectAsStateWithLifecycle()
 
 
     Scaffold { innerPadding ->
         FlyDropNavHost(
+            onConnectionButtonClick = onConnectionButtonClick,
             navController = navController,
             homeViewModel = homeViewModel,
             chatViewModel = chatViewModel,
@@ -128,5 +129,5 @@ fun FlyDropTopAppBar(
 @Preview
 @Composable
 fun FlyDropAppPreview() {
-    FlyDropApp()
+    FlyDropApp(onConnectionButtonClick = {})
 }

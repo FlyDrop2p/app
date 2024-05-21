@@ -16,10 +16,12 @@ class WiFiDirectBroadcastReceiver(
     private val manager = WiFiDirectManager(activity)
     private val devices = mutableSetOf<WifiP2pDevice>()
 
-    fun discoverPeers() {
+    fun connectToDevices() {
         manager.discoverPeers(object : WifiP2pManager.ActionListener {
             override fun onSuccess() {
                 Log.d("WifiDirectBroadcastReceiver", "discoverPeers() onSuccess()")
+
+                updateDevices()
             }
 
             override fun onFailure(reasonCode: Int) {
@@ -32,18 +34,9 @@ class WiFiDirectBroadcastReceiver(
         manager.requestPeers {
             for (device in it.deviceList) {
                 devices.add(device)
+                connectToDevice(device)
             }
         }
-
-        manager.requestGroupInfo(object : WifiP2pManager.GroupInfoListener {
-            override fun onGroupInfoAvailable(info: WifiP2pGroup?) {
-                if (info != null) {
-                    for (client in info.clientList) {
-                        Log.d("requestGroupInfo()", client.toString())
-                    }
-                }
-            }
-        })
 
         manager.requestPeers(object : WifiP2pManager.PeerListListener {
             override fun onPeersAvailable(peers: WifiP2pDeviceList?) {
@@ -56,7 +49,7 @@ class WiFiDirectBroadcastReceiver(
         })
     }
 
-    fun connectToDevice(device: WifiP2pDevice) {
+    private fun connectToDevice(device: WifiP2pDevice) {
         manager.connectToDevice(device, object : WifiP2pManager.ActionListener {
             override fun onSuccess() {
                 Log.d("WifiDirectBroadcastReceiver", "Connected to ${device.deviceName}")

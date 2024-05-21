@@ -21,6 +21,7 @@ import com.flydrop2p.flydrop2p.ui.screen.settings.SettingsViewModel
 
 @Composable
 fun FlyDropNavHost(
+    onConnectionButtonClick: () -> Unit,
     navController: NavHostController,
     homeViewModel: HomeViewModel,
     chatViewModel: ChatViewModel,
