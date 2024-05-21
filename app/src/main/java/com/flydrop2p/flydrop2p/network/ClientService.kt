@@ -1,31 +1,28 @@
 package com.flydrop2p.flydrop2p.network
 
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
 
 class ClientService {
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    fun connectToServer(device: Device) {
+        try {
+            // Create a client socket with the host, port, and timeout information.
+            val socket = Socket()
+            socket.bind(null)
+            socket.connect((InetSocketAddress(InetAddress.getByName("192.168.49.1"), ServerService.PORT_HANDSHAKE)))
+            device.ipAddress = socket.inetAddress.hostAddress?.toString()
 
-    fun connectToServer() {
-        coroutineScope.launch {
-            try {
-                // Create a client socket with the host, port, and timeout information.
-                val socket = Socket()
-                socket.bind(null)
-                socket.connect((InetSocketAddress(InetAddress.getByName("192.168.49.1"), ServerService.PORT_HANDSHAKE)))
-
-                // Send the socket IP address to the server.
-                val outputStream = socket.getOutputStream()
-                outputStream.write(socket.localAddress.address)
-                outputStream.close()
-            } catch (e: Exception) {
-                throw e
-            }
+            // Send device info to server.
+            val outputStream = socket.getOutputStream()
+            outputStream.write(Json.encodeToString(device).toByteArray())
+            outputStream.close()
+        } catch (e: Exception) {
+            throw e
         }
     }
 

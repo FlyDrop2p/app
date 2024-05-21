@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pDeviceList
-import android.net.wifi.p2p.WifiP2pGroup
 import android.net.wifi.p2p.WifiP2pManager
 import android.util.Log
 import com.flydrop2p.flydrop2p.MainActivity
@@ -14,7 +13,7 @@ class WiFiDirectBroadcastReceiver(
     activity: MainActivity
 ) : BroadcastReceiver() {
     private val manager = WiFiDirectManager(activity)
-    private val devices = mutableSetOf<WifiP2pDevice>()
+    val devices = mutableSetOf<WifiP2pDevice>()
 
     fun connectToDevices() {
         manager.discoverPeers(object : WifiP2pManager.ActionListener {
@@ -68,22 +67,22 @@ class WiFiDirectBroadcastReceiver(
         when (action) {
             WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION -> {
                 Log.d("WifiDirectBroadcastReceiver", "WIFI_P2P_STATE_CHANGED_ACTION")
-                updateDevices()
+                connectToDevices()
             }
 
             WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION -> {
                 Log.d("WifiDirectBroadcastReceiver", "WIFI_P2P_PEERS_CHANGED_ACTION")
-                updateDevices()
+                connectToDevices()
             }
 
             WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
                 Log.d("WifiDirectBroadcastReceiver", "WIFI_P2P_CONNECTION_CHANGED_ACTION")
-                updateDevices()
+                connectToDevices()
             }
 
             WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {
                 Log.d("WifiDirectBroadcastReceiver", "WIFI_P2P_THIS_DEVICE_CHANGED_ACTION")
-                updateDevices()
+                connectToDevices()
             }
         }
     }

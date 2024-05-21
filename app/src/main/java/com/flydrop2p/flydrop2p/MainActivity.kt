@@ -10,10 +10,8 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import com.flydrop2p.flydrop2p.network.ServicesManager
-import com.flydrop2p.flydrop2p.network.WiFiDirectBroadcastReceiver
+import com.flydrop2p.flydrop2p.network.NetworkManager
 import com.flydrop2p.flydrop2p.ui.theme.FlyDrop2pTheme
-import kotlinx.coroutines.flow.onEach
 
 class MainActivity : ComponentActivity() {
     private val intentFilter = IntentFilter().apply {
@@ -23,29 +21,23 @@ class MainActivity : ComponentActivity() {
         addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
     }
 
-    private lateinit var receiver: WiFiDirectBroadcastReceiver
-    private lateinit var servicesManager: ServicesManager
+    private lateinit var networkManager: NetworkManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestPermissions()
 
-        receiver = WiFiDirectBroadcastReceiver(this)
-        servicesManager = ServicesManager()
+        networkManager = NetworkManager(this)
+        networkManager.startServerConnection()
 
         setContent {
             FlyDrop2pTheme {
                 FlyDropApp(
                     onConnectionButtonClick = {
-                        receiver.connectToDevices()
+                        networkManager.receiver.connectToDevices()
+                        networkManager.connectToServer()
                     }
                 )
-            }
-        }
-
-        servicesManager.serverService.isHandshakeSocketOpen.onEach {
-            if (!it) {
-                servicesManager.serverService.startConnection()
             }
         }
     }
@@ -59,14 +51,14 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         Log.d("MainActivity", "onResume")
 
-        registerReceiver(receiver, intentFilter)
+        registerReceiver(networkManager.receiver, intentFilter)
     }
 
     override fun onPause() {
         super.onPause()
         Log.d("MainActivity", "onPause")
 
-        unregisterReceiver(receiver)
+        unregisterReceiver(networkManager.receiver)
     }
 
     override fun onStop() {
