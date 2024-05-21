@@ -1,4 +1,4 @@
-package com.flydrop2p.flydrop2p.ui.screen.Home
+package com.flydrop2p.flydrop2p.ui.screen.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,4 +1,4 @@
-package com.flydrop2p.flydrop2p.ui.screen.Chat
+package com.flydrop2p.flydrop2p.ui.screen.chat
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -16,10 +16,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ChatViewModel(private val chatRepository: ChatRepository,
-                    private val contactRepository: ContactRepository,
-                    private val chatsInfoRepository: ChatsInfoRepository,
-    ): ViewModel() {
+class ChatViewModel(
+    private val chatRepository: ChatRepository,
+    private val contactRepository: ContactRepository,
+    private val chatsInfoRepository: ChatsInfoRepository,
+) : ViewModel() {
     private val _uiState = MutableStateFlow(ChatViewState())
     val uiState: StateFlow<ChatViewState> = _uiState.asStateFlow()
 
@@ -44,7 +45,7 @@ class ChatViewModel(private val chatRepository: ChatRepository,
         if (senderId == 0) {
             return "Me"
         }
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             val contact = contactRepository.getContact(senderId).first()
             contact?.name ?: "Unknown"
         }

@@ -1,4 +1,4 @@
-package com.flydrop2p.flydrop2p.ui.screen.Home
+package com.flydrop2p.flydrop2p.ui.screen.home
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -22,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,7 +38,7 @@ import com.flydrop2p.flydrop2p.FlydropTopAppBar
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.ChatInfo
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
-import com.flydrop2p.flydrop2p.ui.screen.Chat.ChatViewModel
+import com.flydrop2p.flydrop2p.ui.screen.chat.ChatViewModel
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
@@ -52,6 +51,8 @@ fun HomeScreen(
     homeViewModel: HomeViewModel,
     chatViewModel: ChatViewModel,
     onChatClick: (ChatInfo) -> Unit,
+    onConnectionButtonClick: () -> Unit,
+    onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -62,8 +63,9 @@ fun HomeScreen(
             FlydropTopAppBar(
                 title = "Chat",
                 canNavigateBack = false,
-                modifier = modifier,
-                scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+                onConnectionButtonClick = onConnectionButtonClick,
+                onSettingsButtonClick = onSettingsButtonClick,
+                modifier = modifier
             )
         },
         floatingActionButton = {

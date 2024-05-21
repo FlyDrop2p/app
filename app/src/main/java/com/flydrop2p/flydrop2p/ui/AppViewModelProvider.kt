@@ -6,19 +6,19 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.flydrop2p.flydrop2p.FlydropApplication
-import com.flydrop2p.flydrop2p.ui.screen.Chat.ChatViewModel
-import com.flydrop2p.flydrop2p.ui.screen.Home.HomeViewModel
+import com.flydrop2p.flydrop2p.ui.screen.chat.ChatViewModel
+import com.flydrop2p.flydrop2p.ui.screen.home.HomeViewModel
+import com.flydrop2p.flydrop2p.ui.screen.settings.SettingsViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
-        // Initializer for HomeViewModel
         initializer {
             HomeViewModel(
                 // this.createSavedStateHandle()
                 flydropApplication().container.chatsInfoRepository
             )
         }
-        // Initializer for ItemEntryViewModel
+
         initializer {
             ChatViewModel(
                 flydropApplication().container.chatRepository,
@@ -27,6 +27,11 @@ object AppViewModelProvider {
             )
         }
 
+        initializer {
+            SettingsViewModel(
+
+            )
+        }
     }
 }
 

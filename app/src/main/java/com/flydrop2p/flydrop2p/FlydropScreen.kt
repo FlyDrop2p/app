@@ -14,7 +14,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -32,14 +31,16 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.flydrop2p.flydrop2p.ui.AppViewModelProvider
 import com.flydrop2p.flydrop2p.ui.navigation.FlydropNavHost
-import com.flydrop2p.flydrop2p.ui.screen.Chat.ChatViewModel
-import com.flydrop2p.flydrop2p.ui.screen.Home.HomeViewModel
+import com.flydrop2p.flydrop2p.ui.screen.chat.ChatViewModel
+import com.flydrop2p.flydrop2p.ui.screen.home.HomeViewModel
+import com.flydrop2p.flydrop2p.ui.screen.settings.SettingsViewModel
 
 
 @Composable
 fun FlydropApp(
     homeViewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     chatViewModel: ChatViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController = rememberNavController()
 ){
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -52,6 +53,7 @@ fun FlydropApp(
             navController = navController,
             homeViewModel = homeViewModel,
             chatViewModel = chatViewModel,
+            settingsViewModel = settingsViewModel,
             modifier = Modifier.padding(innerPadding)
         )
     }
@@ -65,8 +67,9 @@ fun FlydropApp(
 fun FlydropTopAppBar(
     title: String,
     canNavigateBack: Boolean,
+    onConnectionButtonClick: () -> Unit,
+    onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
     navigateUp: () -> Unit = {}
 ) {
 
@@ -95,16 +98,16 @@ fun FlydropTopAppBar(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
-                    onClick = { /* Action for custom icon */ }
+                    onClick = onConnectionButtonClick
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.wifi_tethering_24px),
-                        contentDescription = "Settings",
+                        contentDescription = "Connection",
                         modifier = Modifier.size(36.dp)
                     )
                 }
                 IconButton(
-                    onClick = { /* Action for settings icon */ }
+                    onClick = onSettingsButtonClick
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Settings,
