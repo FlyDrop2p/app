@@ -10,49 +10,63 @@ class ServerService {
     companion object {
         const val PORT_KEEPALIVE_OWNER: Int = 8800
         const val PORT_KEEPALIVE_GUEST: Int = 8890
+        const val PORT_CONTENT_STRING: Int = 8900
     }
 
     suspend fun listenKeepaliveOwner(): Device {
-        val device: Device
+        val ret: Device
 
         withContext(Dispatchers.IO) {
             val socket = ServerSocket(PORT_KEEPALIVE_OWNER)
-
-            // Wait for client connections. This call blocks until a connection is accepted from a client.
             val client = socket.accept()
 
-            // If this code is reached, a client has connected and transferred data.
             val inputStream = client.getInputStream()
             val buffer = inputStream.readBytes()
-            device = Json.decodeFromString(buffer.decodeToString())
+            ret = Json.decodeFromString(buffer.decodeToString())
 
             socket.close()
 
-            Log.d("OWNER KEEPALIVE", device.toString())
+            Log.d("OWNER KEEPALIVE", ret.toString())
         }
 
-        return device
+        return ret
     }
 
     suspend fun listenKeepaliveGuest(): Set<Device> {
-        val devices: Set<Device>
+        val ret: Set<Device>
 
         withContext(Dispatchers.IO) {
             val socket = ServerSocket(PORT_KEEPALIVE_GUEST)
-
-            // Wait for client connections. This call blocks until a connection is accepted from a client.
             val client = socket.accept()
 
-            // If this code is reached, a client has connected and transferred data.
             val inputStream = client.getInputStream()
             val buffer = inputStream.readBytes()
-            devices = Json.decodeFromString(buffer.decodeToString())
+            ret = Json.decodeFromString(buffer.decodeToString())
 
             socket.close()
 
-            Log.d("GUEST KEEPALIVE", devices.toString())
+            Log.d("GUEST KEEPALIVE", ret.toString())
         }
 
-        return devices
+        return ret
+    }
+
+    suspend fun listenContentString(): Pair<Device, String> {
+        val ret: Pair<Device, String>
+
+        withContext(Dispatchers.IO) {
+            val socket = ServerSocket(PORT_CONTENT_STRING)
+            val client = socket.accept()
+
+            val inputStream = client.getInputStream()
+            val buffer = inputStream.readBytes()
+            ret = Json.decodeFromString(buffer.decodeToString())
+
+            socket.close()
+
+            Log.d("CONTENT STRING", ret.toString())
+        }
+
+        return ret
     }
 }

@@ -30,8 +30,7 @@ class MainActivity : ComponentActivity() {
         requestPermissions()
 
         networkManager = NetworkManager(this)
-        networkManager.startKeepaliveOwnerConnection()
-        networkManager.startKeepaliveGuestConnection()
+        networkManager.startConnections()
 
         startKeepaliveHandler()
 

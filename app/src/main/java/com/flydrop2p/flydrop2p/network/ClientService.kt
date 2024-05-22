@@ -10,16 +10,15 @@ import java.net.InetSocketAddress
 import java.net.Socket
 
 class ClientService {
-    suspend fun sendKeepaliveToOwner(device: Device) {
+    suspend fun sendKeepaliveOwner(device: Device) {
         withContext(Dispatchers.IO) {
             try {
-                // Create a client socket with the host, port, and timeout information.
                 val socket = Socket()
                 socket.bind(null)
                 socket.connect((InetSocketAddress(InetAddress.getByName(IP_GROUP_OWNER), ServerService.PORT_KEEPALIVE_OWNER)))
+
                 device.ipAddress = socket.localAddress.hostAddress?.toString()
 
-                // Send device info to server.
                 val outputStream = socket.getOutputStream()
                 outputStream.write(Json.encodeToString(device).encodeToByteArray())
                 outputStream.close()
@@ -29,15 +28,13 @@ class ClientService {
         }
     }
 
-    suspend fun sendKeepaliveToGuest(addressIp: String, devices: Set<Device>) {
+    suspend fun sendKeepaliveGuest(addressIp: String, devices: Set<Device>) {
         withContext(Dispatchers.IO) {
             try {
-                // Create a client socket with the host, port, and timeout information.
                 val socket = Socket()
                 socket.bind(null)
                 socket.connect((InetSocketAddress(InetAddress.getByName(addressIp), ServerService.PORT_KEEPALIVE_GUEST)))
 
-                // Send device info to server.
                 val outputStream = socket.getOutputStream()
                 outputStream.write(Json.encodeToString(devices).encodeToByteArray())
                 outputStream.close()
@@ -47,12 +44,15 @@ class ClientService {
         }
     }
 
-    suspend fun sendMessage(message: String) {
+    suspend fun sendContentString(addressIp: String, device: Device, content: String) {
         withContext(Dispatchers.IO) {
             try {
                 val socket = Socket()
+                socket.bind(null)
+                socket.connect((InetSocketAddress(InetAddress.getByName(addressIp), ServerService.PORT_CONTENT_STRING)))
+
                 val outputStream = socket.getOutputStream()
-                outputStream.write(message.toByteArray())
+                outputStream.write(Json.encodeToString(Pair(device, content)).encodeToByteArray())
                 outputStream.close()
             } catch (_: Exception) {
 

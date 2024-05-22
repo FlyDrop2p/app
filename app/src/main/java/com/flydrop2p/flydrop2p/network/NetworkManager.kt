@@ -16,40 +16,55 @@ class NetworkManager(activity: MainActivity) {
     private val serverService = ServerService()
     private val clientService = ClientService()
 
-    fun startKeepaliveOwnerConnection() {
-        coroutineScope.launch {
-            while (true) {
-                val newDevice = serverService.listenKeepaliveOwner()
-                connectedDevices.add(newDevice)
-                connectedDevices.remove(thisDevice)
-            }
-        }
-    }
-
-    fun startKeepaliveGuestConnection() {
-        coroutineScope.launch {
-            while (true) {
-                val newDevices = serverService.listenKeepaliveGuest()
-                connectedDevices.addAll(newDevices)
-                connectedDevices.remove(thisDevice)
-            }
-        }
-    }
-
     fun sendKeepalive() {
         receiver.requestGroupInfo {
             if (it.isGroupOwner) {
                 coroutineScope.launch {
                     for (device in connectedDevices) {
                         device.ipAddress?.let {
-                            clientService.sendKeepaliveToGuest(it, connectedDevices + thisDevice)
+                            clientService.sendKeepaliveGuest(it, connectedDevices + thisDevice)
                         }
                     }
                 }
             } else {
                 coroutineScope.launch {
-                    clientService.sendKeepaliveToOwner(thisDevice)
+                    clientService.sendKeepaliveOwner(thisDevice)
                 }
+            }
+        }
+    }
+
+    fun startConnections() {
+        startKeepaliveOwnerConnection()
+        startKeepaliveGuestConnection()
+        startContentStringConnection()
+    }
+
+    private fun startKeepaliveOwnerConnection() {
+        coroutineScope.launch {
+            while (true) {
+                val device = serverService.listenKeepaliveOwner()
+                connectedDevices.add(device)
+                connectedDevices.remove(thisDevice)
+            }
+        }
+    }
+
+    private fun startKeepaliveGuestConnection() {
+        coroutineScope.launch {
+            while (true) {
+                val devices = serverService.listenKeepaliveGuest()
+                connectedDevices.addAll(devices)
+                connectedDevices.remove(thisDevice)
+            }
+        }
+    }
+
+    private fun startContentStringConnection() {
+        coroutineScope.launch {
+            while (true) {
+                val (device, content) = serverService.listenContentString()
+                // TODO (device sent content to thisDevice)
             }
         }
     }
