@@ -1,6 +1,7 @@
-package com.flydrop2p.flydrop2p.network
+package com.flydrop2p.flydrop2p.network.services
 
-import com.flydrop2p.flydrop2p.network.WiFiDirectBroadcastReceiver.Companion.IP_GROUP_OWNER
+import com.flydrop2p.flydrop2p.network.Device
+import com.flydrop2p.flydrop2p.network.wifidirect.WiFiDirectBroadcastReceiver.Companion.IP_GROUP_OWNER
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString

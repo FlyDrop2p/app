@@ -1,4 +1,4 @@
-package com.flydrop2p.flydrop2p.network
+package com.flydrop2p.flydrop2p.network.wifidirect
 
 import android.content.BroadcastReceiver
 import android.content.Context

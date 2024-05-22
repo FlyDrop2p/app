@@ -1,6 +1,7 @@
-package com.flydrop2p.flydrop2p.network
+package com.flydrop2p.flydrop2p.network.services
 
 import android.util.Log
+import com.flydrop2p.flydrop2p.network.Device
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
