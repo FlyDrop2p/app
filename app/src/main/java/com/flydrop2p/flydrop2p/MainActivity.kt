@@ -30,8 +30,8 @@ class MainActivity : ComponentActivity() {
         requestPermissions()
 
         networkManager = NetworkManager(this)
-        networkManager.startHandshakeConnection()
-        networkManager.startKeepaliveConnection()
+        networkManager.startKeepaliveOwnerConnection()
+        networkManager.startKeepaliveGuestConnection()
 
         startKeepaliveHandler()
 
@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
             FlyDrop2pTheme {
                 FlyDropApp(
                     onConnectionButtonClick = {
-                        networkManager.connectToServer()
+
                     }
                 )
             }

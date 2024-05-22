@@ -10,13 +10,13 @@ import java.net.InetSocketAddress
 import java.net.Socket
 
 class ClientService {
-    suspend fun connectToServer(device: Device): Device {
+    suspend fun sendKeepaliveToOwner(device: Device) {
         withContext(Dispatchers.IO) {
             try {
                 // Create a client socket with the host, port, and timeout information.
                 val socket = Socket()
                 socket.bind(null)
-                socket.connect((InetSocketAddress(InetAddress.getByName(IP_GROUP_OWNER), ServerService.PORT_HANDSHAKE)))
+                socket.connect((InetSocketAddress(InetAddress.getByName(IP_GROUP_OWNER), ServerService.PORT_KEEPALIVE_OWNER)))
                 device.ipAddress = socket.localAddress.hostAddress?.toString()
 
                 // Send device info to server.
@@ -27,29 +27,24 @@ class ClientService {
 
             }
         }
-
-        return device
     }
 
-    suspend fun sendKeepalive(addressIp: String, device: Device): Device {
+    suspend fun sendKeepaliveToGuest(addressIp: String, devices: Set<Device>) {
         withContext(Dispatchers.IO) {
             try {
                 // Create a client socket with the host, port, and timeout information.
                 val socket = Socket()
                 socket.bind(null)
-                socket.connect((InetSocketAddress(InetAddress.getByName(addressIp), ServerService.PORT_KEEPALIVE)))
-                device.ipAddress = socket.localAddress.hostAddress?.toString()
+                socket.connect((InetSocketAddress(InetAddress.getByName(addressIp), ServerService.PORT_KEEPALIVE_GUEST)))
 
                 // Send device info to server.
                 val outputStream = socket.getOutputStream()
-                outputStream.write(Json.encodeToString(device).encodeToByteArray())
+                outputStream.write(Json.encodeToString(devices).encodeToByteArray())
                 outputStream.close()
             } catch (_: Exception) {
 
             }
         }
-
-        return device
     }
 
     suspend fun sendMessage(message: String) {

@@ -16,32 +16,22 @@ class NetworkManager(activity: MainActivity) {
     private val serverService = ServerService()
     private val clientService = ClientService()
 
-    fun startHandshakeConnection() {
+    fun startKeepaliveOwnerConnection() {
         coroutineScope.launch {
-            while(true) {
-                val newDevice = serverService.startHandshakeConnection()
+            while (true) {
+                val newDevice = serverService.listenKeepaliveOwner()
                 connectedDevices.add(newDevice)
                 connectedDevices.remove(thisDevice)
             }
         }
     }
 
-    fun startKeepaliveConnection() {
+    fun startKeepaliveGuestConnection() {
         coroutineScope.launch {
-            while(true) {
-                val newDevice = serverService.startKeepaliveConnection()
-                connectedDevices.add(newDevice)
+            while (true) {
+                val newDevices = serverService.listenKeepaliveGuest()
+                connectedDevices.addAll(newDevices)
                 connectedDevices.remove(thisDevice)
-            }
-        }
-    }
-
-    fun connectToServer() {
-        receiver.requestGroupInfo {
-            if(!it.isGroupOwner) {
-                coroutineScope.launch {
-                    clientService.connectToServer(thisDevice)
-                }
             }
         }
     }
@@ -52,13 +42,13 @@ class NetworkManager(activity: MainActivity) {
                 coroutineScope.launch {
                     for (device in connectedDevices) {
                         device.ipAddress?.let {
-                            clientService.sendKeepalive(it, thisDevice)
+                            clientService.sendKeepaliveToGuest(it, connectedDevices + thisDevice)
                         }
                     }
                 }
             } else {
                 coroutineScope.launch {
-                    clientService.sendKeepalive(IP_GROUP_OWNER, thisDevice)
+                    clientService.sendKeepaliveToOwner(thisDevice)
                 }
             }
         }

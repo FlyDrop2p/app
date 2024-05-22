@@ -8,15 +8,15 @@ import java.net.ServerSocket
 
 class ServerService {
     companion object {
-        const val PORT_HANDSHAKE: Int = 8800
-        const val PORT_KEEPALIVE: Int = 8890
+        const val PORT_KEEPALIVE_OWNER: Int = 8800
+        const val PORT_KEEPALIVE_GUEST: Int = 8890
     }
 
-    suspend fun startHandshakeConnection(): Device {
+    suspend fun listenKeepaliveOwner(): Device {
         val device: Device
 
         withContext(Dispatchers.IO) {
-            val socket = ServerSocket(PORT_HANDSHAKE)
+            val socket = ServerSocket(PORT_KEEPALIVE_OWNER)
 
             // Wait for client connections. This call blocks until a connection is accepted from a client.
             val client = socket.accept()
@@ -28,17 +28,17 @@ class ServerService {
 
             socket.close()
 
-            Log.d("HANDSHAKE", device.toString())
+            Log.d("OWNER KEEPALIVE", device.toString())
         }
 
         return device
     }
 
-    suspend fun startKeepaliveConnection(): Device {
-        val device: Device
+    suspend fun listenKeepaliveGuest(): Set<Device> {
+        val devices: Set<Device>
 
         withContext(Dispatchers.IO) {
-            val socket = ServerSocket(PORT_KEEPALIVE)
+            val socket = ServerSocket(PORT_KEEPALIVE_GUEST)
 
             // Wait for client connections. This call blocks until a connection is accepted from a client.
             val client = socket.accept()
@@ -46,13 +46,13 @@ class ServerService {
             // If this code is reached, a client has connected and transferred data.
             val inputStream = client.getInputStream()
             val buffer = inputStream.readBytes()
-            device = Json.decodeFromString(buffer.decodeToString())
+            devices = Json.decodeFromString(buffer.decodeToString())
 
             socket.close()
 
-            Log.d("KEEPALIVE", device.toString())
+            Log.d("GUEST KEEPALIVE", devices.toString())
         }
 
-        return device
+        return devices
     }
 }
