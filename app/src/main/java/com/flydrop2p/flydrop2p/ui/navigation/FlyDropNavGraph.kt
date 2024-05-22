@@ -46,7 +46,7 @@ fun FlyDropNavHost(
                 homeViewModel = homeViewModel,
                 chatViewModel = chatViewModel,
                 onChatClick = { navController.navigate("${ChatDestination.route}/${it.id}") },
-                onConnectionButtonClick = {},
+                onConnectionButtonClick = onConnectionButtonClick,
                 onSettingsButtonClick = { navController.navigate(SettingsDestination.route) },
             )
         }
@@ -65,7 +65,7 @@ fun FlyDropNavHost(
                     chatId = it, // Passare direttamente l'ID della chat a ChatScreen
                     chatViewModel = chatViewModel,
                     navController = navController,
-                    onConnectionButtonClick = {},
+                    onConnectionButtonClick = onConnectionButtonClick,
                     onSettingsButtonClick = { navController.navigate(SettingsDestination.route) },
                 )
             }
@@ -77,7 +77,7 @@ fun FlyDropNavHost(
             SettingsScreen(
                 settingsViewModel = settingsViewModel,
                 navController = navController,
-                onConnectionButtonClick = {},
+                onConnectionButtonClick = onConnectionButtonClick,
                 onSettingsButtonClick = { navController.navigate(SettingsDestination.route) },
             )
         }

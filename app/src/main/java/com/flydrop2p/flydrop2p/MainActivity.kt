@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -25,16 +26,19 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         requestPermissions()
 
         networkManager = NetworkManager(this)
-        networkManager.startServerConnection()
+        networkManager.startHandshakeConnection()
+        networkManager.startKeepaliveConnection()
+
+        startKeepaliveHandler()
 
         setContent {
             FlyDrop2pTheme {
                 FlyDropApp(
                     onConnectionButtonClick = {
-                        networkManager.receiver.connectToDevices()
                         networkManager.connectToServer()
                     }
                 )
@@ -69,6 +73,18 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d("MainActivity", "onDestroy")
+    }
+
+    private fun startKeepaliveHandler() {
+        val handler = Handler(mainLooper)
+        val runnable = object : Runnable {
+            override fun run() {
+                networkManager.sendKeepalive()
+                handler.postDelayed(this, 5000)
+            }
+        }
+
+        handler.post(runnable)
     }
 
     private fun requestPermissions() {
