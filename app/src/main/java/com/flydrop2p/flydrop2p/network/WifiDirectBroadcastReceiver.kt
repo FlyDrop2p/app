@@ -15,15 +15,7 @@ class WiFiDirectBroadcastReceiver(activity: MainActivity) : BroadcastReceiver() 
         const val IP_GROUP_OWNER: String = "192.168.49.1"
     }
 
-    fun isGroupOwner(): Boolean {
-        var isGroupOwner = false
-
-        manager.requestGroupInfo {
-            isGroupOwner = it.isGroupOwner
-        }
-
-        return isGroupOwner
-    }
+    fun requestGroupInfo(listener: WifiP2pManager.GroupInfoListener) = manager.requestGroupInfo(listener)
 
     fun connectToDevices() {
         manager.discoverPeers(object : WifiP2pManager.ActionListener {

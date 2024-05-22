@@ -10,7 +10,7 @@ import java.net.InetSocketAddress
 import java.net.Socket
 
 class ClientService {
-    suspend fun connectToServer(device: Device) {
+    suspend fun connectToServer(device: Device): Device {
         withContext(Dispatchers.IO) {
             try {
                 // Create a client socket with the host, port, and timeout information.
@@ -27,24 +27,29 @@ class ClientService {
 
             }
         }
+
+        return device
     }
 
-    suspend fun sendKeepalive(addressIp: String, devices: Set<Device>) {
+    suspend fun sendKeepalive(addressIp: String, device: Device): Device {
         withContext(Dispatchers.IO) {
             try {
                 // Create a client socket with the host, port, and timeout information.
                 val socket = Socket()
                 socket.bind(null)
                 socket.connect((InetSocketAddress(InetAddress.getByName(addressIp), ServerService.PORT_KEEPALIVE)))
+                device.ipAddress = socket.localAddress.hostAddress?.toString()
 
                 // Send device info to server.
                 val outputStream = socket.getOutputStream()
-                outputStream.write(Json.encodeToString(devices).encodeToByteArray())
+                outputStream.write(Json.encodeToString(device).encodeToByteArray())
                 outputStream.close()
             } catch (_: Exception) {
 
             }
         }
+
+        return device
     }
 
     suspend fun sendMessage(message: String) {
