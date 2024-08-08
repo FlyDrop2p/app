@@ -1,5 +1,6 @@
 package com.flydrop2p.flydrop2p.network
 
+import android.util.Log
 import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.network.services.ClientService
 import com.flydrop2p.flydrop2p.network.services.ServerService
@@ -19,19 +20,25 @@ class NetworkManager(activity: MainActivity) {
     private val serverService = ServerService()
     private val clientService = ClientService()
 
+    init {
+        Log.d("DEVICE ID", thisDevice.id.toString())
+    }
+
     fun sendKeepalive() {
         receiver.requestGroupInfo {
-            if (it.isGroupOwner) {
-                coroutineScope.launch {
-                    for (device in connectedDevices) {
-                        device.ipAddress?.let {
-                            clientService.sendKeepaliveGuest(it, connectedDevices + thisDevice)
+            if (it != null) {
+                if (it.isGroupOwner) {
+                    coroutineScope.launch {
+                        for (device in connectedDevices) {
+                            device.ipAddress?.let {
+                                clientService.sendKeepaliveGuest(it, connectedDevices + thisDevice)
+                            }
                         }
                     }
-                }
-            } else {
-                coroutineScope.launch {
-                    clientService.sendKeepaliveOwner(thisDevice)
+                } else {
+                    coroutineScope.launch {
+                        clientService.sendKeepaliveOwner(thisDevice)
+                    }
                 }
             }
         }
@@ -47,6 +54,7 @@ class NetworkManager(activity: MainActivity) {
         coroutineScope.launch {
             while (true) {
                 val device = serverService.listenKeepaliveOwner()
+                Log.d("KEEPALIVE", device.toString())
                 connectedDevices.add(device)
                 connectedDevices.remove(thisDevice)
             }
@@ -57,6 +65,9 @@ class NetworkManager(activity: MainActivity) {
         coroutineScope.launch {
             while (true) {
                 val devices = serverService.listenKeepaliveGuest()
+                for(device in devices) {
+                    Log.d("KEEPALIVE", device.toString())
+                }
                 connectedDevices.addAll(devices)
                 connectedDevices.remove(thisDevice)
             }
