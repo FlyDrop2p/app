@@ -22,15 +22,13 @@ class MainActivity : ComponentActivity() {
         addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
     }
 
-    private lateinit var networkManager: NetworkManager
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         requestPermissions()
 
-        networkManager = NetworkManager(this)
-        networkManager.startConnections()
+        NetworkManager.init(this)
+        NetworkManager.startConnections()
 
         startKeepaliveHandler()
 
@@ -54,14 +52,14 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         Log.d("MainActivity", "onResume")
 
-        registerReceiver(networkManager.receiver, intentFilter)
+        registerReceiver(NetworkManager.receiver, intentFilter)
     }
 
     override fun onPause() {
         super.onPause()
         Log.d("MainActivity", "onPause")
 
-        unregisterReceiver(networkManager.receiver)
+        unregisterReceiver(NetworkManager.receiver)
     }
 
     override fun onStop() {
@@ -78,7 +76,7 @@ class MainActivity : ComponentActivity() {
         val handler = Handler(mainLooper)
         val runnable = object : Runnable {
             override fun run() {
-                networkManager.sendKeepalive()
+                NetworkManager.sendKeepalive()
                 handler.postDelayed(this, 5000)
             }
         }
