@@ -9,13 +9,14 @@ import com.flydrop2p.flydrop2p.network.wifidirect.WiFiDirectBroadcastReceiver.Co
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 
 class NetworkManager(activity: MainActivity) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     val receiver = WiFiDirectBroadcastReceiver(activity)
 
-    private val thisDevice = Device(android.os.Build.VERSION.SDK_INT.toLong(), IP_GROUP_OWNER)
+    private val thisDevice = Device(Random.nextLong(), IP_GROUP_OWNER)
     private val connectedDevices = mutableSetOf<Device>()
     private val serverService = ServerService()
     private val clientService = ClientService()
@@ -26,19 +27,17 @@ class NetworkManager(activity: MainActivity) {
 
     fun sendKeepalive() {
         receiver.requestGroupInfo {
-            if (it != null) {
-                if (it.isGroupOwner) {
-                    coroutineScope.launch {
-                        for (device in connectedDevices) {
-                            device.ipAddress?.let {
-                                clientService.sendKeepaliveGuest(it, connectedDevices + thisDevice)
-                            }
+            if (it == null || it.isGroupOwner) {
+                coroutineScope.launch {
+                    for (device in connectedDevices) {
+                        device.ipAddress?.let {
+                            clientService.sendKeepaliveToGuest(it, connectedDevices + thisDevice)
                         }
                     }
-                } else {
-                    coroutineScope.launch {
-                        clientService.sendKeepaliveOwner(thisDevice)
-                    }
+                }
+            } else {
+                coroutineScope.launch {
+                    clientService.sendKeepaliveToOwner(thisDevice)
                 }
             }
         }
@@ -54,7 +53,6 @@ class NetworkManager(activity: MainActivity) {
         coroutineScope.launch {
             while (true) {
                 val device = serverService.listenKeepaliveOwner()
-                Log.d("KEEPALIVE", device.toString())
                 connectedDevices.add(device)
                 connectedDevices.remove(thisDevice)
             }
@@ -65,9 +63,6 @@ class NetworkManager(activity: MainActivity) {
         coroutineScope.launch {
             while (true) {
                 val devices = serverService.listenKeepaliveGuest()
-                for(device in devices) {
-                    Log.d("KEEPALIVE", device.toString())
-                }
                 connectedDevices.addAll(devices)
                 connectedDevices.remove(thisDevice)
             }

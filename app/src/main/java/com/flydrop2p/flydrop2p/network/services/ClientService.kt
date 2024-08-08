@@ -11,7 +11,7 @@ import java.net.InetSocketAddress
 import java.net.Socket
 
 class ClientService {
-    suspend fun sendKeepaliveOwner(device: Device) {
+    suspend fun sendKeepaliveToOwner(device: Device) {
         withContext(Dispatchers.IO) {
             try {
                 val socket = Socket()
@@ -29,7 +29,7 @@ class ClientService {
         }
     }
 
-    suspend fun sendKeepaliveGuest(addressIp: String, devices: Set<Device>) {
+    suspend fun sendKeepaliveToGuest(addressIp: String, devices: Set<Device>) {
         withContext(Dispatchers.IO) {
             try {
                 val socket = Socket()

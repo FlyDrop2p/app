@@ -10,8 +10,8 @@ import java.net.ServerSocket
 class ServerService {
     companion object {
         const val PORT_KEEPALIVE_OWNER: Int = 8800
-        const val PORT_KEEPALIVE_GUEST: Int = 8890
-        const val PORT_CONTENT_STRING: Int = 8900
+        const val PORT_KEEPALIVE_GUEST: Int = 8801
+        const val PORT_CONTENT_STRING: Int = 8802
     }
 
     suspend fun listenKeepaliveOwner(): Device {
