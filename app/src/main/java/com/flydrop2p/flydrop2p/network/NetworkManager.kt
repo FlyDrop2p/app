@@ -8,6 +8,9 @@ import com.flydrop2p.flydrop2p.network.wifidirect.WiFiDirectBroadcastReceiver
 import com.flydrop2p.flydrop2p.network.wifidirect.WiFiDirectBroadcastReceiver.Companion.IP_GROUP_OWNER
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -17,7 +20,8 @@ object NetworkManager {
     lateinit var receiver: WiFiDirectBroadcastReceiver
 
     private val thisDevice = Device(Random.nextLong(), IP_GROUP_OWNER)
-    private val connectedDevices = mutableSetOf<Device>()
+    private val _connectedDevices = MutableStateFlow<Set<Device>>(emptySet())
+    val connectedDevices: StateFlow<Set<Device>> = _connectedDevices.asStateFlow()
     private val serverService = ServerService()
     private val clientService = ClientService()
 
@@ -33,9 +37,9 @@ object NetworkManager {
         receiver.requestGroupInfo {
             if (it == null || it.isGroupOwner) {
                 coroutineScope.launch {
-                    for (device in connectedDevices) {
+                    for (device in connectedDevices.value) {
                         device.ipAddress?.let {
-                            clientService.sendKeepaliveToGuest(it, connectedDevices + thisDevice)
+                            clientService.sendKeepaliveToGuest(it, connectedDevices.value + thisDevice)
                         }
                     }
                 }
@@ -57,8 +61,10 @@ object NetworkManager {
         coroutineScope.launch {
             while (true) {
                 val device = serverService.listenKeepaliveOwner()
-                connectedDevices.add(device)
-                connectedDevices.remove(thisDevice)
+                val currentDevices = _connectedDevices.value.toMutableSet()
+                currentDevices.add(device)
+                currentDevices.remove(thisDevice)
+                _connectedDevices.value = currentDevices.toSet()
             }
         }
     }
@@ -67,8 +73,10 @@ object NetworkManager {
         coroutineScope.launch {
             while (true) {
                 val devices = serverService.listenKeepaliveGuest()
-                connectedDevices.addAll(devices)
-                connectedDevices.remove(thisDevice)
+                val currentDevices = _connectedDevices.value.toMutableSet()
+                currentDevices.addAll(devices)
+                currentDevices.remove(thisDevice)
+                _connectedDevices.value = currentDevices.toSet()
             }
         }
     }
