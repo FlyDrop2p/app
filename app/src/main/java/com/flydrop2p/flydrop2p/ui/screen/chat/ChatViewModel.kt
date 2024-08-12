@@ -55,10 +55,11 @@ class ChatViewModel(
     fun addMessage(message: MessageEntity) {
         viewModelScope.launch {
             try {
+                val updatedMessageList = _uiState.value.messageList.toMutableList().apply {
+                    add(message)
+                }
+                _uiState.value = _uiState.value.copy(messageList = updatedMessageList)
                 chatRepository.addChatMessage(message)
-                val messageList = _uiState.value.messageList
-                messageList.add(message)
-                _uiState.value = _uiState.value.copy(messageList = messageList)
             } catch (e: Exception) {
                 Log.e("ChatViewModel", "Error adding message", e)
             }
