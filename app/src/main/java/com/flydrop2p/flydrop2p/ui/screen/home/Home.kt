@@ -3,25 +3,13 @@ package com.flydrop2p.flydrop2p.ui.screen.home
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -55,8 +43,7 @@ fun HomeScreen(
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-
-    val chatsState by homeViewModel.chatsInfoState.collectAsState()
+    val uiState by homeViewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {
@@ -84,38 +71,29 @@ fun HomeScreen(
                 )
             }
         },
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier.padding(innerPadding)
-        ) {
-
-            ChatItem(
-                chatInfo = ChatInfo(-1, "Group Chat", R.drawable.campaign_24px),
-                onChatClick = onChatClick
+        content = { innerPadding ->
+            ChatList(
+                chatsInfo = uiState.chatList,
+                onChatClick = onChatClick,
+                modifier = Modifier.padding(innerPadding)
             )
-            Divider()
-            ChatList(chatsState.chats, onChatClick)
         }
-
-    }
-
+    )
 }
 
 @Composable
-fun ChatList(chatsInfo: List<ChatInfo>, onChatClick: (ChatInfo) -> Unit) {
-    LazyColumn {
+fun ChatList(chatsInfo: List<ChatInfo>, onChatClick: (ChatInfo) -> Unit, modifier: Modifier = Modifier) { // Aggiungi il parametro modifier qui
+    LazyColumn(modifier = modifier) {
         items(chatsInfo) { chatInfo ->
             ChatItem(chatInfo = chatInfo, onChatClick = onChatClick)
-            Divider()
         }
     }
 }
 
-
 @Composable
-fun ChatItem(chatInfo: ChatInfo, onChatClick: (ChatInfo) -> Unit) {
+fun ChatItem(chatInfo: ChatInfo, onChatClick: (ChatInfo) -> Unit, modifier: Modifier = Modifier) { // Aggiungi il parametro modifier qui
     Row(
-        modifier = Modifier
+        modifier = modifier
             .padding(vertical = 8.dp, horizontal = 16.dp)
             .fillMaxWidth()
             .clickable {

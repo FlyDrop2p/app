@@ -23,4 +23,7 @@ interface ChatInfoDAO {
 
     @Delete
     suspend fun deleteChatInfo(chatInfoEntity: ChatInfoEntity)
+
+    @Query("SELECT * FROM ChatInfoEntity WHERE id = :id")
+    suspend fun getChatInfoByDeviceId(id: Long): ChatInfoEntity?
 }

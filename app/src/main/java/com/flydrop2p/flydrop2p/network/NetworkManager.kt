@@ -15,9 +15,9 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 
-object NetworkManager {
+class NetworkManager(activity: MainActivity) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    lateinit var receiver: WiFiDirectBroadcastReceiver
+    val receiver: WiFiDirectBroadcastReceiver = WiFiDirectBroadcastReceiver(activity)
 
     private val thisDevice = Device(Random.nextLong(), IP_GROUP_OWNER)
     private val _connectedDevices = MutableStateFlow<Set<Device>>(emptySet())
@@ -27,10 +27,6 @@ object NetworkManager {
 
     init {
         Log.d("DEVICE ID", thisDevice.id.toString())
-    }
-
-    fun init(activity: MainActivity) {
-        receiver = WiFiDirectBroadcastReceiver(activity)
     }
 
     fun sendKeepalive() {

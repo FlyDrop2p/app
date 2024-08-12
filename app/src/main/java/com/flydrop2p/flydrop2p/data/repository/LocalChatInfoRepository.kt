@@ -3,10 +3,14 @@ package com.flydrop2p.flydrop2p.data.repository
 import com.flydrop2p.flydrop2p.data.DataSource
 import com.flydrop2p.flydrop2p.data.local.ChatInfoDAO
 import com.flydrop2p.flydrop2p.data.local.ChatInfoEntity
+import com.flydrop2p.flydrop2p.domain.model.ChatInfo
 import com.flydrop2p.flydrop2p.domain.model.toChatInfoEntity
+import com.flydrop2p.flydrop2p.domain.model.toChatInfo
 import com.flydrop2p.flydrop2p.domain.repository.ChatsInfoRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
 class LocalChatInfoRepository(private val chatInfoDAO: ChatInfoDAO) : ChatsInfoRepository {
@@ -27,6 +31,13 @@ class LocalChatInfoRepository(private val chatInfoDAO: ChatInfoDAO) : ChatsInfoR
         chatInfoDAO.updateChatInfo(chatInfo)
     }
 
+    override suspend fun getChatInfoForDevice(deviceId: Long): Flow<ChatInfo?> {
+        return flow {
+            val chatInfoEntity = chatInfoDAO.getChatInfoByDeviceId(deviceId)
+            emit(chatInfoEntity?.toChatInfo())
+        }.flowOn(Dispatchers.IO)
+    }
+
     // TODO: Only for testing purposes
     override suspend fun populateDatabase() {
         withContext(Dispatchers.IO) {
@@ -36,6 +47,4 @@ class LocalChatInfoRepository(private val chatInfoDAO: ChatInfoDAO) : ChatsInfoR
             }
         }
     }
-
-
 }
