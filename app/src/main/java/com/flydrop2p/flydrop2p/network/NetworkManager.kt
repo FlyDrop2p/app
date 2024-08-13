@@ -20,8 +20,8 @@ class NetworkManager(activity: MainActivity) {
     val receiver: WiFiDirectBroadcastReceiver = WiFiDirectBroadcastReceiver(activity)
 
     private val thisDevice = Device(Random.nextLong(), IP_GROUP_OWNER)
-    private val _connectedDevices = MutableStateFlow<Set<Device>>(emptySet())
-    val connectedDevices: StateFlow<Set<Device>> = _connectedDevices.asStateFlow()
+    private val _connectedDevices = MutableStateFlow<MutableSet<Device>>(mutableSetOf())
+    val connectedDevices: StateFlow<MutableSet<Device>> = _connectedDevices.asStateFlow()
     private val serverService = ServerService()
     private val clientService = ClientService()
 
@@ -57,10 +57,7 @@ class NetworkManager(activity: MainActivity) {
         coroutineScope.launch {
             while (true) {
                 val device = serverService.listenKeepaliveOwner()
-                val currentDevices = _connectedDevices.value.toMutableSet()
-                currentDevices.add(device)
-                currentDevices.remove(thisDevice)
-                _connectedDevices.value = currentDevices.toSet()
+                _connectedDevices.value.add(device)
             }
         }
     }
@@ -69,10 +66,7 @@ class NetworkManager(activity: MainActivity) {
         coroutineScope.launch {
             while (true) {
                 val devices = serverService.listenKeepaliveGuest()
-                val currentDevices = _connectedDevices.value.toMutableSet()
-                currentDevices.addAll(devices)
-                currentDevices.remove(thisDevice)
-                _connectedDevices.value = currentDevices.toSet()
+                _connectedDevices.value.addAll(devices.filter { it != thisDevice })
             }
         }
     }
