@@ -4,9 +4,9 @@ import com.flydrop2p.flydrop2p.domain.model.Profile
 import kotlinx.coroutines.flow.Flow
 
 interface ProfileRepository {
-    fun getProfile(): Flow<Profile>
-
-    suspend fun setId(id: Int)
+    val profile: Flow<Profile>
 
     suspend fun setUsername(username: String)
+
+    suspend fun setImageFilePath(imageFilePath: String)
 }

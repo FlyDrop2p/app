@@ -24,9 +24,8 @@ class SettingsViewModel(
 
     init {
         viewModelScope.launch {
-            profileRepository.getProfile().collectLatest { profile ->
-                Log.d("SettingsViewModel", "Profile updated: $profile")
-                _uiState.value = SettingsViewState(profile)
+            profileRepository.profile.collect {
+                _uiState.value = SettingsViewState(it)
             }
         }
     }
@@ -34,7 +33,6 @@ class SettingsViewModel(
     fun updateUsername(newUsername: String) {
         viewModelScope.launch {
             profileRepository.setUsername(newUsername)
-            Log.d("SettingsViewModel", "Username updated to $newUsername") //OK
         }
     }
 }

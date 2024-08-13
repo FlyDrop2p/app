@@ -1,18 +1,19 @@
 package com.flydrop2p.flydrop2p.network
 
+import com.flydrop2p.flydrop2p.domain.model.Contact
 import com.flydrop2p.flydrop2p.domain.model.Profile
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Device(
     var ipAddress: String?,
-    val profile: Profile
+    val contact: Contact
 ) {
-    val id: Int
-        get() = profile.id
+    val contactId: Int
+        get() = contact.contactId
 
-    val username: String
-        get() = profile.username
+    val profile: Profile
+        get() = contact.profile
 
     override fun equals(other: Any?): Boolean = other is Device && other.profile == this.profile
 

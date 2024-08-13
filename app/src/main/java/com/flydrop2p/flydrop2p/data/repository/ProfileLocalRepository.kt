@@ -6,13 +6,14 @@ import com.flydrop2p.flydrop2p.domain.repository.ProfileRepository
 import kotlinx.coroutines.flow.Flow
 
 class ProfileLocalRepository(private val profileDataStore: DataStore<Profile>) : ProfileRepository {
-    override fun getProfile(): Flow<Profile> = profileDataStore.data
-
-    override suspend fun setId(id: Int) {
-        profileDataStore.updateData { it.copy(id = id) }
-    }
+    override val profile: Flow<Profile>
+        get() = profileDataStore.data
 
     override suspend fun setUsername(username: String) {
         profileDataStore.updateData { it.copy(username = username) }
+    }
+
+    override suspend fun setImageFilePath(imageFilePath: String) {
+        profileDataStore.updateData { it.copy(imageFilePath = imageFilePath) }
     }
 }

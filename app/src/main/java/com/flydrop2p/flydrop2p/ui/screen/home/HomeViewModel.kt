@@ -35,7 +35,7 @@ class HomeViewModel(
 
         for (device in devices) {
             try {
-                val chatInfos = chatInfoRepository.getChatInfosByContactId(device.id)
+                val chatInfos = chatInfoRepository.getChatInfosByContactId(device.contactId)
                 chats.addAll(chatInfos)
             } catch (e: Exception) {
                 // Log dell'eccezione per debugging

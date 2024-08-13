@@ -2,6 +2,7 @@ package com.flydrop2p.flydrop2p.network
 
 import android.util.Log
 import com.flydrop2p.flydrop2p.MainActivity
+import com.flydrop2p.flydrop2p.domain.model.Contact
 import com.flydrop2p.flydrop2p.domain.model.Profile
 import com.flydrop2p.flydrop2p.network.services.ClientService
 import com.flydrop2p.flydrop2p.network.services.ServerService
@@ -18,7 +19,7 @@ class NetworkManager(activity: MainActivity) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     val receiver: WiFiDirectBroadcastReceiver = WiFiDirectBroadcastReceiver(activity)
 
-    val thisDevice = Device(IP_GROUP_OWNER, Profile())
+    val thisDevice = Device(IP_GROUP_OWNER, Contact())
     private val _connectedDevices = MutableStateFlow<Set<Device>>(setOf())
     val connectedDevices: StateFlow<Set<Device>> = _connectedDevices
 
@@ -26,7 +27,7 @@ class NetworkManager(activity: MainActivity) {
     private val clientService = ClientService()
 
     init {
-        Log.d("DEVICE ID", thisDevice.id.toString())
+        Log.d("DEVICE ID", thisDevice.contactId.toString())
     }
 
     fun sendKeepalive() {
