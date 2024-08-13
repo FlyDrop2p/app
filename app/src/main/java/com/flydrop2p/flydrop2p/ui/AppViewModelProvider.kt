@@ -30,7 +30,7 @@ object AppViewModelProvider {
 
         initializer {
             SettingsViewModel(
-
+                flydropApplication().container.profileRepository,
             )
         }
     }

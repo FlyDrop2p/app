@@ -13,9 +13,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +52,9 @@ fun SettingsScreen(
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val settingsState by settingsViewModel.uiState.collectAsState()
+    var newUsername by remember { mutableStateOf("") }
+
     Scaffold(
         topBar = {
             FlyDropTopAppBar(
@@ -58,9 +69,6 @@ fun SettingsScreen(
             )
         },
     ) {
-
-        Log.d("SettingsScreen", "SettingsScreen")
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -73,7 +81,6 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-
                 Image(
                     painter = painterResource(id = R.drawable.account_circle_24px),
                     colorFilter = ColorFilter.tint(Color.Black),
@@ -87,16 +94,36 @@ fun SettingsScreen(
 
                 Column {
                     Text(
-                        text = "Name: ${settingsViewModel.username.value}",
+                        text = "Name: ${settingsState.profile.username}",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Device: ${settingsViewModel.deviceName.value}",
+                        text = "Device: ?",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
+            }
+
+            var usernameText by remember { mutableStateOf("") }
+            TextField(
+                value = usernameText,
+                onValueChange = {
+                    usernameText = it
+                },
+                label = { Text("Update Username") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Button(
+                onClick = {
+                    settingsViewModel.updateUsername(usernameText)
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Save", color = Color.White)
             }
         }
     }

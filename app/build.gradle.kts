@@ -79,7 +79,6 @@ dependencies {
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.datastore:datastore:1.1.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.7.1")
 
     implementation("androidx.activity:activity:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
