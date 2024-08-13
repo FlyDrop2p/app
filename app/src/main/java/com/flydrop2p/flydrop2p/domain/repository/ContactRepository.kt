@@ -1,6 +1,6 @@
 package com.flydrop2p.flydrop2p.domain.repository
 
-import com.flydrop2p.flydrop2p.data.local.ContactEntity
+import com.flydrop2p.flydrop2p.data.local.contact.ContactEntity
 import kotlinx.coroutines.flow.Flow
 
 interface ContactRepository {

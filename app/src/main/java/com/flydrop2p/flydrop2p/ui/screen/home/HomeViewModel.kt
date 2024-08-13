@@ -14,9 +14,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private val chatsInfoRepository: ChatsInfoRepository,
-                    private val networkManager: NetworkManager
-                ) : ViewModel() {
+class HomeViewModel(
+    private val chatsInfoRepository: ChatsInfoRepository,
+    private val networkManager: NetworkManager
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeViewState())
     val uiState: StateFlow<HomeViewState> = _uiState.asStateFlow()

@@ -1,4 +1,4 @@
-package com.flydrop2p.flydrop2p.data.local
+package com.flydrop2p.flydrop2p.data.local.chatinfo
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

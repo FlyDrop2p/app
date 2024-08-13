@@ -1,8 +1,8 @@
 package com.flydrop2p.flydrop2p.data.repository
 
 import com.flydrop2p.flydrop2p.data.DataSource
-import com.flydrop2p.flydrop2p.data.local.ChatInfoDAO
-import com.flydrop2p.flydrop2p.data.local.ChatInfoEntity
+import com.flydrop2p.flydrop2p.data.local.chatinfo.ChatInfoDAO
+import com.flydrop2p.flydrop2p.data.local.chatinfo.ChatInfoEntity
 import com.flydrop2p.flydrop2p.domain.model.ChatInfo
 import com.flydrop2p.flydrop2p.domain.model.toChatInfoEntity
 import com.flydrop2p.flydrop2p.domain.model.toChatInfo

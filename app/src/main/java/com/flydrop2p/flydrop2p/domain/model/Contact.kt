@@ -1,7 +1,7 @@
 package com.flydrop2p.flydrop2p.domain.model
 
 import com.flydrop2p.flydrop2p.R
-import com.flydrop2p.flydrop2p.data.local.ContactEntity
+import com.flydrop2p.flydrop2p.data.local.contact.ContactEntity
 
 data class Contact(
     val id: Int,

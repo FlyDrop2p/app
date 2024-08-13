@@ -2,6 +2,7 @@ package com.flydrop2p.flydrop2p.network
 
 import android.util.Log
 import com.flydrop2p.flydrop2p.MainActivity
+import com.flydrop2p.flydrop2p.domain.model.Profile
 import com.flydrop2p.flydrop2p.network.services.ClientService
 import com.flydrop2p.flydrop2p.network.services.ServerService
 import com.flydrop2p.flydrop2p.network.wifidirect.WiFiDirectBroadcastReceiver
@@ -19,9 +20,10 @@ class NetworkManager(activity: MainActivity) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     val receiver: WiFiDirectBroadcastReceiver = WiFiDirectBroadcastReceiver(activity)
 
-    val thisDevice = Device(Random.nextLong(), IP_GROUP_OWNER)
-    private val _connectedDevices = MutableStateFlow<MutableSet<Device>>(mutableSetOf())
-    val connectedDevices: StateFlow<MutableSet<Device>> = _connectedDevices.asStateFlow()
+    private val thisDevice = Device(IP_GROUP_OWNER, Profile())
+    private val _connectedDevices = MutableStateFlow<Set<Device>>(setOf())
+    val connectedDevices: StateFlow<Set<Device>> = _connectedDevices
+
     private val serverService = ServerService()
     private val clientService = ClientService()
 
@@ -57,7 +59,10 @@ class NetworkManager(activity: MainActivity) {
         coroutineScope.launch {
             while (true) {
                 val device = serverService.listenKeepaliveOwner()
-                _connectedDevices.value.add(device)
+
+                if(device != thisDevice) {
+                    _connectedDevices.value += device
+                }
             }
         }
     }
@@ -66,7 +71,7 @@ class NetworkManager(activity: MainActivity) {
         coroutineScope.launch {
             while (true) {
                 val devices = serverService.listenKeepaliveGuest()
-                _connectedDevices.value.addAll(devices.filter { it != thisDevice })
+                _connectedDevices.value += devices.filter { it != thisDevice }
             }
         }
     }

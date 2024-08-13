@@ -1,7 +1,7 @@
 package com.flydrop2p.flydrop2p.domain.model
 
 import com.flydrop2p.flydrop2p.R
-import com.flydrop2p.flydrop2p.data.local.ChatInfoEntity
+import com.flydrop2p.flydrop2p.data.local.chatinfo.ChatInfoEntity
 
 data class ChatInfo(
     val id: Int,

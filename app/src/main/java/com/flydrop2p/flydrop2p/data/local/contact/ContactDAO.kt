@@ -1,4 +1,4 @@
-package com.flydrop2p.flydrop2p.data.local
+package com.flydrop2p.flydrop2p.data.local.contact
 
 import androidx.room.Dao
 import androidx.room.Insert

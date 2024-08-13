@@ -1,6 +1,6 @@
 package com.flydrop2p.flydrop2p.domain.repository
 
-import com.flydrop2p.flydrop2p.data.local.ChatInfoEntity
+import com.flydrop2p.flydrop2p.data.local.chatinfo.ChatInfoEntity
 import com.flydrop2p.flydrop2p.domain.model.ChatInfo
 import kotlinx.coroutines.flow.Flow
 
