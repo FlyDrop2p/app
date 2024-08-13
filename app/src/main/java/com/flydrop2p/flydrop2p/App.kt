@@ -5,7 +5,7 @@ import android.content.Context
 import com.flydrop2p.flydrop2p.data.AppContainer
 import com.flydrop2p.flydrop2p.data.AppDataContainer
 
-class FlyDropApplication : Application() {
+class App : Application() {
 
     /**
      * AppContainer instance used by the rest of classes to obtain dependencies

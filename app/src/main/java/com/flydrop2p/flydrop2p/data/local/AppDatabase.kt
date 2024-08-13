@@ -12,7 +12,7 @@ import com.flydrop2p.flydrop2p.data.local.message.MessageDAO
 import com.flydrop2p.flydrop2p.data.local.message.MessageEntity
 
 @Database(entities = [MessageEntity::class, ChatInfoEntity::class, ContactEntity::class], version = 1, exportSchema = false)
-abstract class FlyDropDatabase : RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {
 
     abstract fun messageDao(): MessageDAO
 
@@ -22,14 +22,14 @@ abstract class FlyDropDatabase : RoomDatabase() {
 
     companion object {
         @Volatile
-        private var Instance: FlyDropDatabase? = null
+        private var Instance: AppDatabase? = null
 
-        fun getDatabase(context: Context): FlyDropDatabase {
+        fun getDatabase(context: Context): AppDatabase {
             // if the Instance is not null, return it, otherwise create a new database instance.
             return Instance ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    FlyDropDatabase::class.java,
+                    AppDatabase::class.java,
                     "flydrop_database"
                 ).build()
                 Instance = instance

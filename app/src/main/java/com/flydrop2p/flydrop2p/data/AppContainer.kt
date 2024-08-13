@@ -2,8 +2,8 @@ package com.flydrop2p.flydrop2p.data
 
 import android.content.Context
 import com.flydrop2p.flydrop2p.MainActivity
-import com.flydrop2p.flydrop2p.data.local.FlyDropDataStore
-import com.flydrop2p.flydrop2p.data.local.FlyDropDatabase
+import com.flydrop2p.flydrop2p.data.local.AppDataStore
+import com.flydrop2p.flydrop2p.data.local.AppDatabase
 import com.flydrop2p.flydrop2p.data.repository.LocalChatInfoRepository
 import com.flydrop2p.flydrop2p.data.repository.LocalChatRepository
 import com.flydrop2p.flydrop2p.data.repository.LocalContactRepository
@@ -35,28 +35,28 @@ class AppDataContainer(private val context: Context, activity: MainActivity) : A
      * Implementation for [ChatRepository]
      */
     override val chatRepository: ChatRepository by lazy {
-        LocalChatRepository(FlyDropDatabase.getDatabase(context).messageDao())
+        LocalChatRepository(AppDatabase.getDatabase(context).messageDao())
     }
 
     /**
      * Implementation for [ChatsInfoRepository]
      */
     override val chatsInfoRepository: ChatsInfoRepository by lazy {
-        LocalChatInfoRepository(FlyDropDatabase.getDatabase(context).chatInfoDao())
+        LocalChatInfoRepository(AppDatabase.getDatabase(context).chatInfoDao())
     }
 
     /**
      * Implementation for [ContactRepository]
      */
     override val contactRepository: ContactRepository by lazy {
-        LocalContactRepository(FlyDropDatabase.getDatabase(context).contactDao())
+        LocalContactRepository(AppDatabase.getDatabase(context).contactDao())
     }
 
     /**
      * Implementation for [ProfileRepository]
      */
     override val profileRepository: ProfileRepository by lazy {
-        LocalProfileRepository(FlyDropDataStore.getProfileRepository(context))
+        LocalProfileRepository(AppDataStore.getProfileRepository(context))
     }
 
     /**

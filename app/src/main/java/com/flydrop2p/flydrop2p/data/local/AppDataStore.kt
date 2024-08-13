@@ -6,7 +6,7 @@ import androidx.datastore.dataStore
 import com.flydrop2p.flydrop2p.data.local.profile.ProfileSerializer
 import com.flydrop2p.flydrop2p.domain.model.Profile
 
-abstract class FlyDropDataStore {
+abstract class AppDataStore {
     companion object {
         val Context.profileDataStore by dataStore(
             fileName = "profile",

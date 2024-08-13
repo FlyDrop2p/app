@@ -38,7 +38,7 @@ class HomeViewModel(
                 if (chatInfo != null) {
                     chats.add(chatInfo)
                 } else {
-                    val newChatInfo = ChatInfo(device.id.toInt(), device.name ?: "Unknown")
+                    val newChatInfo = ChatInfo(device.id.toInt(), device.username)
                     chatsInfoRepository.addChatInfo(newChatInfo.toChatInfoEntity())
                     chats.add(newChatInfo)
                 }

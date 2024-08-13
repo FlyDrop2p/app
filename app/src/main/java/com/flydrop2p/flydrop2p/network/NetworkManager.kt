@@ -11,16 +11,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 
 class NetworkManager(activity: MainActivity) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     val receiver: WiFiDirectBroadcastReceiver = WiFiDirectBroadcastReceiver(activity)
 
-    private val thisDevice = Device(IP_GROUP_OWNER, Profile())
+    val thisDevice = Device(IP_GROUP_OWNER, Profile())
     private val _connectedDevices = MutableStateFlow<Set<Device>>(setOf())
     val connectedDevices: StateFlow<Set<Device>> = _connectedDevices
 

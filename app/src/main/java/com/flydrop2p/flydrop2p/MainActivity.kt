@@ -29,8 +29,8 @@ class MainActivity : ComponentActivity() {
 
         requestPermissions()
 
-        (application as FlyDropApplication).initializeContainer(this, this)
-        networkManager = (application as FlyDropApplication).container.networkManager
+        (application as App).initializeContainer(this, this)
+        networkManager = (application as App).container.networkManager
 
         networkManager.startConnections()
 

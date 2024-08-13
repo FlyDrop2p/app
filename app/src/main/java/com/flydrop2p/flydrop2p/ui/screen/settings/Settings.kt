@@ -87,7 +87,7 @@ fun SettingsScreen(
 
                 Column {
                     Text(
-                        text = "Name: ${settingsViewModel.}",
+                        text = "Name: ${settingsViewModel.username.value}",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
