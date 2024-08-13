@@ -19,7 +19,7 @@ class NetworkManager(activity: MainActivity) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     val receiver: WiFiDirectBroadcastReceiver = WiFiDirectBroadcastReceiver(activity)
 
-    private val thisDevice = Device(Random.nextLong(), IP_GROUP_OWNER)
+    val thisDevice = Device(Random.nextLong(), IP_GROUP_OWNER)
     private val _connectedDevices = MutableStateFlow<MutableSet<Device>>(mutableSetOf())
     val connectedDevices: StateFlow<MutableSet<Device>> = _connectedDevices.asStateFlow()
     private val serverService = ServerService()
