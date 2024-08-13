@@ -3,15 +3,12 @@ package com.flydrop2p.flydrop2p.ui.screen.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flydrop2p.flydrop2p.domain.model.ChatInfo
-import com.flydrop2p.flydrop2p.domain.model.toChatInfo
-import com.flydrop2p.flydrop2p.domain.model.toChatInfoEntity
 import com.flydrop2p.flydrop2p.domain.repository.ChatInfoRepository
 import com.flydrop2p.flydrop2p.network.Device
 import com.flydrop2p.flydrop2p.network.NetworkManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
@@ -35,7 +32,7 @@ class HomeViewModel(
 
         for (device in devices) {
             try {
-                val chatInfos = chatInfoRepository.getChatInfosByContactId(device.contactId)
+                val chatInfos = chatInfoRepository.getChatInfosByContactId(device.accountId)
                 chats.addAll(chatInfos)
             } catch (e: Exception) {
                 // Log dell'eccezione per debugging

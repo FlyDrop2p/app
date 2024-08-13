@@ -2,10 +2,10 @@ package com.flydrop2p.flydrop2p.data
 
 import com.flydrop2p.flydrop2p.data.local.message.MessageEntity
 import com.flydrop2p.flydrop2p.domain.model.ChatInfo
-import com.flydrop2p.flydrop2p.domain.model.Contact
+import com.flydrop2p.flydrop2p.domain.model.Account
 
 object DataSource {
-    val contacts = listOf<Contact>(
+    val accounts = listOf<Account>(
 //        Contact(0, "Me"),
 //        Contact(1, "Alice"),
 //        Contact(2, "Bob"),

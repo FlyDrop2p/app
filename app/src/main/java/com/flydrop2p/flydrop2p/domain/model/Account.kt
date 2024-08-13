@@ -2,10 +2,11 @@ package com.flydrop2p.flydrop2p.domain.model
 
 import com.flydrop2p.flydrop2p.data.local.contact.ContactEntity
 import kotlinx.serialization.Serializable
+import kotlin.random.Random
 
 @Serializable
-data class Contact(
-    val contactId: Int = -1,
+data class Account(
+    val accountId: Int = Random.nextInt(),
     val profile: Profile = Profile()
 ) {
     val username: String
@@ -15,23 +16,23 @@ data class Contact(
         get() = profile.imageFilePath
 
     override fun equals(other: Any?): Boolean =
-        other is Contact && other.contactId == this.contactId
+        other is Account && other.accountId == this.accountId
 
     override fun hashCode(): Int =
-        this.contactId.hashCode()
+        this.accountId.hashCode()
 }
 
-fun Contact.toContactEntity(): ContactEntity {
+fun Account.toContactEntity(): ContactEntity {
     return ContactEntity(
-        contactId = contactId,
+        accountId = accountId,
         username = username,
         imageFilePath = imageFilePath
     )
 }
 
-fun ContactEntity.toContact(): Contact {
-    return Contact(
-        contactId = contactId,
+fun ContactEntity.toAccount(): Account {
+    return Account(
+        accountId = accountId,
         profile = Profile(username, imageFilePath)
     )
 }
