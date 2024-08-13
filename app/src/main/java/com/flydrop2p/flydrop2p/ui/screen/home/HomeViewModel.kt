@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.flydrop2p.flydrop2p.domain.model.ChatInfo
 import com.flydrop2p.flydrop2p.domain.model.toChatInfo
 import com.flydrop2p.flydrop2p.domain.model.toChatInfoEntity
-import com.flydrop2p.flydrop2p.domain.repository.ChatsInfoRepository
+import com.flydrop2p.flydrop2p.domain.repository.ChatInfoRepository
 import com.flydrop2p.flydrop2p.network.Device
 import com.flydrop2p.flydrop2p.network.NetworkManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val chatsInfoRepository: ChatsInfoRepository,
+    private val chatInfoRepository: ChatInfoRepository,
     private val networkManager: NetworkManager
 ) : ViewModel() {
 
@@ -30,49 +30,44 @@ class HomeViewModel(
         }
     }
 
-    private suspend fun updateChatsBasedOnConnectedDevices(devices: Set<Device>) {
-        val chats = mutableListOf<ChatInfo>()
+    private suspend fun updateChatsBasedOnConnectedDevices(devices: Set<Device>) { // TODO check logic
+        val chats = mutableSetOf<ChatInfo>()
+
         for (device in devices) {
             try {
-                val chatInfo = chatsInfoRepository.getChatInfo(device.id).firstOrNull()?.toChatInfo()
-                if (chatInfo != null) {
-                    chats.add(chatInfo)
-                } else {
-                    val newChatInfo = ChatInfo(device.id.toInt(), device.username)
-                    chatsInfoRepository.addChatInfo(newChatInfo.toChatInfoEntity())
-                    chats.add(newChatInfo)
-                }
+                val chatInfos = chatInfoRepository.getChatInfosByContactId(device.id)
+                chats.addAll(chatInfos)
             } catch (e: Exception) {
                 // Log dell'eccezione per debugging
                 e.printStackTrace()
             }
         }
-        _uiState.value = _uiState.value.copy(chatList = chats)
+        _uiState.value = _uiState.value.copy(chatList = chats.toList())
     }
 
-    private fun loadChatsInfo() {
-        viewModelScope.launch {
-            try {
-                chatsInfoRepository.getChatsInfo().collect { chatsInfoEntity ->
-                    val chatsInfo = chatsInfoEntity.map { it.toChatInfo() }
-                    _uiState.value = _uiState.value.copy(chatList = chatsInfo)
-                }
-            } catch (e: Exception) {
-                // Log dell'eccezione per debugging
-                e.printStackTrace()
-            }
-        }
-    }
+//    private fun loadChatsInfo() {
+//        viewModelScope.launch {
+//            try {
+//                chatInfoRepository.getAllChatInfos().collect { chatsInfoEntity ->
+//                    val chatsInfo = chatsInfoEntity.map { it.toChatInfo() }
+//                    _uiState.value = _uiState.value.copy(chatList = chatsInfo)
+//                }
+//            } catch (e: Exception) {
+//                // Log dell'eccezione per debugging
+//                e.printStackTrace()
+//            }
+//        }
+//    }
 
     fun getChatName(chatId: Int): String {
-        return _uiState.value.chatList.find { it.id == chatId }?.name ?: "Unknown"
+        return _uiState.value.chatList.find { it.chatId == chatId }?.name ?: "Unknown"
     }
 
     // TODO: Only for testing purposes
     fun populateDatabase() {
         viewModelScope.launch {
             try {
-                chatsInfoRepository.populateDatabase()
+                chatInfoRepository.populateDatabase()
                 // Aggiorna lo stato della UI per riflettere il popolamento del database
             } catch (e: Exception) {
                 e.printStackTrace()

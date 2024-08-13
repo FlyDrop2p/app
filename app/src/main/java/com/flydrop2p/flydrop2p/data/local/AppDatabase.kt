@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.flydrop2p.flydrop2p.data.local.chatcontacts.ChatContactsDAO
+import com.flydrop2p.flydrop2p.data.local.chatcontacts.ChatContactsEntity
 import com.flydrop2p.flydrop2p.data.local.chatinfo.ChatInfoDAO
 import com.flydrop2p.flydrop2p.data.local.chatinfo.ChatInfoEntity
 import com.flydrop2p.flydrop2p.data.local.contact.ContactDAO
@@ -11,14 +13,16 @@ import com.flydrop2p.flydrop2p.data.local.contact.ContactEntity
 import com.flydrop2p.flydrop2p.data.local.message.MessageDAO
 import com.flydrop2p.flydrop2p.data.local.message.MessageEntity
 
-@Database(entities = [MessageEntity::class, ChatInfoEntity::class, ContactEntity::class], version = 1, exportSchema = false)
+@Database(entities = [ChatContactsEntity::class, ChatInfoEntity::class, ContactEntity::class, MessageEntity::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun messageDao(): MessageDAO
+    abstract fun chatContactsDao(): ChatContactsDAO
 
     abstract fun chatInfoDao(): ChatInfoDAO
 
     abstract fun contactDao(): ContactDAO
+
+    abstract fun messageDao(): MessageDAO
 
     companion object {
         @Volatile

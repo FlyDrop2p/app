@@ -8,7 +8,7 @@ data class MessageEntity(
     @PrimaryKey(autoGenerate = true)
     val messageId: Int = 0,
     val chatId: Int,
-    val message: String,
-    val timestamp: String,
     val senderId: Int,
+    val content: String,
+    val timestamp: Long
 )

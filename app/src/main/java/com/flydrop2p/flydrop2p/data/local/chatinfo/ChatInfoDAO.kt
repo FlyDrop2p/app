@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ChatInfoDAO {
-    @Query("SELECT * FROM ChatInfoEntity WHERE id = :chatId")
-    fun getChatInfoById(chatId: Long): Flow<ChatInfoEntity>
-
     @Query("SELECT * FROM ChatInfoEntity")
-    fun getChatsInfo(): Flow<List<ChatInfoEntity>>
+    fun getAllChatInfos(): Flow<List<ChatInfoEntity>>
+
+    @Query("SELECT * FROM ChatInfoEntity WHERE chatId = :chatId")
+    suspend fun getChatInfoById(chatId: Int): ChatInfoEntity?
 
     @Insert
     suspend fun insertChatInfo(chatInfoEntity: ChatInfoEntity)
@@ -23,7 +23,4 @@ interface ChatInfoDAO {
 
     @Delete
     suspend fun deleteChatInfo(chatInfoEntity: ChatInfoEntity)
-
-    @Query("SELECT * FROM ChatInfoEntity WHERE id = :id")
-    suspend fun getChatInfoByDeviceId(id: Long): ChatInfoEntity?
 }

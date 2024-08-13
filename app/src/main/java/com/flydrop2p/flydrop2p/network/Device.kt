@@ -8,7 +8,7 @@ data class Device(
     var ipAddress: String?,
     val profile: Profile
 ) {
-    val id: Long
+    val id: Int
         get() = profile.id
 
     val username: String

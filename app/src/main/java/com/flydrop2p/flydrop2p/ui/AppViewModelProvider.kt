@@ -14,7 +14,7 @@ object AppViewModelProvider {
         initializer {
             HomeViewModel(
                 // this.createSavedStateHandle()
-                flydropApplication().container.chatsInfoRepository,
+                flydropApplication().container.chatInfoRepository,
                 flydropApplication().container.networkManager
             )
         }
@@ -23,7 +23,7 @@ object AppViewModelProvider {
             ChatViewModel(
                 flydropApplication().container.chatRepository,
                 flydropApplication().container.contactRepository,
-                flydropApplication().container.chatsInfoRepository,
+                flydropApplication().container.chatInfoRepository,
                 flydropApplication().container.networkManager
             )
         }

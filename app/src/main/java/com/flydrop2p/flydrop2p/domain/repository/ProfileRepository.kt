@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface ProfileRepository {
     fun getProfile(): Flow<Profile>
 
-    suspend fun setId(id: Long)
+    suspend fun setId(id: Int)
 
     suspend fun setUsername(username: String)
 }

@@ -1,21 +1,28 @@
 package com.flydrop2p.flydrop2p.data.repository
 
 import com.flydrop2p.flydrop2p.data.DataSource
+import com.flydrop2p.flydrop2p.data.local.chatcontacts.ChatContactsDAO
 import com.flydrop2p.flydrop2p.data.local.message.MessageDAO
-import com.flydrop2p.flydrop2p.data.local.message.MessageEntity
+import com.flydrop2p.flydrop2p.domain.model.Chat
+import com.flydrop2p.flydrop2p.domain.model.Message
+import com.flydrop2p.flydrop2p.domain.model.toMessage
+import com.flydrop2p.flydrop2p.domain.model.toMessageEntity
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
-class LocalChatRepository(private val messageDAO: MessageDAO) : ChatRepository {
+class ChatLocalRepository(private val messageDAO: MessageDAO) : ChatRepository {
 
-    override suspend fun getChatMessages(chatId: Int): Flow<List<MessageEntity>> {
-        return messageDAO.getMessagesByChatId(chatId)
+    override fun getChatMessagesByChatId(chatId: Int): Flow<List<Message>> {
+        return messageDAO.getMessagesByChatId(chatId).map { messageEntities ->
+            messageEntities.map { it.toMessage() }
+        }
     }
 
-    override suspend fun addChatMessage(messageEntity: MessageEntity) {
-        messageDAO.insertMessage(messageEntity)
+    override suspend fun addChatMessage(message: Message) {
+        messageDAO.insertMessage(message.toMessageEntity())
     }
 
 

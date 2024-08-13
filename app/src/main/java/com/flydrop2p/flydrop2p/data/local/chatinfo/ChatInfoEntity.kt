@@ -2,13 +2,13 @@ package com.flydrop2p.flydrop2p.data.local.chatinfo
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.flydrop2p.flydrop2p.R
 
 @Entity
 data class ChatInfoEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    val chatId: Int = 0,
+    val chatType: ChatType,
     val name: String,
-    val imgId: Int = R.drawable.account_circle_24px
-    // val chatMembers: List<Int>
+    val imageFilePath: String?,
+    val creationTimestamp: Long,
 )

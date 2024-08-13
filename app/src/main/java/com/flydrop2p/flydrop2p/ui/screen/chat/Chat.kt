@@ -34,6 +34,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.flydrop2p.flydrop2p.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.data.local.message.MessageEntity
+import com.flydrop2p.flydrop2p.domain.model.Message
 import com.flydrop2p.flydrop2p.ui.components.PrivateMessage
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
@@ -85,17 +86,17 @@ fun ChatScreen(
 
             SendMessageInput(onSendMessage = { messageText ->
                 val currentTimeMillis = System.currentTimeMillis()
-                val message = MessageEntity(
+                val message = Message(
                     messageId = 0,
-                    chatState.chatInfo.id,
+                    chatState.chatInfo.chatId,
                     senderId = 0,
-                    timestamp = currentTimeMillis.toString(),
-                    message = messageText
+                    timestamp = currentTimeMillis,
+                    content = messageText
                 )
                 chatViewModel.addMessage(message)
                 Log.d("New message", "Message added to chat ${chatState}")
 
-                val receiverIp = chatState.chatInfo.id.toString() // TODO: change this to the actual receiver IP
+                val receiverIp = chatState.chatInfo.chatId.toString() // TODO: change this to the actual receiver IP
 
                 chatViewModel.sendMessage(receiverIp, messageText)
             })
@@ -104,7 +105,7 @@ fun ChatScreen(
 }
 
 @Composable
-fun MessagesList(messages: MutableList<MessageEntity>, chatViewModel: ChatViewModel, modifier: Modifier) {
+fun MessagesList(messages: MutableList<Message>, chatViewModel: ChatViewModel, modifier: Modifier) {
     LazyColumn(
         modifier = modifier
             .padding(horizontal = 16.dp)
@@ -117,7 +118,7 @@ fun MessagesList(messages: MutableList<MessageEntity>, chatViewModel: ChatViewMo
 }
 
 @Composable
-fun MessageItem(message: MessageEntity, chatViewModel: ChatViewModel) {
+fun MessageItem(message: Message, chatViewModel: ChatViewModel) {
     val coroutineScope = rememberCoroutineScope()
     var senderName by remember { mutableStateOf("") }
 
@@ -130,7 +131,7 @@ fun MessageItem(message: MessageEntity, chatViewModel: ChatViewModel) {
         modifier = Modifier
             .padding(vertical = 8.dp)
     ) {
-        PrivateMessage(senderName, message.message, message.timestamp, true)
+        PrivateMessage(senderName, message.content, message.timestamp.toString(), true)
     }
 }
 

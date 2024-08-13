@@ -1,25 +1,32 @@
 package com.flydrop2p.flydrop2p.domain.model
 
-import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.data.local.chatinfo.ChatInfoEntity
+import com.flydrop2p.flydrop2p.data.local.chatinfo.ChatType
 
 data class ChatInfo(
-    val id: Int,
+    val chatId: Int,
+    val chatType: ChatType,
     val name: String,
-    val imgId: Int = R.drawable.account_circle_24px
+    val imageFilePath: String?,
+    val creationTimestamp: Long,
 )
 
 fun ChatInfo.toChatInfoEntity(): ChatInfoEntity {
     return ChatInfoEntity(
+        chatId = chatId,
+        chatType = chatType,
         name = name,
-        imgId = imgId
+        imageFilePath = imageFilePath,
+        creationTimestamp = creationTimestamp
     )
 }
 
 fun ChatInfoEntity.toChatInfo(): ChatInfo {
     return ChatInfo(
-        id = id,
+        chatId = chatId,
+        chatType = chatType,
         name = name,
-        imgId = imgId
+        imageFilePath = imageFilePath,
+        creationTimestamp = creationTimestamp
     )
 }

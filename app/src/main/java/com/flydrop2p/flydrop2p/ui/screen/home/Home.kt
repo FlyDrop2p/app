@@ -113,7 +113,7 @@ fun ChatItem(chatInfo: ChatInfo, onChatClick: (ChatInfo) -> Unit, modifier: Modi
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = painterResource(id = chatInfo.imgId),
+            painter = painterResource(id = R.drawable.account_circle_24px), // TODO
             colorFilter = ColorFilter.tint(Color.Black),
             contentDescription = null,
             modifier = Modifier

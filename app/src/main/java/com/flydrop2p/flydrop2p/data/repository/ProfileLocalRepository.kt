@@ -5,10 +5,10 @@ import com.flydrop2p.flydrop2p.domain.model.Profile
 import com.flydrop2p.flydrop2p.domain.repository.ProfileRepository
 import kotlinx.coroutines.flow.Flow
 
-class LocalProfileRepository(private val profileDataStore: DataStore<Profile>) : ProfileRepository {
+class ProfileLocalRepository(private val profileDataStore: DataStore<Profile>) : ProfileRepository {
     override fun getProfile(): Flow<Profile> = profileDataStore.data
 
-    override suspend fun setId(id: Long) {
+    override suspend fun setId(id: Int) {
         profileDataStore.updateData { it.copy(id = id) }
     }
 
