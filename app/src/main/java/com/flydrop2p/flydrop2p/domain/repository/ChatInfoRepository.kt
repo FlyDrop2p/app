@@ -5,15 +5,15 @@ import com.flydrop2p.flydrop2p.domain.model.ChatInfo
 import kotlinx.coroutines.flow.Flow
 
 interface ChatsInfoRepository {
-    fun getChatsInfo(): Flow<List<ChatInfoEntity>>
+    fun getChatsInfo(): Flow<List<ChatInfo>>
 
-    fun getChatInfo(chatId: Long): Flow<ChatInfoEntity>
+    fun getChatInfo(chatId: Int): Flow<ChatInfo>
 
-    suspend fun addChatInfo(chatInfo: ChatInfoEntity)
+    suspend fun addChatInfo(chatInfo: ChatInfo)
 
-    suspend fun updateChatInfo(chatInfo: ChatInfoEntity)
+    suspend fun updateChatInfo(chatInfo: ChatInfo)
 
-    suspend fun getChatInfoForDevice(deviceId: Long): Flow<ChatInfo?>
+    suspend fun getChatInfoForDevice(deviceId: Int): Flow<ChatInfo?>
 
     // TODO: Only for testing purposes
     suspend fun populateDatabase()
