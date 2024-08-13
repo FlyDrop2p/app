@@ -53,7 +53,6 @@ fun SettingsScreen(
     modifier: Modifier = Modifier
 ) {
     val settingsState by settingsViewModel.uiState.collectAsState()
-    var newUsername by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -99,7 +98,7 @@ fun SettingsScreen(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Device: ?",
+                        text = "Device: ${settingsState.profile.id}",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )

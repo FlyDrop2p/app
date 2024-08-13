@@ -8,6 +8,7 @@ import com.flydrop2p.flydrop2p.domain.repository.ProfileRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
@@ -18,22 +19,18 @@ class SettingsViewModel(
     val uiState: StateFlow<SettingsViewState> = _uiState.asStateFlow()
 
     init {
-        loadProfile()
-    }
-
-    private fun loadProfile() {
         viewModelScope.launch {
-            profileRepository.getProfile().collect { profile ->
-                Log.d("SettingsViewModel", "loadProfile: $profile")
+            profileRepository.getProfile().collectLatest { profile ->
+                Log.d("SettingsViewModel", "Profile updated: $profile")
                 _uiState.value = SettingsViewState(profile)
             }
         }
     }
 
     fun updateUsername(newUsername: String) {
-        Log.d("SettingsViewModel", "updateUsername: $newUsername")
         viewModelScope.launch {
             profileRepository.setUsername(newUsername)
+            Log.d("SettingsViewModel", "Username updated to $newUsername") //OK
         }
     }
 }
