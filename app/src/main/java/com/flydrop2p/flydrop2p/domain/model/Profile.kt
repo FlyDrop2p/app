@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Profile(
     val id: Long = -1,
-    val username: String = "username"
+    val username: String = android.os.Build.MODEL.toString()
 ) {
     override fun equals(other: Any?): Boolean = other is Profile && other.id == this.id
 
