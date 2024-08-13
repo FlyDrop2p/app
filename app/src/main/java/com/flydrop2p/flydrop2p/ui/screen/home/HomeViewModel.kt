@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flydrop2p.flydrop2p.domain.model.ChatInfo
 import com.flydrop2p.flydrop2p.domain.model.toChatInfo
+import com.flydrop2p.flydrop2p.domain.model.toChatInfoEntity
 import com.flydrop2p.flydrop2p.domain.repository.ChatsInfoRepository
 import com.flydrop2p.flydrop2p.network.Device
 import com.flydrop2p.flydrop2p.network.NetworkManager
@@ -32,9 +33,13 @@ class HomeViewModel(private val chatsInfoRepository: ChatsInfoRepository,
         val chats = mutableListOf<ChatInfo>()
         for (device in devices) {
             try {
-                val chatInfo = chatsInfoRepository.getChatInfoForDevice(device.id).firstOrNull()
+                val chatInfo = chatsInfoRepository.getChatInfo(device.id).firstOrNull()?.toChatInfo()
                 if (chatInfo != null) {
                     chats.add(chatInfo)
+                } else {
+                    val newChatInfo = ChatInfo(device.id.toInt(), device.name ?: "Unknown")
+                    chatsInfoRepository.addChatInfo(newChatInfo.toChatInfoEntity())
+                    chats.add(newChatInfo)
                 }
             } catch (e: Exception) {
                 // Log dell'eccezione per debugging

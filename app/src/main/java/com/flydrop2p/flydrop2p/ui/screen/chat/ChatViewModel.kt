@@ -32,7 +32,7 @@ class ChatViewModel(
         viewModelScope.launch {
             try {
                 val chatMessages = chatRepository.getChatMessages(chatId).first().toMutableList()
-                val chatName = chatsInfoRepository.getChatInfo(chatId).first().name
+                val chatName = chatsInfoRepository.getChatInfo(chatId.toLong()).first().name
                 val chatInfo = ChatInfo(chatId, chatName)
                 _uiState.value = _uiState.value.copy(chatInfo = chatInfo, messageList = chatMessages)
             } catch (e: Exception) {

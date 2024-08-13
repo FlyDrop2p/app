@@ -19,7 +19,7 @@ class LocalChatInfoRepository(private val chatInfoDAO: ChatInfoDAO) : ChatsInfoR
         return chatInfoDAO.getChatsInfo()
     }
 
-    override fun getChatInfo(chatId: Int): Flow<ChatInfoEntity> {
+    override fun getChatInfo(chatId: Long): Flow<ChatInfoEntity> {
         return chatInfoDAO.getChatInfoById(chatId)
     }
 

@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ChatInfoDAO {
     @Query("SELECT * FROM ChatInfoEntity WHERE id = :chatId")
-    fun getChatInfoById(chatId: Int): Flow<ChatInfoEntity>
+    fun getChatInfoById(chatId: Long): Flow<ChatInfoEntity>
 
     @Query("SELECT * FROM ChatInfoEntity")
     fun getChatsInfo(): Flow<List<ChatInfoEntity>>

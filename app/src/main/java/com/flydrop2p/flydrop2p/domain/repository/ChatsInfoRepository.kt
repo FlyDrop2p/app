@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface ChatsInfoRepository {
     fun getChatsInfo(): Flow<List<ChatInfoEntity>>
 
-    fun getChatInfo(chatId: Int): Flow<ChatInfoEntity>
+    fun getChatInfo(chatId: Long): Flow<ChatInfoEntity>
 
     suspend fun addChatInfo(chatInfo: ChatInfoEntity)
 
