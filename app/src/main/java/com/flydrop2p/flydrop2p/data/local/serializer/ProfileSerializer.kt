@@ -11,7 +11,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 object ProfileSerializer : Serializer<Profile> {
-    override val defaultValue: Profile = Profile("username")
+    override val defaultValue: Profile = Profile(android.os.Build.MODEL.toString())
 
     override suspend fun readFrom(input: InputStream): Profile {
         try {

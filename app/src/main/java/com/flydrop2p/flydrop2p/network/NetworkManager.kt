@@ -15,6 +15,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 
 
@@ -37,33 +39,34 @@ class NetworkManager(
     private val clientService = ClientService()
 
     init {
-        thisDevice = Device(ipAddress = null, accountId = android.os.Build.VERSION.SDK_INT, Profile(android.os.Build.MODEL.toString()))
-
         coroutineScope.launch {
+            val account = accountRepository.account.first()
+            val profile = profileRepository.profile.first()
+
+            thisDevice = Device(null, account.accountId, profile)
+
             profileRepository.profile.collect {
                 thisDevice?.profile = it
+            }
+
+            accountRepository.account.collect {
+                thisDevice?.accountId = it.accountId
             }
         }
     }
 
     fun sendKeepalive() {
         thisDevice?.let { thisDevice ->
-            receiver.requestGroupInfo {
-                if (it == null || it.isGroupOwner) {
-                    coroutineScope.launch {
-                        for (device in connectedDevices.value) {
-                            if(device.ipAddress == null) {
-                                device.ipAddress = IP_GROUP_OWNER
-                            }
+            coroutineScope.launch {
+                clientService.sendKeepaliveToOwner(thisDevice)
 
-                            device.ipAddress?.let { ipAddress ->
-                                clientService.sendKeepaliveToGuest(ipAddress, connectedDevices.value + thisDevice)
-                            }
-                        }
+                for (device in connectedDevices.value) {
+                    if(device.ipAddress == null) {
+                        device.ipAddress = IP_GROUP_OWNER
                     }
-                } else {
-                    coroutineScope.launch {
-                        clientService.sendKeepaliveToOwner(thisDevice)
+
+                    device.ipAddress?.let { ipAddress ->
+                        clientService.sendKeepaliveToGuest(ipAddress, connectedDevices.value + thisDevice)
                     }
                 }
             }

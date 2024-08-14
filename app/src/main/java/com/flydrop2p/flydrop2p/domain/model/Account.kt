@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Account(
-    val accountId: Int = android.os.Build.VERSION.SDK_INT
+    val accountId: Int
 )

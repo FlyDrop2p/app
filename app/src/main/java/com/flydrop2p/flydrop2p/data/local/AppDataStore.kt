@@ -10,12 +10,12 @@ import com.flydrop2p.flydrop2p.domain.model.Profile
 
 abstract class AppDataStore {
     companion object {
-        val Context.accountDataStore by dataStore(
+        private val Context.accountDataStore by dataStore(
             fileName = "account.json",
             serializer = AccountSerializer
         )
 
-        val Context.profileDataStore by dataStore(
+        private val Context.profileDataStore by dataStore(
             fileName = "profile.json",
             serializer = ProfileSerializer
         )
