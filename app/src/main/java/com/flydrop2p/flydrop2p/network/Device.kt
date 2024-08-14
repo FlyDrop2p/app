@@ -1,21 +1,27 @@
 package com.flydrop2p.flydrop2p.network
 
-import com.flydrop2p.flydrop2p.domain.model.Account
+import com.flydrop2p.flydrop2p.domain.model.Contact
 import com.flydrop2p.flydrop2p.domain.model.Profile
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Device(
-    var ipAddress: String?,
-    val account: Account
+    var ipAddress: String? = null,
+    var accountId: Int,
+    var profile: Profile
 ) {
-    val accountId: Int
-        get() = account.accountId
+    val username: String
+        get() = profile.username
 
-    val profile: Profile
-        get() = account.profile
+    override fun equals(other: Any?): Boolean {
+        return other is Device && other.accountId == this.accountId
+    }
 
-    override fun equals(other: Any?): Boolean = other is Device && other.account == this.account
+    override fun hashCode(): Int {
+        return this.accountId.hashCode()
+    }
+}
 
-    override fun hashCode(): Int = account.hashCode()
+fun Device.toContact(): Contact {
+    return Contact(accountId, profile)
 }

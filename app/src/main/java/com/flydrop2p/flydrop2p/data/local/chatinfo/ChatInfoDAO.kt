@@ -16,7 +16,7 @@ interface ChatInfoDAO {
     suspend fun getChatInfoById(chatId: Int): ChatInfoEntity?
 
     @Insert
-    suspend fun insertChatInfo(chatInfoEntity: ChatInfoEntity)
+    suspend fun insertChatInfo(chatInfoEntity: ChatInfoEntity): Long
 
     @Update
     suspend fun updateChatInfo(chatInfoEntity: ChatInfoEntity)

@@ -4,10 +4,12 @@ import android.content.Context
 import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.data.local.AppDataStore
 import com.flydrop2p.flydrop2p.data.local.AppDatabase
+import com.flydrop2p.flydrop2p.data.repository.AccountLocalRepository
 import com.flydrop2p.flydrop2p.data.repository.ChatInfoLocalRepository
 import com.flydrop2p.flydrop2p.data.repository.ChatLocalRepository
 import com.flydrop2p.flydrop2p.data.repository.ContactLocalRepository
 import com.flydrop2p.flydrop2p.data.repository.ProfileLocalRepository
+import com.flydrop2p.flydrop2p.domain.repository.AccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.ChatInfoRepository
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
@@ -21,6 +23,7 @@ interface AppContainer {
     val chatRepository: ChatRepository
     val chatInfoRepository: ChatInfoRepository
     val contactRepository: ContactRepository
+    val accountRepository: AccountRepository
     val profileRepository: ProfileRepository
     val networkManager: NetworkManager
 }
@@ -35,7 +38,7 @@ class AppDataContainer(private val context: Context, activity: MainActivity) : A
      * Implementation for [ChatRepository]
      */
     override val chatRepository: ChatRepository by lazy {
-        ChatLocalRepository(AppDatabase.getDatabase(context).messageDao())
+        ChatLocalRepository(AppDatabase.getDatabase(context).chatContactsDao(), AppDatabase.getDatabase(context).chatInfoDao(), AppDatabase.getDatabase(context).contactDao(), AppDatabase.getDatabase(context).messageDao())
     }
 
     /**
@@ -53,6 +56,13 @@ class AppDataContainer(private val context: Context, activity: MainActivity) : A
     }
 
     /**
+     * Implementation for [AccountRepository]
+     */
+    override val accountRepository: AccountRepository by lazy {
+        AccountLocalRepository(AppDataStore.getAccountRepository(context))
+    }
+
+    /**
      * Implementation for [ProfileRepository]
      */
     override val profileRepository: ProfileRepository by lazy {
@@ -62,5 +72,5 @@ class AppDataContainer(private val context: Context, activity: MainActivity) : A
     /**
      * Implementation for [NetworkManager]
      */
-    override val networkManager: NetworkManager = NetworkManager(activity)
+    override val networkManager: NetworkManager = NetworkManager(activity, accountRepository, profileRepository, chatInfoRepository, chatRepository, contactRepository)
 }

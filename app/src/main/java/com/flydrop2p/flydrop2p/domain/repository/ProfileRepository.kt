@@ -7,6 +7,4 @@ interface ProfileRepository {
     val profile: Flow<Profile>
 
     suspend fun setUsername(username: String)
-
-    suspend fun setImageFilePath(imageFilePath: String)
 }
