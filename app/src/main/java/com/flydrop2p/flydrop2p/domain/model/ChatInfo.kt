@@ -13,7 +13,6 @@ data class ChatInfo(
 
 fun ChatInfo.toChatInfoEntity(): ChatInfoEntity {
     return ChatInfoEntity(
-        chatId = chatId,
         chatType = chatType,
         name = name,
         imageFilePath = imageFilePath,

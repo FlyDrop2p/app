@@ -52,7 +52,7 @@ class ContactLocalRepository(private val contactDAO: ContactDAO, private val cha
     // TODO: Only for testing purposes
     override suspend fun populateDatabase() {
         withContext(Dispatchers.IO) {
-            val contacts = DataSource.accounts
+            val contacts = DataSource.contacts
             for (contact in contacts) {
                 contactDAO.insertContact(contact.toContactEntity())
             }

@@ -42,19 +42,18 @@ class HomeViewModel(
         _uiState.value = _uiState.value.copy(chatList = chats.toList())
     }
 
-//    private fun loadChatsInfo() {
-//        viewModelScope.launch {
-//            try {
-//                chatInfoRepository.getAllChatInfos().collect { chatsInfoEntity ->
-//                    val chatsInfo = chatsInfoEntity.map { it.toChatInfo() }
-//                    _uiState.value = _uiState.value.copy(chatList = chatsInfo)
-//                }
-//            } catch (e: Exception) {
-//                // Log dell'eccezione per debugging
-//                e.printStackTrace()
-//            }
-//        }
-//    }
+    private fun loadChatsInfo() {
+        viewModelScope.launch {
+            try {
+                chatInfoRepository.getAllChatInfos().collect { chatInfos ->
+                    _uiState.value = _uiState.value.copy(chatList = chatInfos)
+                }
+            } catch (e: Exception) {
+                // Log dell'eccezione per debugging
+                e.printStackTrace()
+            }
+        }
+    }
 
     fun getChatName(chatId: Int): String {
         return _uiState.value.chatList.find { it.chatId == chatId }?.name ?: "Unknown"
@@ -65,7 +64,7 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 chatInfoRepository.populateDatabase()
-                // Aggiorna lo stato della UI per riflettere il popolamento del database
+                loadChatsInfo()
             } catch (e: Exception) {
                 e.printStackTrace()
             }

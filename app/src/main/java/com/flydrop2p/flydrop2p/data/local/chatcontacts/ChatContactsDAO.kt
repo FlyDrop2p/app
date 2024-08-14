@@ -1,6 +1,7 @@
 package com.flydrop2p.flydrop2p.data.local.chatcontacts
 
 import androidx.room.Dao
+import androidx.room.Insert
 import androidx.room.Query
 
 @Dao
@@ -10,4 +11,7 @@ interface ChatContactsDAO {
 
     @Query("SELECT chatId FROM ChatContactsEntity WHERE contactId = :contactId")
     suspend fun getAllChatIdsByContactId(contactId: Int): List<Int>
+
+    @Insert
+    suspend fun insertChatContact(contact: ChatContactsEntity)
 }

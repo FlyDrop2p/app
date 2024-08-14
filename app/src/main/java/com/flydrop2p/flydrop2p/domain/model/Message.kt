@@ -12,7 +12,6 @@ data class Message(
 
 fun Message.toMessageEntity(): MessageEntity {
     return MessageEntity(
-        messageId = messageId,
         chatId = chatId,
         senderId = senderId,
         content = content,

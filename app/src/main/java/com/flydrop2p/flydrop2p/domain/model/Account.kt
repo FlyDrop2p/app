@@ -24,7 +24,6 @@ data class Account(
 
 fun Account.toContactEntity(): ContactEntity {
     return ContactEntity(
-        accountId = accountId,
         username = username,
         imageFilePath = imageFilePath
     )

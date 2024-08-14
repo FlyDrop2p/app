@@ -1,9 +1,7 @@
 package com.flydrop2p.flydrop2p.data.repository
 
 import com.flydrop2p.flydrop2p.data.DataSource
-import com.flydrop2p.flydrop2p.data.local.chatcontacts.ChatContactsDAO
 import com.flydrop2p.flydrop2p.data.local.message.MessageDAO
-import com.flydrop2p.flydrop2p.domain.model.Chat
 import com.flydrop2p.flydrop2p.domain.model.Message
 import com.flydrop2p.flydrop2p.domain.model.toMessage
 import com.flydrop2p.flydrop2p.domain.model.toMessageEntity
@@ -31,7 +29,7 @@ class ChatLocalRepository(private val messageDAO: MessageDAO) : ChatRepository {
         withContext(Dispatchers.IO) {
             for ((chatId, messages) in DataSource.placeholderMessages) {
                 for (message in messages) {
-                    messageDAO.insertMessage(message)
+                    messageDAO.insertMessage(message.toMessageEntity())
                 }
             }
         }
