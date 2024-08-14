@@ -3,12 +3,25 @@ package com.flydrop2p.flydrop2p.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val primaryLight = Color(0xFF226487)
+val VeniceBlue50 = Color(0xFFF0FAFF)
+val VeniceBlue100 = Color(0xFFE0F4FE)
+val VeniceBlue200 = Color(0xFFBAE6FD)
+val VeniceBlue300 = Color(0xFF7DD0FC)
+val VeniceBlue400 = Color(0xFF38B5F8)
+val VeniceBlue500 = Color(0xFF0E9DE9)
+val VeniceBlue600 = Color(0xFF0282C7)
+val VeniceBlue700 = Color(0xFF036AA1)
+val VeniceBlue800 = Color(0xFF075985)
+val VeniceBlue900 = Color(0xFF0C4C6E)
+val VeniceBlue950 = Color(0xFF083249)
+
+val primaryLight = VeniceBlue500
 val onPrimaryLight = Color(0xFFFFFFFF)
-val primaryContainerLight = Color(0xFFC7E7FF)
-val onPrimaryContainerLight = Color(0xFF001E2E)
-val secondaryLight = Color(0xFF4F616E)
-val onSecondaryLight = Color(0xFFFFFFFF)
+val primaryContainerLight = VeniceBlue200
+val onPrimaryContainerLight = VeniceBlue900
+
+val secondaryLight = VeniceBlue700
+val onSecondaryLight = Color.White
 val secondaryContainerLight = Color(0xFFD2E5F5)
 val onSecondaryContainerLight = Color(0xFF0B1D29)
 val tertiaryLight = Color(0xFF62597C)
@@ -19,10 +32,12 @@ val errorLight = Color(0xFFBA1A1A)
 val onErrorLight = Color(0xFFFFFFFF)
 val errorContainerLight = Color(0xFFFFDAD6)
 val onErrorContainerLight = Color(0xFF410002)
-val backgroundLight = Color(0xFFF6FAFE)
-val onBackgroundLight = Color(0xFF181C20)
-val surfaceLight = Color(0xFFF6FAFE)
-val onSurfaceLight = Color(0xFF181C20)
+
+val backgroundLight = VeniceBlue50
+val onBackgroundLight = VeniceBlue900
+val surfaceLight = VeniceBlue50
+val onSurfaceLight = VeniceBlue900
+
 val surfaceVariantLight = Color(0xFFDDE3EA)
 val onSurfaceVariantLight = Color(0xFF41484D)
 val outlineLight = Color(0xFF71787E)
@@ -111,12 +126,14 @@ val surfaceContainerLightHighContrast = Color(0xFFEBEEF3)
 val surfaceContainerHighLightHighContrast = Color(0xFFE5E8ED)
 val surfaceContainerHighestLightHighContrast = Color(0xFFDFE3E7)
 
-val primaryDark = Color(0xFF92CEF6)
-val onPrimaryDark = Color(0xFF00344C)
-val primaryContainerDark = Color(0xFF004C6C)
-val onPrimaryContainerDark = Color(0xFFC7E7FF)
-val secondaryDark = Color(0xFFB6C9D8)
-val onSecondaryDark = Color(0xFF21323E)
+val primaryDark = VeniceBlue200
+val onPrimaryDark = VeniceBlue900
+val primaryContainerDark = VeniceBlue700
+val onPrimaryContainerDark = VeniceBlue50
+
+val secondaryDark = VeniceBlue200
+val onSecondaryDark = VeniceBlue900
+
 val secondaryContainerDark = Color(0xFF374955)
 val onSecondaryContainerDark = Color(0xFFD2E5F5)
 val tertiaryDark = Color(0xFFCCC0E9)
@@ -127,10 +144,11 @@ val errorDark = Color(0xFFFFB4AB)
 val onErrorDark = Color(0xFF690005)
 val errorContainerDark = Color(0xFF93000A)
 val onErrorContainerDark = Color(0xFFFFDAD6)
-val backgroundDark = Color(0xFF101417)
-val onBackgroundDark = Color(0xFFDFE3E7)
-val surfaceDark = Color(0xFF101417)
-val onSurfaceDark = Color(0xFFDFE3E7)
+
+val backgroundDark = VeniceBlue900
+val onBackgroundDark = VeniceBlue50
+val surfaceDark = VeniceBlue900
+val onSurfaceDark = VeniceBlue50
 val surfaceVariantDark = Color(0xFF41484D)
 val onSurfaceVariantDark = Color(0xFFC1C7CE)
 val outlineDark = Color(0xFF8B9198)
