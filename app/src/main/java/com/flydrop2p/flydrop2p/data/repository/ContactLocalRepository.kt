@@ -1,10 +1,9 @@
 package com.flydrop2p.flydrop2p.data.repository
 
-import com.flydrop2p.flydrop2p.data.DataSource
 import com.flydrop2p.flydrop2p.data.local.chatcontacts.ChatContactsDAO
 import com.flydrop2p.flydrop2p.data.local.contact.ContactDAO
-import com.flydrop2p.flydrop2p.domain.model.Account
-import com.flydrop2p.flydrop2p.domain.model.toAccount
+import com.flydrop2p.flydrop2p.domain.model.Contact
+import com.flydrop2p.flydrop2p.domain.model.toContact
 import com.flydrop2p.flydrop2p.domain.model.toContactEntity
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import kotlinx.coroutines.Dispatchers
@@ -14,48 +13,48 @@ import kotlinx.coroutines.withContext
 
 class ContactLocalRepository(private val contactDAO: ContactDAO, private val chatContactsDAO: ChatContactsDAO) : ContactRepository {
 
-    override fun getAllContacts(): Flow<List<Account>> {
+    override fun getAllContacts(): Flow<List<Contact>> {
         return contactDAO.getAllContacts().map { contactEntities ->
-            contactEntities.map { it.toAccount() }
+            contactEntities.map { it.toContact() }
         }
     }
 
-    override suspend fun getContactById(accountId: Int): Account? {
-        return contactDAO.getContactById(accountId)?.toAccount()
+    override suspend fun getContactById(contactId: Int): Contact? {
+        return contactDAO.getContactById(contactId)?.toContact()
     }
 
-    override suspend fun getChatContactsByChatId(chatId: Int): List<Account> {
-        val contactIds = chatContactsDAO.getAllContactIdsByChatId(chatId)
-        val accounts = mutableListOf<Account>()
+    override suspend fun getChatContactsByChatId(chatId: Int): List<Contact> {
+        val accountIds = chatContactsDAO.getAllContactIdsByChatId(chatId)
+        val contacts = mutableListOf<Contact>()
 
-        for (id in contactIds) {
+        for (id in accountIds) {
             getContactById(id)?.also {
-                accounts.add(it)
+                contacts.add(it)
             }
         }
 
-        return accounts
+        return contacts
     }
 
-    override suspend fun addContact(account: Account) {
-        contactDAO.insertContact(account.toContactEntity())
+    override suspend fun addContact(contact: Contact) {
+        contactDAO.insertContact(contact.toContactEntity())
     }
 
-    override suspend fun updateContact(account: Account) {
-        contactDAO.updateContact(account.toContactEntity())
+    override suspend fun updateContact(contact: Contact) {
+        contactDAO.updateContact(contact.toContactEntity())
     }
 
-    override suspend fun deleteContact(account: Account) {
-        contactDAO.deleteContact(account.toContactEntity())
+    override suspend fun deleteContact(contact: Contact) {
+        contactDAO.deleteContact(contact.toContactEntity())
     }
 
     // TODO: Only for testing purposes
     override suspend fun populateDatabase() {
         withContext(Dispatchers.IO) {
-            val contacts = DataSource.contacts
-            for (contact in contacts) {
-                contactDAO.insertContact(contact.toContactEntity())
-            }
+//            val contacts = DataSource.contacts
+//            for (contact in contacts) {
+//                contactDAO.insertContact(contact.toContactEntity())
+//            }
         }
     }
 

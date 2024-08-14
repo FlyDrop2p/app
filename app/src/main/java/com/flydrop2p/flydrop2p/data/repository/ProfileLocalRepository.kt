@@ -12,8 +12,4 @@ class ProfileLocalRepository(private val profileDataStore: DataStore<Profile>) :
     override suspend fun setUsername(username: String) {
         profileDataStore.updateData { it.copy(username = username) }
     }
-
-    override suspend fun setImageFilePath(imageFilePath: String) {
-        profileDataStore.updateData { it.copy(imageFilePath = imageFilePath) }
-    }
 }

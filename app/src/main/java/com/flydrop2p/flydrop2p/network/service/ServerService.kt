@@ -1,7 +1,9 @@
-package com.flydrop2p.flydrop2p.network.services
+package com.flydrop2p.flydrop2p.network.service
 
 import android.util.Log
 import com.flydrop2p.flydrop2p.network.Device
+import com.flydrop2p.flydrop2p.network.model.GuestKeepalive
+import com.flydrop2p.flydrop2p.network.model.OwnerKeepalive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -14,8 +16,8 @@ class ServerService {
         const val PORT_CONTENT_STRING: Int = 8802
     }
 
-    suspend fun listenKeepaliveOwner(): Device {
-        val ret: Device
+    suspend fun listenKeepaliveAsOwner(): OwnerKeepalive {
+        val ret: OwnerKeepalive
 
         withContext(Dispatchers.IO) {
             val socket = ServerSocket(PORT_KEEPALIVE_OWNER)
@@ -33,8 +35,8 @@ class ServerService {
         return ret
     }
 
-    suspend fun listenKeepaliveGuest(): Set<Device> {
-        val ret: Set<Device>
+    suspend fun listenKeepaliveAsGuest(): GuestKeepalive {
+        val ret: GuestKeepalive
 
         withContext(Dispatchers.IO) {
             val socket = ServerSocket(PORT_KEEPALIVE_GUEST)

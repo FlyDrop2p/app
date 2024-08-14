@@ -1,6 +1,8 @@
-package com.flydrop2p.flydrop2p.network.services
+package com.flydrop2p.flydrop2p.network.service
 
 import com.flydrop2p.flydrop2p.network.Device
+import com.flydrop2p.flydrop2p.network.model.GuestKeepalive
+import com.flydrop2p.flydrop2p.network.model.OwnerKeepalive
 import com.flydrop2p.flydrop2p.network.wifidirect.WiFiDirectBroadcastReceiver.Companion.IP_GROUP_OWNER
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -21,7 +23,7 @@ class ClientService {
                 device.ipAddress = socket.localAddress.hostAddress?.toString()
 
                 val outputStream = socket.getOutputStream()
-                outputStream.write(Json.encodeToString(device).encodeToByteArray())
+                outputStream.write(Json.encodeToString(OwnerKeepalive(device)).encodeToByteArray())
                 outputStream.close()
             } catch (_: Exception) {
 
@@ -29,7 +31,7 @@ class ClientService {
         }
     }
 
-    suspend fun sendKeepaliveToGuest(addressIp: String, devices: Set<Device>) {
+    suspend fun sendKeepaliveToGuest(addressIp: String, devices: List<Device>) {
         withContext(Dispatchers.IO) {
             try {
                 val socket = Socket()
@@ -37,7 +39,7 @@ class ClientService {
                 socket.connect((InetSocketAddress(InetAddress.getByName(addressIp), ServerService.PORT_KEEPALIVE_GUEST)))
 
                 val outputStream = socket.getOutputStream()
-                outputStream.write(Json.encodeToString(devices).encodeToByteArray())
+                outputStream.write(Json.encodeToString(GuestKeepalive(devices.toList())).encodeToByteArray())
                 outputStream.close()
             } catch (_: Exception) {
 

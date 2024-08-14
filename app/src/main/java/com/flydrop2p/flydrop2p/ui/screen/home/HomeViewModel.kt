@@ -27,7 +27,7 @@ class HomeViewModel(
         }
     }
 
-    private suspend fun updateChatsBasedOnConnectedDevices(devices: Set<Device>) { // TODO check logic
+    private suspend fun updateChatsBasedOnConnectedDevices(devices: List<Device>) { // TODO check logic
         val chats = mutableSetOf<ChatInfo>()
 
         for (device in devices) {
@@ -35,10 +35,10 @@ class HomeViewModel(
                 val chatInfos = chatInfoRepository.getChatInfosByContactId(device.accountId)
                 chats.addAll(chatInfos)
             } catch (e: Exception) {
-                // Log dell'eccezione per debugging
                 e.printStackTrace()
             }
         }
+
         _uiState.value = _uiState.value.copy(chatList = chats.toList())
     }
 

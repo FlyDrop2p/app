@@ -57,7 +57,7 @@ class ChatInfoLocalRepository(private val chatInfoDAO: ChatInfoDAO, private val 
             }
             val chatContacts = DataSource.chatContacts
             for (contact in chatContacts) {
-                chatContactsDAO.insertChatContact(contact)
+                chatContactsDAO.insertChatContacts(contact)
             }
         }
     }

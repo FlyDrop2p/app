@@ -123,7 +123,7 @@ fun ChatItem(chatInfo: ChatInfo, onChatClick: (ChatInfo) -> Unit, modifier: Modi
         Spacer(modifier = Modifier.width(16.dp))
         Column {
             Text(
-                text = chatInfo.name,
+                text = chatInfo.name ?: "New chat",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )

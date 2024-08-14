@@ -1,8 +1,10 @@
 package com.flydrop2p.flydrop2p.data.local.chatcontacts
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface ChatContactsDAO {
@@ -13,5 +15,11 @@ interface ChatContactsDAO {
     suspend fun getAllChatIdsByContactId(contactId: Int): List<Int>
 
     @Insert
-    suspend fun insertChatContact(contact: ChatContactsEntity)
+    suspend fun insertChatContacts(chatContactsEntity: ChatContactsEntity): Long
+
+    @Update
+    suspend fun updateChatContacts(chatContactsEntity: ChatContactsEntity)
+
+    @Delete
+    suspend fun deleteChatContacts(chatContactsEntity: ChatContactsEntity)
 }

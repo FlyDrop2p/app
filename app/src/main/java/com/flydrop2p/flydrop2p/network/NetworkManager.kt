@@ -1,10 +1,14 @@
 package com.flydrop2p.flydrop2p.network
 
-import android.util.Log
 import com.flydrop2p.flydrop2p.MainActivity
-import com.flydrop2p.flydrop2p.domain.model.Account
-import com.flydrop2p.flydrop2p.network.services.ClientService
-import com.flydrop2p.flydrop2p.network.services.ServerService
+import com.flydrop2p.flydrop2p.domain.model.Profile
+import com.flydrop2p.flydrop2p.domain.repository.AccountRepository
+import com.flydrop2p.flydrop2p.domain.repository.ChatInfoRepository
+import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
+import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
+import com.flydrop2p.flydrop2p.domain.repository.ProfileRepository
+import com.flydrop2p.flydrop2p.network.service.ClientService
+import com.flydrop2p.flydrop2p.network.service.ServerService
 import com.flydrop2p.flydrop2p.network.wifidirect.WiFiDirectBroadcastReceiver
 import com.flydrop2p.flydrop2p.network.wifidirect.WiFiDirectBroadcastReceiver.Companion.IP_GROUP_OWNER
 import kotlinx.coroutines.CoroutineScope
@@ -14,34 +18,53 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 
-class NetworkManager(activity: MainActivity) {
+class NetworkManager(
+    activity: MainActivity,
+    accountRepository: AccountRepository,
+    profileRepository: ProfileRepository,
+    private val chatInfoRepository: ChatInfoRepository,
+    private val chatRepository: ChatRepository,
+    private val contactRepository: ContactRepository,
+) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     val receiver: WiFiDirectBroadcastReceiver = WiFiDirectBroadcastReceiver(activity)
 
-    val thisDevice = Device(IP_GROUP_OWNER, Account())
-    private val _connectedDevices = MutableStateFlow<Set<Device>>(setOf())
-    val connectedDevices: StateFlow<Set<Device>> = _connectedDevices
+    private var thisDevice: Device? = null
+    private val _connectedDevices = MutableStateFlow<List<Device>>(listOf())
+    val connectedDevices: StateFlow<List<Device>> = _connectedDevices
 
     private val serverService = ServerService()
     private val clientService = ClientService()
 
     init {
-        Log.d("DEVICE ID", thisDevice.accountId.toString())
+        thisDevice = Device(ipAddress = null, accountId = android.os.Build.VERSION.SDK_INT, Profile(android.os.Build.MODEL.toString()))
+
+        coroutineScope.launch {
+            profileRepository.profile.collect {
+                thisDevice?.profile = it
+            }
+        }
     }
 
     fun sendKeepalive() {
-        receiver.requestGroupInfo {
-            if (it == null || it.isGroupOwner) {
-                coroutineScope.launch {
-                    for (device in connectedDevices.value) {
-                        device.ipAddress?.let {
-                            clientService.sendKeepaliveToGuest(it, connectedDevices.value + thisDevice)
+        thisDevice?.let { thisDevice ->
+            receiver.requestGroupInfo {
+                if (it == null || it.isGroupOwner) {
+                    coroutineScope.launch {
+                        for (device in connectedDevices.value) {
+                            if(device.ipAddress == null) {
+                                device.ipAddress = IP_GROUP_OWNER
+                            }
+
+                            device.ipAddress?.let { ipAddress ->
+                                clientService.sendKeepaliveToGuest(ipAddress, connectedDevices.value + thisDevice)
+                            }
                         }
                     }
-                }
-            } else {
-                coroutineScope.launch {
-                    clientService.sendKeepaliveToOwner(thisDevice)
+                } else {
+                    coroutineScope.launch {
+                        clientService.sendKeepaliveToOwner(thisDevice)
+                    }
                 }
             }
         }
@@ -56,10 +79,10 @@ class NetworkManager(activity: MainActivity) {
     private fun startKeepaliveOwnerConnection() {
         coroutineScope.launch {
             while (true) {
-                val device = serverService.listenKeepaliveOwner()
+                val ownerKeepalive = serverService.listenKeepaliveAsOwner()
 
-                if(device != thisDevice) {
-                    _connectedDevices.value += device
+                if(ownerKeepalive.device.accountId != thisDevice?.accountId) {
+                    handleDeviceKeepalive(ownerKeepalive.device)
                 }
             }
         }
@@ -68,8 +91,13 @@ class NetworkManager(activity: MainActivity) {
     private fun startKeepaliveGuestConnection() {
         coroutineScope.launch {
             while (true) {
-                val devices = serverService.listenKeepaliveGuest()
-                _connectedDevices.value += devices.filter { it != thisDevice }
+                val guestKeepalive = serverService.listenKeepaliveAsGuest()
+
+                for (device in guestKeepalive.devices) {
+                    if(device.accountId != thisDevice?.accountId) {
+                        handleDeviceKeepalive(device)
+                    }
+                }
             }
         }
     }
@@ -80,6 +108,20 @@ class NetworkManager(activity: MainActivity) {
                 val (device, content) = serverService.listenContentString()
                 // TODO (device sent content to thisDevice)
             }
+        }
+    }
+
+    private fun handleDeviceKeepalive(device: Device) {
+        coroutineScope.launch {
+            val contact = contactRepository.getContactById(device.accountId)
+
+            if(contact == null) {
+                chatRepository.addSingleChat(device)
+            } else {
+                chatRepository.updateSingleChat(contact)
+            }
+
+            _connectedDevices.value = (_connectedDevices.value.filter { it.accountId != device.accountId } + device)
         }
     }
 }

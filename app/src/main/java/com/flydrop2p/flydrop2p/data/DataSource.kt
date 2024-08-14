@@ -9,25 +9,25 @@ import com.flydrop2p.flydrop2p.domain.model.Profile
 
 object DataSource {
     val contacts = listOf<Account>(
-        Account(accountId = 0, profile = Profile(username = "Me", imageFilePath = null)),
-        Account(accountId = 1, profile = Profile(username = "Alice", imageFilePath = null)),
-        Account(accountId = 2, profile = Profile(username = "Bob", imageFilePath = null)),
-        Account(accountId = 3, profile = Profile(username = "Charlie", imageFilePath = null)),
-        Account(accountId = 4, profile = Profile(username = "David", imageFilePath = null)),
-        Account(accountId = 5, profile = Profile(username = "Eve", imageFilePath = null)),
-        Account(accountId = 6, profile = Profile(username = "Frank", imageFilePath = null)),
-        Account(accountId = 7, profile = Profile(username = "Grace", imageFilePath = null))
+//        Account(accountId = 0, profile = Profile(username = "Me", imageFilePath = null)),
+//        Account(accountId = 1, profile = Profile(username = "Alice", imageFilePath = null)),
+//        Account(accountId = 2, profile = Profile(username = "Bob", imageFilePath = null)),
+//        Account(accountId = 3, profile = Profile(username = "Charlie", imageFilePath = null)),
+//        Account(accountId = 4, profile = Profile(username = "David", imageFilePath = null)),
+//        Account(accountId = 5, profile = Profile(username = "Eve", imageFilePath = null)),
+//        Account(accountId = 6, profile = Profile(username = "Frank", imageFilePath = null)),
+//        Account(accountId = 7, profile = Profile(username = "Grace", imageFilePath = null))
     )
 
     val chatsInfoListDatasource = listOf<ChatInfo>(
-        ChatInfo(chatId = 0, chatType = ChatType.GROUP, name = "Chat Pubblica", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
-        ChatInfo(chatId = 1, chatType = ChatType.SINGLE, name = "Alice", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
-        ChatInfo(chatId = 2, chatType = ChatType.SINGLE, name = "Bob", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
-        ChatInfo(chatId = 3, chatType = ChatType.SINGLE, name = "Charlie", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
-        ChatInfo(chatId = 4, chatType = ChatType.SINGLE, name = "David", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
-        ChatInfo(chatId = 5, chatType = ChatType.SINGLE, name = "Eve", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
-        ChatInfo(chatId = 6, chatType = ChatType.SINGLE, name = "Frank", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
-        ChatInfo(chatId = 7, chatType = ChatType.SINGLE, name = "Grace", imageFilePath = null, creationTimestamp = System.currentTimeMillis())
+//        ChatInfo(chatId = 0, chatType = ChatType.GROUP, name = "Chat Pubblica", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
+//        ChatInfo(chatId = 1, chatType = ChatType.SINGLE, name = "Alice", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
+//        ChatInfo(chatId = 2, chatType = ChatType.SINGLE, name = "Bob", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
+//        ChatInfo(chatId = 3, chatType = ChatType.SINGLE, name = "Charlie", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
+//        ChatInfo(chatId = 4, chatType = ChatType.SINGLE, name = "David", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
+//        ChatInfo(chatId = 5, chatType = ChatType.SINGLE, name = "Eve", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
+//        ChatInfo(chatId = 6, chatType = ChatType.SINGLE, name = "Frank", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
+//        ChatInfo(chatId = 7, chatType = ChatType.SINGLE, name = "Grace", imageFilePath = null, creationTimestamp = System.currentTimeMillis())
     )
 
     val chatContacts = listOf<ChatContactsEntity>(

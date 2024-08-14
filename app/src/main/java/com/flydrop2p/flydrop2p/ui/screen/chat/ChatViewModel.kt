@@ -4,11 +4,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flydrop2p.flydrop2p.domain.model.Message
-import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ChatInfoRepository
+import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.network.NetworkManager
-import com.flydrop2p.flydrop2p.network.services.ClientService
+import com.flydrop2p.flydrop2p.network.service.ClientService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -71,7 +71,7 @@ class ChatViewModel(
         viewModelScope.launch {
             try {
                 val clientService = ClientService()
-                clientService.sendContentString(receiverIp, networkManager.thisDevice, message)
+                // clientService.sendContentString(receiverIp, networkManager.thisDevice, message) TODO
             } catch (e: Exception) {
                 Log.e("ChatViewModel", "Error sending message", e)
             }

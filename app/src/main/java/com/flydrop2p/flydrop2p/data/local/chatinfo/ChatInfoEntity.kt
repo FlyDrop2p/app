@@ -8,7 +8,5 @@ data class ChatInfoEntity(
     @PrimaryKey(autoGenerate = true)
     val chatId: Int = 0,
     val chatType: ChatType,
-    val name: String,
-    val imageFilePath: String?,
-    val creationTimestamp: Long,
+    val name: String?
 )
