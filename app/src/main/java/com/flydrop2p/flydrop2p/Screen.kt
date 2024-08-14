@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -95,7 +96,7 @@ fun FlyDropTopAppBar(
                     text = title,
                     fontSize = 30.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
@@ -120,9 +121,9 @@ fun FlyDropTopAppBar(
 
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White,
+            containerColor = MaterialTheme.colorScheme.surfaceBright,
         ),
-        modifier = modifier.padding(top = 16.dp, bottom = 8.dp)
+        modifier = modifier.padding(bottom = 8.dp)
     )
 }
 

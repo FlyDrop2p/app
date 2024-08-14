@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -140,17 +141,17 @@ fun SettingsScreen(
                         usernameText = it
                     },
                     label = { Text("Update Username") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.tertiaryContainer)
                 )
 
                 Button(
                     onClick = {
                         settingsViewModel.updateUsername(usernameText)
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFbae6fd)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Save", color = Color.White)
+                    Text("Save", color = Color(0xFF083249))
                 }
             }
         }
