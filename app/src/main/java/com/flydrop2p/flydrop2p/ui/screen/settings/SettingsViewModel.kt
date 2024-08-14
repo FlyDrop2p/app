@@ -35,4 +35,10 @@ class SettingsViewModel(
             profileRepository.setUsername(newUsername)
         }
     }
+
+    fun updateProfileImage(newImagePath: String) {
+        viewModelScope.launch {
+            profileRepository.setImageFilePath(newImagePath)
+        }
+    }
 }
