@@ -2,8 +2,7 @@ package com.flydrop2p.flydrop2p.network.service
 
 import android.util.Log
 import com.flydrop2p.flydrop2p.network.Device
-import com.flydrop2p.flydrop2p.network.model.GuestKeepalive
-import com.flydrop2p.flydrop2p.network.model.OwnerKeepalive
+import com.flydrop2p.flydrop2p.network.model.Keepalive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -11,16 +10,15 @@ import java.net.ServerSocket
 
 class ServerService {
     companion object {
-        const val PORT_KEEPALIVE_OWNER: Int = 8800
-        const val PORT_KEEPALIVE_GUEST: Int = 8801
-        const val PORT_CONTENT_STRING: Int = 8802
+        const val PORT_KEEPALIVE: Int = 8800
+        const val PORT_CONTENT_STRING: Int = 8801
     }
 
-    suspend fun listenKeepaliveAsOwner(): OwnerKeepalive {
-        val ret: OwnerKeepalive
+    suspend fun listenKeepalive(): Keepalive {
+        val ret: Keepalive
 
         withContext(Dispatchers.IO) {
-            val socket = ServerSocket(PORT_KEEPALIVE_OWNER)
+            val socket = ServerSocket(PORT_KEEPALIVE)
             val client = socket.accept()
 
             val inputStream = client.getInputStream()
@@ -29,26 +27,7 @@ class ServerService {
 
             socket.close()
 
-            Log.d("OWNER KEEPALIVE", ret.toString())
-        }
-
-        return ret
-    }
-
-    suspend fun listenKeepaliveAsGuest(): GuestKeepalive {
-        val ret: GuestKeepalive
-
-        withContext(Dispatchers.IO) {
-            val socket = ServerSocket(PORT_KEEPALIVE_GUEST)
-            val client = socket.accept()
-
-            val inputStream = client.getInputStream()
-            val buffer = inputStream.readBytes()
-            ret = Json.decodeFromString(buffer.decodeToString())
-
-            socket.close()
-
-            Log.d("GUEST KEEPALIVE", ret.toString())
+            Log.d("KEEPALIVE", ret.toString())
         }
 
         return ret
