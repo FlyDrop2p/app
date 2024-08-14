@@ -8,8 +8,6 @@ interface ContactRepository {
 
     suspend fun getContactById(contactId: Int): Contact?
 
-    suspend fun getChatContactsByChatId(chatId: Int): List<Contact>
-
     suspend fun addContact(contact: Contact)
 
     suspend fun updateContact(contact: Contact)

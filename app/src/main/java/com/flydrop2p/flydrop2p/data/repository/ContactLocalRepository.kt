@@ -1,6 +1,5 @@
 package com.flydrop2p.flydrop2p.data.repository
 
-import com.flydrop2p.flydrop2p.data.local.chatcontacts.ChatContactsDAO
 import com.flydrop2p.flydrop2p.data.local.contact.ContactDAO
 import com.flydrop2p.flydrop2p.domain.model.Contact
 import com.flydrop2p.flydrop2p.domain.model.toContact
@@ -11,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
-class ContactLocalRepository(private val contactDAO: ContactDAO, private val chatContactsDAO: ChatContactsDAO) : ContactRepository {
+class ContactLocalRepository(private val contactDAO: ContactDAO) : ContactRepository {
 
     override fun getAllContacts(): Flow<List<Contact>> {
         return contactDAO.getAllContacts().map { contactEntities ->
@@ -21,19 +20,6 @@ class ContactLocalRepository(private val contactDAO: ContactDAO, private val cha
 
     override suspend fun getContactById(contactId: Int): Contact? {
         return contactDAO.getContactById(contactId)?.toContact()
-    }
-
-    override suspend fun getChatContactsByChatId(chatId: Int): List<Contact> {
-        val accountIds = chatContactsDAO.getAllContactIdsByChatId(chatId)
-        val contacts = mutableListOf<Contact>()
-
-        for (id in accountIds) {
-            getContactById(id)?.also {
-                contacts.add(it)
-            }
-        }
-
-        return contacts
     }
 
     override suspend fun addContact(contact: Contact) {

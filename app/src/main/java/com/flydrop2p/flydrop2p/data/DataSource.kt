@@ -1,11 +1,7 @@
 package com.flydrop2p.flydrop2p.data
 
-import com.flydrop2p.flydrop2p.data.local.chatcontacts.ChatContactsEntity
-import com.flydrop2p.flydrop2p.data.local.chatinfo.ChatType
 import com.flydrop2p.flydrop2p.domain.model.Account
-import com.flydrop2p.flydrop2p.domain.model.ChatInfo
 import com.flydrop2p.flydrop2p.domain.model.Message
-import com.flydrop2p.flydrop2p.domain.model.Profile
 
 object DataSource {
     val contacts = listOf<Account>(
@@ -17,30 +13,6 @@ object DataSource {
 //        Account(accountId = 5, profile = Profile(username = "Eve", imageFilePath = null)),
 //        Account(accountId = 6, profile = Profile(username = "Frank", imageFilePath = null)),
 //        Account(accountId = 7, profile = Profile(username = "Grace", imageFilePath = null))
-    )
-
-    val chatsInfoListDatasource = listOf<ChatInfo>(
-//        ChatInfo(chatId = 0, chatType = ChatType.GROUP, name = "Chat Pubblica", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
-//        ChatInfo(chatId = 1, chatType = ChatType.SINGLE, name = "Alice", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
-//        ChatInfo(chatId = 2, chatType = ChatType.SINGLE, name = "Bob", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
-//        ChatInfo(chatId = 3, chatType = ChatType.SINGLE, name = "Charlie", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
-//        ChatInfo(chatId = 4, chatType = ChatType.SINGLE, name = "David", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
-//        ChatInfo(chatId = 5, chatType = ChatType.SINGLE, name = "Eve", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
-//        ChatInfo(chatId = 6, chatType = ChatType.SINGLE, name = "Frank", imageFilePath = null, creationTimestamp = System.currentTimeMillis()),
-//        ChatInfo(chatId = 7, chatType = ChatType.SINGLE, name = "Grace", imageFilePath = null, creationTimestamp = System.currentTimeMillis())
-    )
-
-    val chatContacts = listOf<ChatContactsEntity>(
-        ChatContactsEntity(chatId = 0, contactId = 0), // "Me" nella chat di gruppo
-        ChatContactsEntity(chatId = 0, contactId = 1), // "Alice" nella chat di gruppo
-        ChatContactsEntity(chatId = 0, contactId = 2), // "Bob" nella chat di gruppo
-        ChatContactsEntity(chatId = 1, contactId = 1), // Chat 1 con "Alice"
-        ChatContactsEntity(chatId = 2, contactId = 2), // Chat 2 con "Bob"
-        ChatContactsEntity(chatId = 3, contactId = 3), // Chat 3 con "Charlie"
-        ChatContactsEntity(chatId = 4, contactId = 4), // Chat 4 con "David"
-        ChatContactsEntity(chatId = 5, contactId = 5), // Chat 5 con "Eve"
-        ChatContactsEntity(chatId = 6, contactId = 6), // Chat 6 con "Frank"
-        ChatContactsEntity(chatId = 7, contactId = 7)  // Chat 7 con "Grace"
     )
 
     val placeholderMessages = mapOf(

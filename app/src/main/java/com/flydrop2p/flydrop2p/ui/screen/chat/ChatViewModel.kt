@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flydrop2p.flydrop2p.domain.model.Message
-import com.flydrop2p.flydrop2p.domain.repository.ChatInfoRepository
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.network.NetworkManager
@@ -20,7 +19,6 @@ import kotlinx.coroutines.withContext
 class ChatViewModel(
     private val chatRepository: ChatRepository,
     private val contactRepository: ContactRepository,
-    private val chatInfoRepository: ChatInfoRepository,
     private val networkManager: NetworkManager,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ChatViewState())
@@ -31,15 +29,14 @@ class ChatViewModel(
     }
 
     fun getChat(chatId: Int) {
-        viewModelScope.launch {
-            try {
-                val chatMessages = chatRepository.getChatMessagesByChatId(chatId)
-                val chatInfo = chatInfoRepository.getChatInfoById(chatId)!!
-                _uiState.value = _uiState.value.copy(chatInfo = chatInfo, messageList = chatMessages.last().toMutableList())
-            } catch (e: Exception) {
-                Log.e("ChatViewModel", "Error getting chat", e)
-            }
-        }
+//        viewModelScope.launch { TODO
+//            try {
+//                val chatMessages = chatRepository.getChatMessagesByChatId(chatId)
+//                _uiState.value = _uiState.value.copy(chatInfo = chatInfo, messageList = chatMessages.last().toMutableList())
+//            } catch (e: Exception) {
+//                Log.e("ChatViewModel", "Error getting chat", e)
+//            }
+//        }
     }
 
     suspend fun getSenderName(senderId: Int): String {
@@ -80,7 +77,7 @@ class ChatViewModel(
 
 
     fun resetChat() {
-        _uiState.value = ChatViewState()
+        // _uiState.value = ChatViewState() TODO
     }
 
     fun populateDatabase() {

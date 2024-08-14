@@ -12,11 +12,6 @@ class App : Application() {
      */
     lateinit var container: AppContainer
 
-    override fun onCreate() {
-        super.onCreate()
-    }
-
-
     fun initializeContainer(context: Context, activity: MainActivity) {
         container = AppDataContainer(context, activity)
     }

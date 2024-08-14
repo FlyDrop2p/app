@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flydrop2p.flydrop2p.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.R
-import com.flydrop2p.flydrop2p.domain.model.ChatInfo
+import com.flydrop2p.flydrop2p.domain.model.Contact
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import com.flydrop2p.flydrop2p.ui.screen.chat.ChatViewModel
 
@@ -49,7 +49,7 @@ object HomeDestination : NavigationDestination {
 fun HomeScreen(
     homeViewModel: HomeViewModel,
     chatViewModel: ChatViewModel,
-    onChatClick: (ChatInfo) -> Unit,
+    onChatClick: (Contact) -> Unit,
     onConnectionButtonClick: () -> Unit,
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -84,7 +84,7 @@ fun HomeScreen(
         },
         content = { innerPadding ->
             ChatList(
-                chatsInfo = uiState.chatList,
+                contacts = uiState.contacts,
                 onChatClick = onChatClick,
                 modifier = Modifier.padding(innerPadding)
             )
@@ -93,22 +93,22 @@ fun HomeScreen(
 }
 
 @Composable
-fun ChatList(chatsInfo: List<ChatInfo>, onChatClick: (ChatInfo) -> Unit, modifier: Modifier = Modifier) { // Aggiungi il parametro modifier qui
+fun ChatList(contacts: List<Contact>, onChatClick: (Contact) -> Unit, modifier: Modifier = Modifier) { // Aggiungi il parametro modifier qui
     LazyColumn(modifier = modifier) {
-        items(chatsInfo) { chatInfo ->
-            ChatItem(chatInfo = chatInfo, onChatClick = onChatClick)
+        items(contacts) { contact ->
+            ChatItem(contact = contact, onChatClick = onChatClick)
         }
     }
 }
 
 @Composable
-fun ChatItem(chatInfo: ChatInfo, onChatClick: (ChatInfo) -> Unit, modifier: Modifier = Modifier) { // Aggiungi il parametro modifier qui
+fun ChatItem(contact: Contact, onChatClick: (Contact) -> Unit, modifier: Modifier = Modifier) { // Aggiungi il parametro modifier qui
     Row(
         modifier = modifier
             .padding(vertical = 8.dp, horizontal = 16.dp)
             .fillMaxWidth()
             .clickable {
-                onChatClick(chatInfo)
+                onChatClick(contact)
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -123,7 +123,7 @@ fun ChatItem(chatInfo: ChatInfo, onChatClick: (ChatInfo) -> Unit, modifier: Modi
         Spacer(modifier = Modifier.width(16.dp))
         Column {
             Text(
-                text = chatInfo.name ?: "New chat",
+                text = contact.username ?: "New chat",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )

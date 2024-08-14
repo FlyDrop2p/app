@@ -12,7 +12,7 @@ import java.io.OutputStream
 import kotlin.random.Random
 
 object AccountSerializer : Serializer<Account> {
-    override val defaultValue: Account = Account(Random.nextInt())
+    override val defaultValue: Account = Account(android.os.Build.MODEL[4].code)
 
     override suspend fun readFrom(input: InputStream): Account {
         try {

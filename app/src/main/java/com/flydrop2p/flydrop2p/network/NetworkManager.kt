@@ -2,7 +2,6 @@ package com.flydrop2p.flydrop2p.network
 
 import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.domain.repository.AccountRepository
-import com.flydrop2p.flydrop2p.domain.repository.ChatInfoRepository
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.domain.repository.ProfileRepository
@@ -22,7 +21,6 @@ class NetworkManager(
     activity: MainActivity,
     accountRepository: AccountRepository,
     profileRepository: ProfileRepository,
-    private val chatInfoRepository: ChatInfoRepository,
     private val chatRepository: ChatRepository,
     private val contactRepository: ContactRepository,
 ) {
@@ -42,6 +40,9 @@ class NetworkManager(
             val profile = profileRepository.profile.first()
 
             thisDevice = Device(null, account.accountId, profile)
+
+            profileRepository.setUsername(profile.username)
+            accountRepository.setAccountId(account.accountId)
 
             profileRepository.profile.collect {
                 thisDevice.profile = it
@@ -98,9 +99,9 @@ class NetworkManager(
             val contact = contactRepository.getContactById(device.accountId)
 
             if(contact == null) {
-                chatRepository.addSingleChat(device)
+                contactRepository.addContact(device.toContact())
             } else {
-                chatRepository.updateSingleChat(contact)
+                contactRepository.updateContact(device.toContact())
             }
 
             _connectedDevices.value = (_connectedDevices.value.filter { it.accountId != device.accountId } + device)

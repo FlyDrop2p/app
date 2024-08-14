@@ -13,9 +13,7 @@ object AppViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
             HomeViewModel(
-                // this.createSavedStateHandle()
-                flydropApplication().container.chatInfoRepository,
-                flydropApplication().container.networkManager
+                flydropApplication().container.contactRepository
             )
         }
 
@@ -23,7 +21,6 @@ object AppViewModelProvider {
             ChatViewModel(
                 flydropApplication().container.chatRepository,
                 flydropApplication().container.contactRepository,
-                flydropApplication().container.chatInfoRepository,
                 flydropApplication().container.networkManager
             )
         }

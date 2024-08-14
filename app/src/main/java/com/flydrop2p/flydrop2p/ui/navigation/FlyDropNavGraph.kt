@@ -45,7 +45,7 @@ fun FlyDropNavHost(
             HomeScreen(
                 homeViewModel = homeViewModel,
                 chatViewModel = chatViewModel,
-                onChatClick = { navController.navigate("${ChatDestination.route}/${it.chatId}") },
+                onChatClick = { navController.navigate("${ChatDestination.route}/${it.accountId}") },
                 onConnectionButtonClick = onConnectionButtonClick,
                 onSettingsButtonClick = { navController.navigate(SettingsDestination.route) },
             )

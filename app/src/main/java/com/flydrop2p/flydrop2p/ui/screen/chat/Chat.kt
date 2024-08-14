@@ -61,7 +61,7 @@ fun ChatScreen(
     Scaffold(
         topBar = {
             FlyDropTopAppBar(
-                title = chatState.chatInfo.name ?: "New chat",
+                title = chatState.contact.username,
                 canNavigateBack = true,
                 onConnectionButtonClick = onConnectionButtonClick,
                 onSettingsButtonClick = onSettingsButtonClick,
@@ -87,7 +87,7 @@ fun ChatScreen(
                 val currentTimeMillis = System.currentTimeMillis()
                 val message = Message(
                     messageId = 0,
-                    chatState.chatInfo.chatId,
+                    chatState.contact.accountId,
                     senderId = 0,
                     timestamp = currentTimeMillis,
                     content = messageText
@@ -95,7 +95,7 @@ fun ChatScreen(
                 chatViewModel.addMessage(message)
                 Log.d("New message", "Message added to chat ${chatState}")
 
-                val receiverIp = chatState.chatInfo.chatId.toString() // TODO: change this to the actual receiver IP
+                val receiverIp = chatState.contact.accountId.toString() // TODO: change this to the actual receiver IP
 
                 chatViewModel.sendMessage(receiverIp, messageText)
             })
