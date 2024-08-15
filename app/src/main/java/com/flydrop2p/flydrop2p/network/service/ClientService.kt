@@ -6,6 +6,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.io.File
+import java.io.FileInputStream
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
@@ -41,6 +43,30 @@ class ClientService {
                 outputStream.close()
             } catch (_: Exception) {
 
+            }
+        }
+    }
+
+    suspend fun sendFile(addressIp: String, file: File) {
+        withContext(Dispatchers.IO) {
+            try {
+                val socket = Socket()
+                socket.bind(null)
+                socket.connect(InetSocketAddress(InetAddress.getByName(addressIp), ServerService.PORT_FILE_TRANSFER))
+
+                val outputStream = socket.getOutputStream()
+                val fileInputStream = FileInputStream(file)
+
+                val buffer = ByteArray(1024)
+                var bytesRead: Int
+
+                while (fileInputStream.read(buffer).also { bytesRead = it } != -1) {
+                    outputStream.write(buffer, 0, bytesRead)
+                }
+
+                outputStream.close()
+                fileInputStream.close()
+            } catch (_: Exception) {
             }
         }
     }
