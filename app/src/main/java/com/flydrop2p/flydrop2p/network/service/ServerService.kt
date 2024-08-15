@@ -58,7 +58,7 @@ class ServerService {
         val networkFileMessage: NetworkFileMessage
 
         withContext(Dispatchers.IO) {
-            val socket = ServerSocket(PORT_TEXT_MESSAGE)
+            val socket = ServerSocket(PORT_FILE_MESSAGE)
             val client = socket.accept()
 
             val inputStream = client.getInputStream()
