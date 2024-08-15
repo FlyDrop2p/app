@@ -82,21 +82,7 @@ fun ChatScreen(
             )
 
             SendMessageInput(onSendMessage = { messageText ->
-                val currentTimeMillis = System.currentTimeMillis()
-                val message = Message(
-                    messageId = 0,
-                    senderId = 0,
-                    receiverId = 0,
-                    timestamp = currentTimeMillis,
-                    content = messageText
-                )
-
-                chatViewModel.addMessage(message)
-                Log.d("New message", "Message added to chat ${chatState}")
-
-                val receiverIp = chatState.contact.accountId.toString() // TODO: change this to the actual receiver IP
-
-                chatViewModel.sendMessage(receiverIp, messageText)
+                chatViewModel.sendTextMessage(accountId, messageText)
             })
         }
     }

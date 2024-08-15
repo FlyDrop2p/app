@@ -18,6 +18,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -137,7 +140,7 @@ class NetworkManager(
         coroutineScope.launch {
             val contact = contactRepository.getContactById(device.accountId)
 
-            if(contact == null) {
+            if(contact.firstOrNull() == null) {
                 contactRepository.addContact(device.contact)
             } else {
                 contactRepository.updateContact(device.contact)

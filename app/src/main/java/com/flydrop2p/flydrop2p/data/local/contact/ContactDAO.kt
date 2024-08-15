@@ -13,7 +13,7 @@ interface ContactDAO {
     fun getAllContacts(): Flow<List<ContactEntity>>
 
     @Query("SELECT * FROM ContactEntity WHERE accountId = :accountId")
-    fun getContactById(accountId: Int): Flow<ContactEntity>?
+    fun getContactById(accountId: Int): Flow<ContactEntity?>
 
     @Insert
     suspend fun insertContact(contact: ContactEntity)

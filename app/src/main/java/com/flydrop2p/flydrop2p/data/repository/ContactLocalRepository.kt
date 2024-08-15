@@ -19,8 +19,8 @@ class ContactLocalRepository(private val contactDAO: ContactDAO) : ContactReposi
         }
     }
 
-    override suspend fun getContactById(accountId: Int): Flow<Contact>? {
-        return contactDAO.getContactById(accountId)?.map { it.toContact() }
+    override fun getContactById(accountId: Int): Flow<Contact?> {
+        return contactDAO.getContactById(accountId).map { it?.toContact() }
     }
 
     override suspend fun addContact(contact: Contact) {

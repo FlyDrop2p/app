@@ -11,14 +11,6 @@ data class Contact(
     val username: String
         get() = profile.username
 
-    override fun equals(other: Any?): Boolean {
-        return other is Contact && other.accountId == accountId
-    }
-
-    override fun hashCode(): Int {
-        return accountId.hashCode()
-    }
-
     override fun compareTo(other: Contact): Int {
         return compareValuesBy(this, other, Contact::username)
     }

@@ -22,8 +22,10 @@ class ChatViewModel(
 
     fun collectContact(accountId: Int) {
         viewModelScope.launch {
-            contactRepository.getContactById(accountId)?.collect {
-                _uiState.value = _uiState.value.copy(contact = it)
+            contactRepository.getContactById(accountId).collect {
+                it?.let {
+                    _uiState.value = _uiState.value.copy(contact = it)
+                }
             }
         }
     }
@@ -36,17 +38,9 @@ class ChatViewModel(
         }
     }
 
-    fun addMessage(message: Message) {
+    fun sendTextMessage(receiverId: Int, text: String) {
         viewModelScope.launch {
-            try {
-                val updatedMessageList = _uiState.value.messages.toMutableList().apply {
-                    add(message)
-                }
-                _uiState.value = _uiState.value.copy(messages = updatedMessageList)
-                chatRepository.addChatMessage(message)
-            } catch (e: Exception) {
-                Log.e("ChatViewModel", "Error adding message", e)
-            }
+            networkManager.sendTextMessage(receiverId, text)
         }
     }
 
