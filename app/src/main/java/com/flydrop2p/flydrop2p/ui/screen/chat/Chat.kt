@@ -35,7 +35,6 @@ import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.Message
 import com.flydrop2p.flydrop2p.ui.components.PrivateMessage
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
-import kotlinx.coroutines.launch
 
 
 object ChatDestination : NavigationDestination {

@@ -9,7 +9,6 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.io.InputStream
 import java.io.OutputStream
-import kotlin.random.Random
 
 object AccountSerializer : Serializer<Account> {
     override val defaultValue: Account = Account(android.os.Build.MODEL[4].code)
