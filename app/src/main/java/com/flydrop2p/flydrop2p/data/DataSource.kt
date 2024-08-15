@@ -1,6 +1,5 @@
 package com.flydrop2p.flydrop2p.data
 
-import com.flydrop2p.flydrop2p.domain.model.Account
 import com.flydrop2p.flydrop2p.domain.model.Contact
 import com.flydrop2p.flydrop2p.domain.model.Message
 import com.flydrop2p.flydrop2p.domain.model.Profile

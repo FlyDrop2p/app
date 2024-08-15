@@ -104,9 +104,9 @@ class NetworkManager(
     private fun startKeepaliveConnection() {
         coroutineScope.launch {
             while(true) {
-                val keepalive = serverService.listenKeepalive()
+                val networkKeepalive = serverService.listenKeepalive()
 
-                for(device in keepalive.devices) {
+                for(device in networkKeepalive.devices) {
                     if(device.accountId != thisDevice.accountId) {
                         handleDeviceKeepalive(device)
                     }
@@ -118,8 +118,8 @@ class NetworkManager(
     private fun startTextMessageConnection() {
         coroutineScope.launch {
             while(true) {
-                val textMessage = serverService.listenTextMessage()
-                handleTextMessage(textMessage)
+                val networkTextMessage = serverService.listenTextMessage()
+                handleTextMessage(networkTextMessage)
             }
         }
     }
@@ -127,8 +127,8 @@ class NetworkManager(
     private fun startFileMessageConnection() {
         coroutineScope.launch { 
             while(true) {
-                val fileMessage = serverService.listenFileMessage()
-                handleFileMessage(fileMessage)
+                val networkFileMessage = serverService.listenFileMessage()
+                handleFileMessage(networkFileMessage)
             }
         }
     }
