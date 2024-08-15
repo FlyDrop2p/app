@@ -3,6 +3,7 @@ package com.flydrop2p.flydrop2p.ui.screen.home
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,8 +16,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -36,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.flydrop2p.flydrop2p.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.ChatPreview
+import com.flydrop2p.flydrop2p.domain.model.Contact
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import com.flydrop2p.flydrop2p.ui.screen.chat.ChatViewModel
 
@@ -44,12 +48,11 @@ object HomeDestination : NavigationDestination {
     override val titleRes = R.string.app_name
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel,
     chatViewModel: ChatViewModel,
-    onChatClick: (ChatPreview) -> Unit,
+    onChatClick: (Contact) -> Unit,
     onConnectionButtonClick: () -> Unit,
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -93,27 +96,32 @@ fun HomeScreen(
 }
 
 @Composable
-fun ChatList(chatPreviews: List<ChatPreview>, onChatClick: (ChatPreview) -> Unit, modifier: Modifier = Modifier) { // Aggiungi il parametro modifier qui
+fun ChatList(chatPreviews: List<ChatPreview>, onChatClick: (Contact) -> Unit, modifier: Modifier = Modifier) { // Aggiungi il parametro modifier qui
     LazyColumn(modifier = modifier) {
         items(chatPreviews) { chatPreview ->
             ChatItem(chatPreview = chatPreview, onChatClick = onChatClick)
+            HorizontalDivider(
+                modifier = Modifier.padding(start = 82.dp, end = 16.dp),
+                thickness = 1.dp,
+                color = Color.LightGray
+            )
         }
     }
 }
 
 @Composable
-fun ChatItem(chatPreview: ChatPreview, onChatClick: (ChatPreview) -> Unit, modifier: Modifier = Modifier) { // Aggiungi il parametro modifier qui
+fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .padding(vertical = 8.dp, horizontal = 16.dp)
             .fillMaxWidth()
             .clickable {
-                onChatClick(chatPreview)
+                onChatClick(chatPreview.contact)
             },
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Top
     ) {
         Image(
-            painter = painterResource(id = R.drawable.account_circle_24px), // TODO
+            painter = painterResource(id = R.drawable.account_circle_24px),
             colorFilter = ColorFilter.tint(Color.Black),
             contentDescription = null,
             modifier = Modifier
@@ -121,7 +129,9 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (ChatPreview) -> Unit, modif
                 .clip(CircleShape)
         )
         Spacer(modifier = Modifier.width(16.dp))
-        Column {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
             Text(
                 text = chatPreview.contact.username,
                 fontSize = 18.sp,
@@ -133,11 +143,15 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (ChatPreview) -> Unit, modif
                 color = Color.Gray
             )
         }
-        Spacer(modifier = Modifier.weight(1f))
-        Text(
-            text = "10:00",
-            fontSize = 12.sp,
-            color = Color.Gray
-        )
+        Column(
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.End
+        ) {
+            Text(
+                text = "10:00",
+                fontSize = 10.sp,
+                color = Color.Gray
+            )
+        }
     }
 }

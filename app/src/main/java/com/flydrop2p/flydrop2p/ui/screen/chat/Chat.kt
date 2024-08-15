@@ -16,7 +16,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -120,18 +119,12 @@ fun MessagesList(messages: List<Message>, chatViewModel: ChatViewModel, modifier
 @Composable
 fun MessageItem(message: Message, chatViewModel: ChatViewModel) {
     val coroutineScope = rememberCoroutineScope()
-    var senderName by remember { mutableStateOf("") }
 
-    LaunchedEffect(key1 = message.senderId) {
-        coroutineScope.launch {
-            senderName = chatViewModel.getSenderName(message.senderId)
-        }
-    }
     Column(
         modifier = Modifier
             .padding(vertical = 8.dp)
     ) {
-        PrivateMessage(senderName, message.content, message.timestamp.toString(), true)
+        PrivateMessage(message, true)
     }
 }
 
@@ -145,7 +138,7 @@ fun SendMessageInput(onSendMessage: (String) -> Unit) {
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        // Casella di input per il testo del messaggio
+
         TextField(
             value = textFieldValue,
             onValueChange = {
@@ -155,7 +148,6 @@ fun SendMessageInput(onSendMessage: (String) -> Unit) {
             modifier = Modifier.weight(1f)
         )
 
-        // Pulsante per inviare il messaggio
         IconButton(
             onClick = {
                 onSendMessage(textFieldValue.text)

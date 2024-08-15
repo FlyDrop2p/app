@@ -35,10 +35,8 @@ class ChatLocalRepository(private val contactDAO: ContactDAO, private val messag
     // TODO: Only for testing purposes
     override suspend fun populateDatabase() {
         withContext(Dispatchers.IO) {
-            for ((chatId, messages) in DataSource.placeholderMessages) {
-                for (message in messages) {
-                    messageDAO.insertMessage(message.toMessageEntity())
-                }
+            DataSource.placeholderMessages.forEach { message ->
+                messageDAO.insertMessage(message.toMessageEntity())
             }
         }
     }

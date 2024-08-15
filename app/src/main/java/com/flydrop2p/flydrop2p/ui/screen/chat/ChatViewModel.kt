@@ -57,7 +57,7 @@ class ChatViewModel(
     fun sendMessage(receiverIp: String, message: String) {
         viewModelScope.launch {
             try {
-                networkManager.sendContentString(receiverIp, networkManager.thisDevice, message) TODO
+                // networkManager.sendContentString(receiverIp, networkManager.thisDevice, message) TODO
             } catch (e: Exception) {
                 Log.e("ChatViewModel", "Error sending message", e)
             }

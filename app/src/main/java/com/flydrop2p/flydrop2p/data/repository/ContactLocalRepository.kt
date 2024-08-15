@@ -1,5 +1,6 @@
 package com.flydrop2p.flydrop2p.data.repository
 
+import com.flydrop2p.flydrop2p.data.DataSource
 import com.flydrop2p.flydrop2p.data.local.contact.ContactDAO
 import com.flydrop2p.flydrop2p.domain.model.Contact
 import com.flydrop2p.flydrop2p.domain.model.toContact
@@ -37,10 +38,10 @@ class ContactLocalRepository(private val contactDAO: ContactDAO) : ContactReposi
     // TODO: Only for testing purposes
     override suspend fun populateDatabase() {
         withContext(Dispatchers.IO) {
-//            val contacts = DataSource.contacts
-//            for (contact in contacts) {
-//                contactDAO.insertContact(contact.toContactEntity())
-//            }
+            val contacts = DataSource.contacts
+            for (contact in contacts) {
+                contactDAO.insertContact(contact.toContactEntity())
+            }
         }
     }
 
