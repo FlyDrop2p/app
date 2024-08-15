@@ -34,7 +34,8 @@ import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.Message
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
-import com.flydrop2p.flydrop2p.ui.components.PrivateMessage
+import com.flydrop2p.flydrop2p.ui.components.FileMessageComponent
+import com.flydrop2p.flydrop2p.ui.components.TextMessageComponent
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 
 
@@ -112,11 +113,11 @@ fun MessageItem(message: Message, chatViewModel: ChatViewModel) {
     ) {
         when(message) {
             is TextMessage -> {
-                PrivateMessage(message, true)
+                TextMessageComponent(message, true)
             }
 
             is FileMessage -> {
-                // TODO Ricky
+                FileMessageComponent(message, true)
             }
         }
     }

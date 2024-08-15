@@ -29,7 +29,7 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun SentMessage(message: TextMessage, visualized: Boolean) {
+fun SentTextMessageComponent(message: TextMessage, visualized: Boolean) {
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     val timeString = timeFormat.format(Date(message.timestamp))
 
@@ -78,7 +78,7 @@ fun SentMessage(message: TextMessage, visualized: Boolean) {
 }
 
 @Composable
-fun ReceivedMessage(message: TextMessage) {
+fun ReceivedTextMessageComponent(message: TextMessage) {
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     val timeString = timeFormat.format(Date(message.timestamp))
 
@@ -120,10 +120,10 @@ fun ReceivedMessage(message: TextMessage) {
 }
 
 @Composable
-fun PrivateMessage(message: TextMessage, visualized: Boolean) {
+fun TextMessageComponent(message: TextMessage, visualized: Boolean) {
     if (message.senderId == 0) {
-        SentMessage(message = message, visualized = visualized)
+        SentTextMessageComponent(message = message, visualized = visualized)
     } else {
-        ReceivedMessage(message = message)
+        ReceivedTextMessageComponent(message = message)
     }
 }
