@@ -9,54 +9,44 @@ import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.network.NetworkManager
 import com.flydrop2p.flydrop2p.network.service.ClientService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ChatViewModel(
     private val chatRepository: ChatRepository,
     private val contactRepository: ContactRepository,
-    private val networkManager: NetworkManager,
+    private val networkManager: NetworkManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ChatViewState())
     val uiState: StateFlow<ChatViewState> = _uiState.asStateFlow()
 
-    init {
-        Log.d("ChatViewModel", "ChatViewModel created")
-    }
-
-    fun getChat(chatId: Int) {
-//        viewModelScope.launch { TODO
-//            try {
-//                val chatMessages = chatRepository.getChatMessagesByChatId(chatId)
-//                _uiState.value = _uiState.value.copy(chatInfo = chatInfo, messageList = chatMessages.last().toMutableList())
-//            } catch (e: Exception) {
-//                Log.e("ChatViewModel", "Error getting chat", e)
-//            }
-//        }
-    }
-
-    suspend fun getSenderName(senderId: Int): String {
-        if (senderId == 0) {
-            return "Me"
-        }
-        return withContext(Dispatchers.IO) {
-            val contact = contactRepository.getContactById(senderId)
-            contact?.username ?: "Unknown"
+    fun collectContact(accountId: Int) {
+        viewModelScope.launch {
+            contactRepository.getContactById(accountId)?.collect {
+                _uiState.value = _uiState.value.copy(contact = it)
+            }
         }
     }
 
+    fun collectMessages(accountId: Int) {
+        viewModelScope.launch {
+            chatRepository.getChatMessagesByAccountId(accountId).collect {
+                _uiState.value = _uiState.value.copy(messages = it)
+            }
+        }
+    }
 
     fun addMessage(message: Message) {
         viewModelScope.launch {
             try {
-                val updatedMessageList = _uiState.value.messageList.toMutableList().apply {
+                val updatedMessageList = _uiState.value.messages.toMutableList().apply {
                     add(message)
                 }
-                _uiState.value = _uiState.value.copy(messageList = updatedMessageList)
+                _uiState.value = _uiState.value.copy(messages = updatedMessageList)
                 chatRepository.addChatMessage(message)
             } catch (e: Exception) {
                 Log.e("ChatViewModel", "Error adding message", e)
@@ -67,8 +57,7 @@ class ChatViewModel(
     fun sendMessage(receiverIp: String, message: String) {
         viewModelScope.launch {
             try {
-                val clientService = ClientService()
-                // clientService.sendContentString(receiverIp, networkManager.thisDevice, message) TODO
+                networkManager.sendContentString(receiverIp, networkManager.thisDevice, message) TODO
             } catch (e: Exception) {
                 Log.e("ChatViewModel", "Error sending message", e)
             }
@@ -77,7 +66,7 @@ class ChatViewModel(
 
 
     fun resetChat() {
-        // _uiState.value = ChatViewState() TODO
+        _uiState.value = ChatViewState()
     }
 
     fun populateDatabase() {

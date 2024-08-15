@@ -48,7 +48,7 @@ object ChatDestination : NavigationDestination {
 
 @Composable
 fun ChatScreen(
-    chatId: Int,
+    accountId: Int,
     chatViewModel: ChatViewModel,
     navController: NavHostController,
     onConnectionButtonClick: () -> Unit,
@@ -78,7 +78,7 @@ fun ChatScreen(
                 .padding(innerPadding)
         ) {
             MessagesList(
-                messages = chatState.messageList,
+                messages = chatState.messages,
                 chatViewModel,
                 modifier = Modifier.weight(1f)
             )
@@ -87,11 +87,12 @@ fun ChatScreen(
                 val currentTimeMillis = System.currentTimeMillis()
                 val message = Message(
                     messageId = 0,
-                    chatState.contact.accountId,
                     senderId = 0,
+                    receiverId = 0,
                     timestamp = currentTimeMillis,
                     content = messageText
                 )
+
                 chatViewModel.addMessage(message)
                 Log.d("New message", "Message added to chat ${chatState}")
 
@@ -104,7 +105,7 @@ fun ChatScreen(
 }
 
 @Composable
-fun MessagesList(messages: MutableList<Message>, chatViewModel: ChatViewModel, modifier: Modifier) {
+fun MessagesList(messages: List<Message>, chatViewModel: ChatViewModel, modifier: Modifier) {
     LazyColumn(
         modifier = modifier
             .padding(horizontal = 16.dp)

@@ -1,6 +1,7 @@
 package com.flydrop2p.flydrop2p.network
 
 import com.flydrop2p.flydrop2p.MainActivity
+import com.flydrop2p.flydrop2p.domain.model.Contact
 import com.flydrop2p.flydrop2p.domain.repository.AccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
@@ -39,17 +40,17 @@ class NetworkManager(
             val account = accountRepository.account.first()
             val profile = profileRepository.profile.first()
 
-            thisDevice = Device(null, account.accountId, profile)
+            thisDevice = Device(null, Contact(account.accountId, profile))
 
             profileRepository.setUsername(profile.username)
             accountRepository.setAccountId(account.accountId)
 
             profileRepository.profile.collect {
-                thisDevice.profile = it
+                thisDevice = thisDevice.copy(contact = thisDevice.contact.copy(profile = it))
             }
 
             accountRepository.account.collect {
-                thisDevice.accountId = it.accountId
+                thisDevice = thisDevice.copy(contact = thisDevice.contact.copy(accountId = it.accountId))
             }
         }
     }
@@ -64,6 +65,10 @@ class NetworkManager(
                 }
             }
         }
+    }
+
+    fun sendMessage() {
+
     }
 
     fun startConnections() {
@@ -99,9 +104,9 @@ class NetworkManager(
             val contact = contactRepository.getContactById(device.accountId)
 
             if(contact == null) {
-                contactRepository.addContact(device.toContact())
+                contactRepository.addContact(device.contact)
             } else {
-                contactRepository.updateContact(device.toContact())
+                contactRepository.updateContact(device.contact)
             }
 
             _connectedDevices.value = (_connectedDevices.value.filter { it.accountId != device.accountId } + device)

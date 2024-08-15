@@ -1,7 +1,7 @@
 package com.flydrop2p.flydrop2p.ui.screen.home
 
-import com.flydrop2p.flydrop2p.domain.model.Contact
+import com.flydrop2p.flydrop2p.domain.model.ChatPreview
 
 data class HomeViewState(
-    val contacts: List<Contact> = listOf()
+    val chatPreviews: List<ChatPreview> = listOf()
 )

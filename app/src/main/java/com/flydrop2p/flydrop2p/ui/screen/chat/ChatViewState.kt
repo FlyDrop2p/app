@@ -7,5 +7,5 @@ import com.flydrop2p.flydrop2p.domain.model.Profile
 
 data class ChatViewState(
     val contact: Contact = Contact(0, Profile("username")),
-    val messageList: MutableList<Message> = mutableListOf()
+    val messages: List<Message> = listOf()
 )

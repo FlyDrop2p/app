@@ -7,13 +7,14 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Device(
     var ipAddress: String? = null,
-    var accountId: Int,
-    var profile: Profile
+    var contact: Contact
 ) {
+    val accountId: Int
+        get() = contact.accountId
+    
+    val profile: Profile
+        get() = contact.profile
+    
     val username: String
-        get() = profile.username
-}
-
-fun Device.toContact(): Contact {
-    return Contact(accountId, profile)
+        get() = contact.username
 }

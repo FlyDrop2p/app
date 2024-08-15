@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ContactDAO {
-    @Query("SELECT * FROM ContactEntity")
+    @Query("SELECT * FROM ContactEntity ORDER BY username ASC")
     fun getAllContacts(): Flow<List<ContactEntity>>
 
-    @Query("SELECT * FROM ContactEntity WHERE accountId = :contactId")
-    suspend fun getContactById(contactId: Int): ContactEntity?
+    @Query("SELECT * FROM ContactEntity WHERE accountId = :accountId")
+    fun getContactById(accountId: Int): Flow<ContactEntity>?
 
     @Insert
     suspend fun insertContact(contact: ContactEntity)

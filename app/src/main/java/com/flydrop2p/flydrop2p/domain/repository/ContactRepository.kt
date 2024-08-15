@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface ContactRepository {
     fun getAllContacts(): Flow<List<Contact>>
 
-    suspend fun getContactById(contactId: Int): Contact?
+    suspend fun getContactById(accountId: Int): Flow<Contact>?
 
     suspend fun addContact(contact: Contact)
 

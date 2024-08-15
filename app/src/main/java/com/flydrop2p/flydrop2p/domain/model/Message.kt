@@ -4,16 +4,20 @@ import com.flydrop2p.flydrop2p.data.local.message.MessageEntity
 
 data class Message(
     val messageId: Int,
-    val chatId: Int,
     val senderId: Int,
+    val receiverId: Int,
     val content: String,
     val timestamp: Long
-)
+) : Comparable<Message> {
+    override fun compareTo(other: Message): Int {
+        return compareValuesBy(this, other, Message::timestamp)
+    }
+}
 
 fun Message.toMessageEntity(): MessageEntity {
     return MessageEntity(
-        chatId = chatId,
         senderId = senderId,
+        receiverId = receiverId,
         content = content,
         timestamp = timestamp
     )
@@ -22,8 +26,8 @@ fun Message.toMessageEntity(): MessageEntity {
 fun MessageEntity.toMessage(): Message {
     return Message(
         messageId = messageId,
-        chatId = chatId,
         senderId = senderId,
+        receiverId = receiverId,
         content = content,
         timestamp = timestamp
     )

@@ -35,7 +35,7 @@ class AppDataContainer(private val context: Context, activity: MainActivity) : A
      * Implementation for [ChatRepository]
      */
     override val chatRepository: ChatRepository by lazy {
-        ChatLocalRepository(AppDatabase.getDatabase(context).messageDao())
+        ChatLocalRepository(AppDatabase.getDatabase(context).contactDao(), AppDatabase.getDatabase(context).messageDao())
     }
 
     /**

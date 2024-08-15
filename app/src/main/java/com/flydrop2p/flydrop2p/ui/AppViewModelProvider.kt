@@ -13,21 +13,22 @@ object AppViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
             HomeViewModel(
-                flydropApplication().container.contactRepository
+                application().container.chatRepository,
+                application().container.contactRepository
             )
         }
 
         initializer {
             ChatViewModel(
-                flydropApplication().container.chatRepository,
-                flydropApplication().container.contactRepository,
-                flydropApplication().container.networkManager
+                application().container.chatRepository,
+                application().container.contactRepository,
+                application().container.networkManager,
             )
         }
 
         initializer {
             SettingsViewModel(
-                flydropApplication().container.profileRepository,
+                application().container.profileRepository,
             )
         }
     }
@@ -37,5 +38,5 @@ object AppViewModelProvider {
  * Extension function to queries for [Application] object and returns an instance of
  * [Application].
  */
-fun CreationExtras.flydropApplication(): com.flydrop2p.flydrop2p.App =
+fun CreationExtras.application(): com.flydrop2p.flydrop2p.App =
     (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as com.flydrop2p.flydrop2p.App)

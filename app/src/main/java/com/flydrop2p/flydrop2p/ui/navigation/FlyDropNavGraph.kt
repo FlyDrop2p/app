@@ -58,11 +58,12 @@ fun FlyDropNavHost(
             })
 
         ) { backStackEntry ->
-            val chatId = backStackEntry.arguments?.getInt(ChatDestination.itemIdArg)
-            chatId?.let {
-                chatViewModel.getChat(chatId)
+            val accountId = backStackEntry.arguments?.getInt(ChatDestination.itemIdArg)
+            accountId?.let {
+                chatViewModel.collectContact(accountId)
+                chatViewModel.collectMessages(accountId)
                 ChatScreen(
-                    chatId = it, // Passare direttamente l'ID della chat a ChatScreen
+                    accountId = it, // Passare direttamente l'ID della chat a ChatScreen
                     chatViewModel = chatViewModel,
                     navController = navController,
                     onConnectionButtonClick = onConnectionButtonClick,
