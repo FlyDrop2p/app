@@ -1,29 +1,26 @@
-package com.flydrop2p.flydrop2p.domain.model
+package com.flydrop2p.flydrop2p.domain.model.message
 
 import com.flydrop2p.flydrop2p.data.local.message.MessageEntity
+import com.flydrop2p.flydrop2p.data.local.message.MessageType
 import com.flydrop2p.flydrop2p.network.model.NetworkTextMessage
 
 data class TextMessage(
-    val senderId: Int,
-    val receiverId: Int,
+    override val senderId: Int,
+    override val receiverId: Int,
     val text: String,
-    val timestamp: Long
-) : Comparable<TextMessage> {
-    override fun compareTo(other: TextMessage): Int {
-        return compareValuesBy(this, other, TextMessage::timestamp)
-    }
+    override val timestamp: Long
+) : Message() {
+    override fun toMessageEntity(): MessageEntity {
+        return MessageEntity(
+            senderId = senderId,
+            receiverId = receiverId,
+            messageType = MessageType.TEXT_MESSAGE,
+            content = text,
+            timestamp = timestamp
+        )    }
 }
 
-fun TextMessage.toMessageEntity(): MessageEntity {
-    return MessageEntity(
-        senderId = senderId,
-        receiverId = receiverId,
-        content = text,
-        timestamp = timestamp
-    )
-}
-
-fun MessageEntity.toMessage(): TextMessage {
+fun MessageEntity.toTextMessage(): TextMessage {
     return TextMessage(
         senderId = senderId,
         receiverId = receiverId,

@@ -23,7 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flydrop2p.flydrop2p.R
-import com.flydrop2p.flydrop2p.domain.model.TextMessage
+import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

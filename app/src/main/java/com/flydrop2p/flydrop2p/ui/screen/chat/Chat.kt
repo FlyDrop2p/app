@@ -31,7 +31,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.flydrop2p.flydrop2p.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.R
-import com.flydrop2p.flydrop2p.domain.model.TextMessage
+import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
+import com.flydrop2p.flydrop2p.domain.model.message.Message
+import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 import com.flydrop2p.flydrop2p.ui.components.PrivateMessage
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 
@@ -88,7 +90,7 @@ fun ChatScreen(
 }
 
 @Composable
-fun MessagesList(messages: List<TextMessage>, chatViewModel: ChatViewModel, modifier: Modifier) {
+fun MessagesList(messages: List<Message>, chatViewModel: ChatViewModel, modifier: Modifier) {
     LazyColumn(
         modifier = modifier
             .padding(horizontal = 16.dp)
@@ -101,14 +103,22 @@ fun MessagesList(messages: List<TextMessage>, chatViewModel: ChatViewModel, modi
 }
 
 @Composable
-fun MessageItem(message: TextMessage, chatViewModel: ChatViewModel) {
+fun MessageItem(message: Message, chatViewModel: ChatViewModel) {
     val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
             .padding(vertical = 8.dp)
     ) {
-        PrivateMessage(message, true)
+        when(message) {
+            is TextMessage -> {
+                PrivateMessage(message, true)
+            }
+
+            is FileMessage -> {
+                // TODO Ricky
+            }
+        }
     }
 }
 

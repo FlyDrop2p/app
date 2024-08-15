@@ -2,9 +2,11 @@ package com.flydrop2p.flydrop2p.network
 
 import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.domain.model.Contact
-import com.flydrop2p.flydrop2p.domain.model.TextMessage
-import com.flydrop2p.flydrop2p.domain.model.toNetworkTextMessage
-import com.flydrop2p.flydrop2p.domain.model.toTextMessage
+import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
+import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
+import com.flydrop2p.flydrop2p.domain.model.message.toNetworkFileMessage
+import com.flydrop2p.flydrop2p.domain.model.message.toNetworkTextMessage
+import com.flydrop2p.flydrop2p.domain.model.message.toTextMessage
 import com.flydrop2p.flydrop2p.domain.repository.AccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
@@ -96,7 +98,9 @@ class NetworkManager(
         connectedDevice?.let { device ->
             coroutineScope.launch {
                 device.ipAddress?.let {
-                    clientService.sendFileMessage(it, thisDevice, file)
+                    val fileMessage = FileMessage(thisDevice.accountId, accountId, file, System.currentTimeMillis() / 1000)
+                    chatRepository.addChatMessage(fileMessage)
+                    clientService.sendFileMessage(it, thisDevice, fileMessage.toNetworkFileMessage())
                 }
             }
         }
@@ -126,7 +130,10 @@ class NetworkManager(
         coroutineScope.launch {
             while(true) {
                 val networkTextMessage = serverService.listenTextMessage()
-                handleTextMessage(networkTextMessage)
+
+                if(networkTextMessage.receiverId == thisDevice.accountId) {
+                    handleTextMessage(networkTextMessage)
+                }
             }
         }
     }
@@ -135,7 +142,10 @@ class NetworkManager(
         coroutineScope.launch { 
             while(true) {
                 val networkFileMessage = serverService.listenFileMessage()
-                handleFileMessage(networkFileMessage)
+
+                if(networkFileMessage.receiverId == thisDevice.accountId) {
+                    handleFileMessage(networkFileMessage)
+                }
             }
         }
     }

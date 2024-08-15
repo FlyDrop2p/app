@@ -1,6 +1,5 @@
 package com.flydrop2p.flydrop2p.ui.screen.chat
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
@@ -42,17 +41,6 @@ class ChatViewModel(
             networkManager.sendTextMessage(receiverId, text)
         }
     }
-
-    fun sendMessage(receiverIp: String, message: String) {
-        viewModelScope.launch {
-            try {
-                // networkManager.sendContentString(receiverIp, networkManager.thisDevice, message) TODO
-            } catch (e: Exception) {
-                Log.e("ChatViewModel", "Error sending message", e)
-            }
-        }
-    }
-
 
     fun resetChat() {
         _uiState.value = ChatViewState()

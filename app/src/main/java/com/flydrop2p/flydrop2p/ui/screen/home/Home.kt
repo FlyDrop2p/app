@@ -38,6 +38,8 @@ import com.flydrop2p.flydrop2p.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.ChatPreview
 import com.flydrop2p.flydrop2p.domain.model.Contact
+import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
+import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import com.flydrop2p.flydrop2p.ui.screen.chat.ChatViewModel
 import java.text.SimpleDateFormat
@@ -142,11 +144,22 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier:
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
-            Text(
-                text = chatPreview.lastMessage?.text ?: "",
-                fontSize = 14.sp,
-                color = Color.Gray
-            )
+
+            when(chatPreview.lastMessage) {
+                is TextMessage -> {
+                    Text(
+                        text = chatPreview.lastMessage.text,
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    )
+                }
+
+                is FileMessage -> {
+                    // TODO Ricky
+                }
+
+                null -> {}
+            }
         }
         Column(
             verticalArrangement = Arrangement.Top,

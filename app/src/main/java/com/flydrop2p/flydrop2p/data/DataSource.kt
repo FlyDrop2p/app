@@ -1,8 +1,8 @@
 package com.flydrop2p.flydrop2p.data
 
 import com.flydrop2p.flydrop2p.domain.model.Contact
-import com.flydrop2p.flydrop2p.domain.model.TextMessage
 import com.flydrop2p.flydrop2p.domain.model.Profile
+import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 
 object DataSource {
     val contacts = listOf(

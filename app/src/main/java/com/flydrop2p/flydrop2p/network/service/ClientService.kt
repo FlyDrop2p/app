@@ -8,8 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.io.File
-import java.io.FileInputStream
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
@@ -51,20 +49,19 @@ class ClientService {
         }
     }
 
-    suspend fun sendFileMessage(addressIp: String, thisDevice: Device, file: File) {
+    suspend fun sendFileMessage(addressIp: String, thisDevice: Device, networkFileMessage: NetworkFileMessage) {
         withContext(Dispatchers.IO) {
             try {
                 val socket = Socket()
                 socket.bind(null)
                 socket.connect(InetSocketAddress(InetAddress.getByName(addressIp), ServerService.PORT_FILE_MESSAGE))
 
-                val fileInputStream = FileInputStream(file)
-                val buffer = ByteArray(1000000)
-                fileInputStream.read(buffer)
-                fileInputStream.close()
+//                val fileInputStream = FileInputStream(file)
+//                val buffer = ByteArray(1000000)
+//                fileInputStream.read(buffer)
+//                fileInputStream.close()
 
                 thisDevice.ipAddress = socket.localAddress.hostAddress?.toString()
-                val networkFileMessage = NetworkFileMessage(thisDevice.accountId, buffer, System.currentTimeMillis() / 1000)
 
                 val outputStream = socket.getOutputStream()
                 outputStream.write(Json.encodeToString(networkFileMessage).encodeToByteArray())
