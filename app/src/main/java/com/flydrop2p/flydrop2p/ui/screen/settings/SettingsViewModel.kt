@@ -29,9 +29,9 @@ class SettingsViewModel(
         }
     }
 
-//    fun updateProfileImage(newImagePath: String) {
-//        viewModelScope.launch {
-//            profileRepository.setImageFilePath(newImagePath)
-//        }
-//    }
+    fun updateProfileImage(newImagePath: String) {
+        viewModelScope.launch {
+            profileRepository.setImageFilePath(newImagePath)
+        }
+    }
 }

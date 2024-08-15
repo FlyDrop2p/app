@@ -16,8 +16,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -42,6 +40,9 @@ import com.flydrop2p.flydrop2p.domain.model.ChatPreview
 import com.flydrop2p.flydrop2p.domain.model.Contact
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import com.flydrop2p.flydrop2p.ui.screen.chat.ChatViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
@@ -111,6 +112,10 @@ fun ChatList(chatPreviews: List<ChatPreview>, onChatClick: (Contact) -> Unit, mo
 
 @Composable
 fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier: Modifier = Modifier) {
+    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    val timeString = chatPreview.lastMessage?.let { Date(it.timestamp) }
+        ?.let { timeFormat.format(it) }
+
     Row(
         modifier = modifier
             .padding(vertical = 8.dp, horizontal = 16.dp)
@@ -148,7 +153,7 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier:
             horizontalAlignment = Alignment.End
         ) {
             Text(
-                text = "10:00",
+                text = timeString ?: "",
                 fontSize = 10.sp,
                 color = Color.Gray
             )
