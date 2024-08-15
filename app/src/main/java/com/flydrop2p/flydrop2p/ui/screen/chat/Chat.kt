@@ -1,6 +1,5 @@
 package com.flydrop2p.flydrop2p.ui.screen.chat
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +31,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.flydrop2p.flydrop2p.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.R
-import com.flydrop2p.flydrop2p.domain.model.Message
+import com.flydrop2p.flydrop2p.domain.model.TextMessage
 import com.flydrop2p.flydrop2p.ui.components.PrivateMessage
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 
@@ -89,7 +88,7 @@ fun ChatScreen(
 }
 
 @Composable
-fun MessagesList(messages: List<Message>, chatViewModel: ChatViewModel, modifier: Modifier) {
+fun MessagesList(messages: List<TextMessage>, chatViewModel: ChatViewModel, modifier: Modifier) {
     LazyColumn(
         modifier = modifier
             .padding(horizontal = 16.dp)
@@ -102,7 +101,7 @@ fun MessagesList(messages: List<Message>, chatViewModel: ChatViewModel, modifier
 }
 
 @Composable
-fun MessageItem(message: Message, chatViewModel: ChatViewModel) {
+fun MessageItem(message: TextMessage, chatViewModel: ChatViewModel) {
     val coroutineScope = rememberCoroutineScope()
 
     Column(

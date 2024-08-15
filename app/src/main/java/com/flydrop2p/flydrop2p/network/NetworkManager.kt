@@ -2,12 +2,15 @@ package com.flydrop2p.flydrop2p.network
 
 import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.domain.model.Contact
-import com.flydrop2p.flydrop2p.domain.model.Message
+import com.flydrop2p.flydrop2p.domain.model.TextMessage
+import com.flydrop2p.flydrop2p.domain.model.toNetworkTextMessage
+import com.flydrop2p.flydrop2p.domain.model.toTextMessage
 import com.flydrop2p.flydrop2p.domain.repository.AccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.domain.repository.ProfileRepository
 import com.flydrop2p.flydrop2p.network.model.NetworkFileMessage
+import com.flydrop2p.flydrop2p.network.model.NetworkKeepalive
 import com.flydrop2p.flydrop2p.network.model.NetworkTextMessage
 import com.flydrop2p.flydrop2p.network.service.ClientService
 import com.flydrop2p.flydrop2p.network.service.ServerService
@@ -19,8 +22,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -64,11 +65,12 @@ class NetworkManager(
 
     fun sendKeepalive() {
         coroutineScope.launch {
-            clientService.sendKeepalive(IP_GROUP_OWNER, thisDevice, connectedDevices.value)
+            val networkKeepalive = NetworkKeepalive(connectedDevices.value + thisDevice)
+            clientService.sendKeepalive(IP_GROUP_OWNER, thisDevice, networkKeepalive)
 
             for (device in connectedDevices.value) {
                 device.ipAddress?.let {
-                    clientService.sendKeepalive(it, thisDevice, connectedDevices.value)
+                    clientService.sendKeepalive(it, thisDevice, networkKeepalive)
                 }
             }
         }
@@ -80,7 +82,9 @@ class NetworkManager(
         connectedDevice?.let { device ->
             coroutineScope.launch {
                 device.ipAddress?.let {
-                    clientService.sendTextMessage(it, thisDevice, text)
+                    val textMessage = TextMessage(thisDevice.accountId, accountId, text, System.currentTimeMillis() / 1000)
+                    chatRepository.addChatMessage(textMessage)
+                    clientService.sendTextMessage(it, thisDevice, textMessage.toNetworkTextMessage())
                 }
             }
         }
@@ -152,7 +156,7 @@ class NetworkManager(
 
     private fun handleTextMessage(networkTextMessage: NetworkTextMessage) {
         coroutineScope.launch {
-            val textMessage = Message(networkTextMessage, thisDevice.accountId)
+            val textMessage = networkTextMessage.toTextMessage()
             chatRepository.addChatMessage(textMessage)
         }
     }

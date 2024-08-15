@@ -4,7 +4,7 @@ import com.flydrop2p.flydrop2p.data.DataSource
 import com.flydrop2p.flydrop2p.data.local.contact.ContactDAO
 import com.flydrop2p.flydrop2p.data.local.message.MessageDAO
 import com.flydrop2p.flydrop2p.domain.model.ChatPreview
-import com.flydrop2p.flydrop2p.domain.model.Message
+import com.flydrop2p.flydrop2p.domain.model.TextMessage
 import com.flydrop2p.flydrop2p.domain.model.toContact
 import com.flydrop2p.flydrop2p.domain.model.toMessage
 import com.flydrop2p.flydrop2p.domain.model.toMessageEntity
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 class ChatLocalRepository(private val contactDAO: ContactDAO, private val messageDAO: MessageDAO) : ChatRepository {
-    override fun getChatMessagesByAccountId(accountId: Int): Flow<List<Message>> {
+    override fun getChatMessagesByAccountId(accountId: Int): Flow<List<TextMessage>> {
         return messageDAO.getAllMessagesByAccountId(accountId).map { messageEntities ->
             messageEntities.map { it.toMessage() }
         }
@@ -27,7 +27,7 @@ class ChatLocalRepository(private val contactDAO: ContactDAO, private val messag
         }
     }
 
-    override suspend fun addChatMessage(message: Message) {
+    override suspend fun addChatMessage(message: TextMessage) {
         messageDAO.insertMessage(message.toMessageEntity())
     }
 

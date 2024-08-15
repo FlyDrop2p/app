@@ -15,7 +15,7 @@ import java.net.InetSocketAddress
 import java.net.Socket
 
 class ClientService {
-    suspend fun sendKeepalive(ipAddress: String, thisDevice: Device, connectedDevices: List<Device>) {
+    suspend fun sendKeepalive(ipAddress: String, thisDevice: Device, networkKeepalive: NetworkKeepalive) {
         withContext(Dispatchers.IO) {
             try {
                 val socket = Socket()
@@ -23,7 +23,6 @@ class ClientService {
                 socket.connect((InetSocketAddress(InetAddress.getByName(ipAddress), ServerService.PORT_KEEPALIVE)))
 
                 thisDevice.ipAddress = socket.localAddress.hostAddress?.toString()
-                val networkKeepalive = NetworkKeepalive(connectedDevices.toList() + thisDevice)
 
                 val outputStream = socket.getOutputStream()
                 outputStream.write(Json.encodeToString(networkKeepalive).encodeToByteArray())
@@ -34,7 +33,7 @@ class ClientService {
         }
     }
 
-    suspend fun sendTextMessage(addressIp: String, thisDevice: Device, text: String) {
+    suspend fun sendTextMessage(addressIp: String, thisDevice: Device, networkTextMessage: NetworkTextMessage) {
         withContext(Dispatchers.IO) {
             try {
                 val socket = Socket()
@@ -42,7 +41,6 @@ class ClientService {
                 socket.connect((InetSocketAddress(InetAddress.getByName(addressIp), ServerService.PORT_TEXT_MESSAGE)))
 
                 thisDevice.ipAddress = socket.localAddress.hostAddress?.toString()
-                val networkTextMessage = NetworkTextMessage(thisDevice.accountId, text, System.currentTimeMillis() / 1000)
 
                 val outputStream = socket.getOutputStream()
                 outputStream.write(Json.encodeToString(networkTextMessage).encodeToByteArray())

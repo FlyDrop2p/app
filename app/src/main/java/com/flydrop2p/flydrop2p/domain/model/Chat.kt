@@ -4,5 +4,5 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 data class Chat(
     val contact: MutableStateFlow<Contact>,
-    var messages: MutableStateFlow<List<Message>>,
+    var messages: MutableStateFlow<List<TextMessage>>,
 )

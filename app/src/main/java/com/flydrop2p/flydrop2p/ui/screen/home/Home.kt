@@ -143,7 +143,7 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier:
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = chatPreview.lastMessage?.content ?: "",
+                text = chatPreview.lastMessage?.text ?: "",
                 fontSize = 14.sp,
                 color = Color.Gray
             )

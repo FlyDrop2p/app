@@ -23,13 +23,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flydrop2p.flydrop2p.R
-import com.flydrop2p.flydrop2p.domain.model.Message
+import com.flydrop2p.flydrop2p.domain.model.TextMessage
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
-fun SentMessage(message: Message, visualized: Boolean) {
+fun SentMessage(message: TextMessage, visualized: Boolean) {
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     val timeString = timeFormat.format(Date(message.timestamp))
 
@@ -50,7 +50,7 @@ fun SentMessage(message: Message, visualized: Boolean) {
                 )
             ) {
                 Text(
-                    text = message.content,
+                    text = message.text,
                     fontSize = 16.sp,
                     color = Color.Black
                 )
@@ -78,7 +78,7 @@ fun SentMessage(message: Message, visualized: Boolean) {
 }
 
 @Composable
-fun ReceivedMessage(message: Message) {
+fun ReceivedMessage(message: TextMessage) {
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     val timeString = timeFormat.format(Date(message.timestamp))
 
@@ -99,7 +99,7 @@ fun ReceivedMessage(message: Message) {
                 )
             ) {
                 Text(
-                    text = message.content,
+                    text = message.text,
                     fontSize = 16.sp,
                     color = Color.Black
                 )
@@ -120,7 +120,7 @@ fun ReceivedMessage(message: Message) {
 }
 
 @Composable
-fun PrivateMessage(message: Message, visualized: Boolean) {
+fun PrivateMessage(message: TextMessage, visualized: Boolean) {
     if (message.senderId == 0) {
         SentMessage(message = message, visualized = visualized)
     } else {
