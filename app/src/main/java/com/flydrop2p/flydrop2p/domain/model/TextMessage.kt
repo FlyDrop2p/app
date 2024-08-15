@@ -13,7 +13,7 @@ data class Message(
     constructor(networkTextMessage: NetworkTextMessage, receiverId: Int) : this(
         senderId = networkTextMessage.senderId,
         receiverId = receiverId,
-        content = networkTextMessage.content,
+        content = networkTextMessage.text,
         timestamp = networkTextMessage.timestamp
     )
 

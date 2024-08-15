@@ -3,8 +3,8 @@ package com.flydrop2p.flydrop2p.network.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NetworkTextMessage(
+class NetworkFileMessage(
     val senderId: Int,
-    val text: String,
+    val file: ByteArray,
     val timestamp: Long
 )
