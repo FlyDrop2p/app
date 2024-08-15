@@ -1,8 +1,8 @@
 package com.flydrop2p.flydrop2p.network.service
 
 import android.util.Log
-import com.flydrop2p.flydrop2p.network.Device
-import com.flydrop2p.flydrop2p.network.model.Keepalive
+import com.flydrop2p.flydrop2p.network.model.NetworkKeepalive
+import com.flydrop2p.flydrop2p.network.model.NetworkTextMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -13,12 +13,12 @@ import java.net.ServerSocket
 class ServerService {
     companion object {
         const val PORT_KEEPALIVE: Int = 8800
-        const val PORT_CONTENT_STRING: Int = 8801
+        const val PORT_TEXT_MESSAGE: Int = 8801
         const val PORT_FILE_TRANSFER: Int = 8802
     }
 
-    suspend fun listenKeepalive(): Keepalive {
-        val ret: Keepalive
+    suspend fun listenKeepalive(): NetworkKeepalive {
+        val networkKeepalive: NetworkKeepalive
 
         withContext(Dispatchers.IO) {
             val socket = ServerSocket(PORT_KEEPALIVE)
@@ -26,33 +26,33 @@ class ServerService {
 
             val inputStream = client.getInputStream()
             val buffer = inputStream.readBytes()
-            ret = Json.decodeFromString(buffer.decodeToString())
+            networkKeepalive = Json.decodeFromString(buffer.decodeToString())
 
             socket.close()
 
-            Log.d("KEEPALIVE", ret.toString())
+            Log.d("KEEPALIVE", networkKeepalive.toString())
         }
 
-        return ret
+        return networkKeepalive
     }
 
-    suspend fun listenContentString(): Pair<Device, String> {
-        val ret: Pair<Device, String>
+    suspend fun listenTextMessage(): NetworkTextMessage {
+        val networkTextMessage: NetworkTextMessage
 
         withContext(Dispatchers.IO) {
-            val socket = ServerSocket(PORT_CONTENT_STRING)
+            val socket = ServerSocket(PORT_TEXT_MESSAGE)
             val client = socket.accept()
 
             val inputStream = client.getInputStream()
             val buffer = inputStream.readBytes()
-            ret = Json.decodeFromString(buffer.decodeToString())
+            networkTextMessage = Json.decodeFromString(buffer.decodeToString())
 
             socket.close()
 
-            Log.d("CONTENT STRING", ret.toString())
+            Log.d("TEXT MESSAGE", networkTextMessage.toString())
         }
 
-        return ret
+        return networkTextMessage
     }
 
     suspend fun receiveFile(destination: File): Boolean {

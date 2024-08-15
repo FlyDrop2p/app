@@ -2,10 +2,12 @@ package com.flydrop2p.flydrop2p.network
 
 import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.domain.model.Contact
+import com.flydrop2p.flydrop2p.domain.model.Message
 import com.flydrop2p.flydrop2p.domain.repository.AccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.domain.repository.ProfileRepository
+import com.flydrop2p.flydrop2p.network.model.NetworkTextMessage
 import com.flydrop2p.flydrop2p.network.service.ClientService
 import com.flydrop2p.flydrop2p.network.service.ServerService
 import com.flydrop2p.flydrop2p.network.wifidirect.WiFiDirectBroadcastReceiver
@@ -67,13 +69,21 @@ class NetworkManager(
         }
     }
 
-    fun sendMessage() {
+    fun sendTextMessage(accountId: Int, content: String) {
+        val connectedDevice = connectedDevices.value.find { it.accountId == accountId }
 
+        connectedDevice?.let { device ->
+            coroutineScope.launch {
+                device.ipAddress?.let {
+                    clientService.sendTextMessage(it, thisDevice, content)
+                }
+            }
+        }
     }
 
     fun startConnections() {
         startKeepaliveConnection()
-        startContentStringConnection()
+        startTextMessageConnection()
     }
 
     private fun startKeepaliveConnection() {
@@ -90,11 +100,11 @@ class NetworkManager(
         }
     }
 
-    private fun startContentStringConnection() {
+    private fun startTextMessageConnection() {
         coroutineScope.launch {
             while (true) {
-                val (device, content) = serverService.listenContentString()
-                // TODO (device sent content to thisDevice)
+                val textMessage = serverService.listenTextMessage()
+                handleTextMessage(textMessage)
             }
         }
     }
@@ -110,6 +120,13 @@ class NetworkManager(
             }
 
             _connectedDevices.value = (_connectedDevices.value.filter { it.accountId != device.accountId } + device)
+        }
+    }
+
+    private fun handleTextMessage(networkTextMessage: NetworkTextMessage) {
+        coroutineScope.launch {
+            val message = Message(networkTextMessage, thisDevice.accountId)
+            chatRepository.addChatMessage(message)
         }
     }
 }
