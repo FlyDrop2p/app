@@ -2,10 +2,13 @@ package com.flydrop2p.flydrop2p.network
 
 import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.domain.model.Contact
+import com.flydrop2p.flydrop2p.domain.model.Message
 import com.flydrop2p.flydrop2p.domain.repository.AccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.domain.repository.ProfileRepository
+import com.flydrop2p.flydrop2p.network.model.NetworkFileMessage
+import com.flydrop2p.flydrop2p.network.model.NetworkTextMessage
 import com.flydrop2p.flydrop2p.network.service.ClientService
 import com.flydrop2p.flydrop2p.network.service.ServerService
 import com.flydrop2p.flydrop2p.network.wifidirect.WiFiDirectBroadcastReceiver
@@ -16,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.io.File
 
 
 class NetworkManager(
@@ -67,18 +71,39 @@ class NetworkManager(
         }
     }
 
-    fun sendMessage() {
+    fun sendTextMessage(accountId: Int, text: String) {
+        val connectedDevice = connectedDevices.value.find { it.accountId == accountId }
 
+        connectedDevice?.let { device ->
+            coroutineScope.launch {
+                device.ipAddress?.let {
+                    clientService.sendTextMessage(it, thisDevice, text)
+                }
+            }
+        }
+    }
+
+    fun sendFileMessage(accountId: Int, file: File) {
+        val connectedDevice = connectedDevices.value.find { it.accountId == accountId }
+
+        connectedDevice?.let { device ->
+            coroutineScope.launch {
+                device.ipAddress?.let {
+                    clientService.sendFileMessage(it, thisDevice, file)
+                }
+            }
+        }
     }
 
     fun startConnections() {
         startKeepaliveConnection()
-        startContentStringConnection()
+        startTextMessageConnection()
+        startFileMessageConnection()
     }
 
     private fun startKeepaliveConnection() {
         coroutineScope.launch {
-            while (true) {
+            while(true) {
                 val keepalive = serverService.listenKeepalive()
 
                 for(device in keepalive.devices) {
@@ -90,11 +115,20 @@ class NetworkManager(
         }
     }
 
-    private fun startContentStringConnection() {
+    private fun startTextMessageConnection() {
         coroutineScope.launch {
-            while (true) {
-                val (device, content) = serverService.listenContentString()
-                // TODO (device sent content to thisDevice)
+            while(true) {
+                val textMessage = serverService.listenTextMessage()
+                handleTextMessage(textMessage)
+            }
+        }
+    }
+    
+    private fun startFileMessageConnection() {
+        coroutineScope.launch { 
+            while(true) {
+                val fileMessage = serverService.listenFileMessage()
+                handleFileMessage(fileMessage)
             }
         }
     }
@@ -110,6 +144,19 @@ class NetworkManager(
             }
 
             _connectedDevices.value = (_connectedDevices.value.filter { it.accountId != device.accountId } + device)
+        }
+    }
+
+    private fun handleTextMessage(networkTextMessage: NetworkTextMessage) {
+        coroutineScope.launch {
+            val textMessage = Message(networkTextMessage, thisDevice.accountId)
+            chatRepository.addChatMessage(textMessage)
+        }
+    }
+    
+    private fun handleFileMessage(networkFileMessage: NetworkFileMessage) {
+        coroutineScope.launch {
+            // TODO
         }
     }
 }
