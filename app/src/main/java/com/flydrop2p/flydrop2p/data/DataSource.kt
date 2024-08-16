@@ -1,19 +1,19 @@
 package com.flydrop2p.flydrop2p.data
 
-import com.flydrop2p.flydrop2p.domain.model.Contact
-import com.flydrop2p.flydrop2p.domain.model.Profile
+import com.flydrop2p.flydrop2p.domain.model.contact.Contact
+import com.flydrop2p.flydrop2p.domain.model.contact.Profile
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 
 object DataSource {
     val contacts = listOf(
         // Contact(accountId = 0, profile = Profile(username = "Me")),
-        Contact(accountId = 7, profile = Profile(username = "Alice")),
-        Contact(accountId = 6, profile = Profile(username = "Bob")),
-        Contact(accountId = 3, profile = Profile(username = "Charlie")),
-        Contact(accountId = 4, profile = Profile(username = "David")),
-        Contact(accountId = 5, profile = Profile(username = "Eve")),
-        Contact(accountId = 15, profile = Profile(username = "Frank")),
-        Contact(accountId = 12, profile = Profile(username = "Grace"))
+        Contact(accountId = 7, profile = Profile(username = "Alice", imagePath = null)),
+        Contact(accountId = 6, profile = Profile(username = "Bob", imagePath = null)),
+        Contact(accountId = 3, profile = Profile(username = "Charlie", imagePath = null)),
+        Contact(accountId = 4, profile = Profile(username = "David", imagePath = null)),
+        Contact(accountId = 5, profile = Profile(username = "Eve", imagePath = null)),
+        Contact(accountId = 15, profile = Profile(username = "Frank", imagePath = null)),
+        Contact(accountId = 12, profile = Profile(username = "Grace", imagePath = null))
     )
 
 

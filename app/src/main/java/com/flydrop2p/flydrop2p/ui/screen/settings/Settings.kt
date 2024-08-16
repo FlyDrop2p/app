@@ -65,7 +65,7 @@ fun SettingsScreen(
     val context = LocalContext.current
     val settingsState by settingsViewModel.uiState.collectAsState()
     var usernameText by remember { mutableStateOf(settingsState.profile.username) }
-    var profileImagePath by remember { mutableStateOf(settingsState.profile.imageFilePath ?: "") }
+    var profileImagePath by remember { mutableStateOf(settingsState.profile.imagePath ?: "") }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let { imageUri ->

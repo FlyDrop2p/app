@@ -3,10 +3,10 @@ package com.flydrop2p.flydrop2p.data.repository
 import com.flydrop2p.flydrop2p.data.DataSource
 import com.flydrop2p.flydrop2p.data.local.contact.ContactDAO
 import com.flydrop2p.flydrop2p.data.local.message.MessageDAO
-import com.flydrop2p.flydrop2p.domain.model.ChatPreview
+import com.flydrop2p.flydrop2p.domain.model.chat.ChatPreview
 import com.flydrop2p.flydrop2p.domain.model.message.Message
 import com.flydrop2p.flydrop2p.domain.model.message.toMessage
-import com.flydrop2p.flydrop2p.domain.model.toContact
+import com.flydrop2p.flydrop2p.domain.model.contact.toContact
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

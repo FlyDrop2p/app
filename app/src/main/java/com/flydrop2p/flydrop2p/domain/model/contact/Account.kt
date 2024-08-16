@@ -1,4 +1,4 @@
-package com.flydrop2p.flydrop2p.domain.model
+package com.flydrop2p.flydrop2p.domain.model.contact
 
 import kotlinx.serialization.Serializable
 

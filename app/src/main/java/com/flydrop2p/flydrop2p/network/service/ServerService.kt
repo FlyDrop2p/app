@@ -1,9 +1,9 @@
 package com.flydrop2p.flydrop2p.network.service
 
 import android.util.Log
-import com.flydrop2p.flydrop2p.network.model.NetworkFileMessage
-import com.flydrop2p.flydrop2p.network.model.NetworkKeepalive
-import com.flydrop2p.flydrop2p.network.model.NetworkTextMessage
+import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
+import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
+import com.flydrop2p.flydrop2p.network.model.message.NetworkTextMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json

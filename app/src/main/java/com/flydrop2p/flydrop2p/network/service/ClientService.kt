@@ -1,9 +1,9 @@
 package com.flydrop2p.flydrop2p.network.service
 
 import com.flydrop2p.flydrop2p.network.Device
-import com.flydrop2p.flydrop2p.network.model.NetworkFileMessage
-import com.flydrop2p.flydrop2p.network.model.NetworkKeepalive
-import com.flydrop2p.flydrop2p.network.model.NetworkTextMessage
+import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
+import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
+import com.flydrop2p.flydrop2p.network.model.message.NetworkTextMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
@@ -55,11 +55,6 @@ class ClientService {
                 val socket = Socket()
                 socket.bind(null)
                 socket.connect(InetSocketAddress(InetAddress.getByName(addressIp), ServerService.PORT_FILE_MESSAGE))
-
-//                val fileInputStream = FileInputStream(file)
-//                val buffer = ByteArray(1000000)
-//                fileInputStream.read(buffer)
-//                fileInputStream.close()
 
                 thisDevice.ipAddress = socket.localAddress.hostAddress?.toString()
 

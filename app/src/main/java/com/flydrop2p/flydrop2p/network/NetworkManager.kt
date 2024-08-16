@@ -1,7 +1,8 @@
 package com.flydrop2p.flydrop2p.network
 
 import com.flydrop2p.flydrop2p.MainActivity
-import com.flydrop2p.flydrop2p.domain.model.Contact
+import com.flydrop2p.flydrop2p.data.local.FileManager
+import com.flydrop2p.flydrop2p.domain.model.contact.Contact
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 import com.flydrop2p.flydrop2p.domain.model.message.toNetworkFileMessage
@@ -11,9 +12,9 @@ import com.flydrop2p.flydrop2p.domain.repository.AccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.domain.repository.ProfileRepository
-import com.flydrop2p.flydrop2p.network.model.NetworkFileMessage
-import com.flydrop2p.flydrop2p.network.model.NetworkKeepalive
-import com.flydrop2p.flydrop2p.network.model.NetworkTextMessage
+import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
+import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
+import com.flydrop2p.flydrop2p.network.model.message.NetworkTextMessage
 import com.flydrop2p.flydrop2p.network.service.ClientService
 import com.flydrop2p.flydrop2p.network.service.ServerService
 import com.flydrop2p.flydrop2p.network.wifidirect.WiFiDirectBroadcastReceiver
@@ -34,6 +35,7 @@ class NetworkManager(
     profileRepository: ProfileRepository,
     private val chatRepository: ChatRepository,
     private val contactRepository: ContactRepository,
+    private val fileManager: FileManager
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     val receiver: WiFiDirectBroadcastReceiver = WiFiDirectBroadcastReceiver(activity)
@@ -67,7 +69,7 @@ class NetworkManager(
 
     fun sendKeepalive() {
         coroutineScope.launch {
-            val networkKeepalive = NetworkKeepalive(connectedDevices.value + thisDevice)
+            val networkKeepalive = NetworkKeepalive(connectedDevices.value.map { it.toNetworkDevice(fileManager) } + thisDevice.toNetworkDevice(fileManager))
             clientService.sendKeepalive(IP_GROUP_OWNER, thisDevice, networkKeepalive)
 
             for (device in connectedDevices.value) {
@@ -117,7 +119,7 @@ class NetworkManager(
             while(true) {
                 val networkKeepalive = serverService.listenKeepalive()
 
-                for(device in networkKeepalive.devices) {
+                for(device in networkKeepalive.networkDevices.map { it.toDevice(fileManager) }) {
                     if(device.accountId != thisDevice.accountId) {
                         handleDeviceKeepalive(device)
                     }

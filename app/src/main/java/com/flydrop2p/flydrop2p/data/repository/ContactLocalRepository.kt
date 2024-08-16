@@ -2,9 +2,9 @@ package com.flydrop2p.flydrop2p.data.repository
 
 import com.flydrop2p.flydrop2p.data.DataSource
 import com.flydrop2p.flydrop2p.data.local.contact.ContactDAO
-import com.flydrop2p.flydrop2p.domain.model.Contact
-import com.flydrop2p.flydrop2p.domain.model.toContact
-import com.flydrop2p.flydrop2p.domain.model.toContactEntity
+import com.flydrop2p.flydrop2p.domain.model.contact.Contact
+import com.flydrop2p.flydrop2p.domain.model.contact.toContact
+import com.flydrop2p.flydrop2p.domain.model.contact.toContactEntity
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

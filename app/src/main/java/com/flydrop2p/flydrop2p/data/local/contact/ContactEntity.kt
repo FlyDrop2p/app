@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class ContactEntity(
     @PrimaryKey
     val accountId: Int,
-    val username: String
+    val username: String,
+    val imagePath: String?
 )

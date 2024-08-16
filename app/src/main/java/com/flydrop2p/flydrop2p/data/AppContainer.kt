@@ -4,6 +4,7 @@ import android.content.Context
 import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.data.local.AppDataStore
 import com.flydrop2p.flydrop2p.data.local.AppDatabase
+import com.flydrop2p.flydrop2p.data.local.FileManager
 import com.flydrop2p.flydrop2p.data.repository.AccountLocalRepository
 import com.flydrop2p.flydrop2p.data.repository.ChatLocalRepository
 import com.flydrop2p.flydrop2p.data.repository.ContactLocalRepository
@@ -22,6 +23,7 @@ interface AppContainer {
     val contactRepository: ContactRepository
     val accountRepository: AccountRepository
     val profileRepository: ProfileRepository
+    val fileManager: FileManager
     val networkManager: NetworkManager
 }
 
@@ -60,7 +62,12 @@ class AppDataContainer(private val context: Context, activity: MainActivity) : A
     }
 
     /**
+     * Implementation for [FileManager]
+     */
+    override val fileManager: FileManager = FileManager(activity)
+
+    /**
      * Implementation for [NetworkManager]
      */
-    override val networkManager: NetworkManager = NetworkManager(activity, accountRepository, profileRepository, chatRepository, contactRepository)
+    override val networkManager: NetworkManager = NetworkManager(activity, accountRepository, profileRepository, chatRepository, contactRepository, fileManager)
 }

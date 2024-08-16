@@ -1,8 +1,9 @@
 package com.flydrop2p.flydrop2p.data.local.serializer
 
+import android.os.Build
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
-import com.flydrop2p.flydrop2p.domain.model.Account
+import com.flydrop2p.flydrop2p.domain.model.contact.Account
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
@@ -11,7 +12,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 object AccountSerializer : Serializer<Account> {
-    override val defaultValue: Account = Account(android.os.Build.MODEL[4].code)
+    override val defaultValue: Account = Account(Build.MODEL[4].code)
 
     override suspend fun readFrom(input: InputStream): Account {
         try {

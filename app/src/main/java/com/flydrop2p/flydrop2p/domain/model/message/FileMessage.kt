@@ -2,7 +2,7 @@ package com.flydrop2p.flydrop2p.domain.model.message
 
 import com.flydrop2p.flydrop2p.data.local.message.MessageEntity
 import com.flydrop2p.flydrop2p.data.local.message.MessageType
-import com.flydrop2p.flydrop2p.network.model.NetworkFileMessage
+import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
 import java.io.File
 
 data class FileMessage(

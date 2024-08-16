@@ -5,8 +5,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import com.flydrop2p.flydrop2p.data.local.serializer.AccountSerializer
 import com.flydrop2p.flydrop2p.data.local.serializer.ProfileSerializer
-import com.flydrop2p.flydrop2p.domain.model.Account
-import com.flydrop2p.flydrop2p.domain.model.Profile
+import com.flydrop2p.flydrop2p.domain.model.contact.Account
+import com.flydrop2p.flydrop2p.domain.model.contact.Profile
 
 abstract class AppDataStore {
     companion object {
