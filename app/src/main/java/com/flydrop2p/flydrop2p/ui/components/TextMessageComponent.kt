@@ -41,7 +41,7 @@ fun SentTextMessageComponent(message: TextMessage, visualized: Boolean) {
     ) {
         Surface(
             shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.primaryContainer,
+            color = MaterialTheme.colorScheme.tertiaryContainer,
             modifier = Modifier.widthIn(max = 250.dp)
         ) {
             Column(
@@ -90,7 +90,7 @@ fun ReceivedTextMessageComponent(message: TextMessage) {
     ) {
         Surface(
             shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant,
+            color = MaterialTheme.colorScheme.secondaryContainer,
             modifier = Modifier.widthIn(max = 250.dp)
         ) {
             Column(

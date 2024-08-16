@@ -106,7 +106,7 @@ fun ChatList(chatPreviews: List<ChatPreview>, onChatClick: (Contact) -> Unit, mo
             HorizontalDivider(
                 modifier = Modifier.padding(start = 82.dp, end = 16.dp),
                 thickness = 1.dp,
-                color = Color.LightGray
+                color = MaterialTheme.colorScheme.surfaceContainerHigh
             )
         }
     }
