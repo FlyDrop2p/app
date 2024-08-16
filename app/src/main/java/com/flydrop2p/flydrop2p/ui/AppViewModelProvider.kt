@@ -22,6 +22,7 @@ object AppViewModelProvider {
             ChatViewModel(
                 application().container.chatRepository,
                 application().container.contactRepository,
+                application().container.accountRepository,
                 application().container.networkManager,
             )
         }

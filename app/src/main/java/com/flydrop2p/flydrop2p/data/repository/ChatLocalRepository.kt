@@ -32,10 +32,17 @@ class ChatLocalRepository(private val contactDAO: ContactDAO, private val messag
 
 
     // TODO: Only for testing purposes
-    override suspend fun populateDatabase() {
+    override suspend fun populateDatabase(accountId: Int) {
         withContext(Dispatchers.IO) {
             DataSource.placeholderMessages.forEach { message ->
-                messageDAO.insertMessage(message.toMessageEntity())
+                var newMessage = message
+                if (message.senderId == 0) {
+                    newMessage = newMessage.copy(senderId = accountId)
+                }
+                if (message.receiverId == 0) {
+                    newMessage = newMessage.copy(receiverId = accountId)
+                }
+                messageDAO.insertMessage(newMessage.toMessageEntity())
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.flydrop2p.flydrop2p.network
 
+import android.util.Log
 import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.data.local.FileManager
 import com.flydrop2p.flydrop2p.domain.model.contact.Contact

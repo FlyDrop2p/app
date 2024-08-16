@@ -12,5 +12,5 @@ interface ChatRepository {
     suspend fun addChatMessage(message: Message)
 
     // TODO: Only for testing purposes
-    suspend fun populateDatabase()
+    suspend fun populateDatabase(accountId: Int)
 }

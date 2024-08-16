@@ -197,9 +197,10 @@ fun ReceivedFileMessageComponent(
 @Composable
 fun FileMessageComponent(
     message: FileMessage,
-    visualized: Boolean
+    visualized: Boolean,
+    currentAccountId: Int
 ) {
-    if (message.senderId == 0) {
+    if (message.senderId == currentAccountId) {
         SentFileMessageComponent(
             message = message,
             visualized = visualized
@@ -218,9 +219,10 @@ fun FileMessageComponentPreview() {
         message = FileMessage(
             senderId = 0,
             receiverId = 1,
-            timestamp = System.currentTimeMillis(),
-            file = File("path/to/File")
+            file = File(""),
+            timestamp = System.currentTimeMillis() / 1000
         ),
-        visualized = true
+        visualized = true,
+        currentAccountId = 0
     )
 }

@@ -63,7 +63,7 @@ fun FlyDropNavHost(
                 chatViewModel.collectContact(accountId)
                 chatViewModel.collectMessages(accountId)
                 ChatScreen(
-                    accountId = it, // Passare direttamente l'ID della chat a ChatScreen
+                    accountId = it,
                     chatViewModel = chatViewModel,
                     navController = navController,
                     onConnectionButtonClick = onConnectionButtonClick,

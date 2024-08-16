@@ -55,6 +55,8 @@ fun ChatScreen(
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val currentAccount by chatViewModel.myAccount.collectAsState(initial = null)
+
     val chatState by chatViewModel.uiState.collectAsState()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
@@ -77,34 +79,37 @@ fun ChatScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            MessagesList(
-                messages = chatState.messages,
-                chatViewModel,
-                modifier = Modifier.weight(1f)
-            )
+            currentAccount?.let { account ->
+                MessagesList(
+                    messages = chatState.messages,
+                    chatViewModel,
+                    accountId = account.accountId,
+                    modifier = Modifier.weight(1f)
+                )
 
-            SendMessageInput(onSendMessage = { messageText ->
-                chatViewModel.sendTextMessage(accountId, messageText)
-            })
+                SendMessageInput(onSendMessage = { messageText ->
+                    chatViewModel.sendTextMessage(accountId, messageText)
+                })
+            }
         }
     }
 }
 
 @Composable
-fun MessagesList(messages: List<Message>, chatViewModel: ChatViewModel, modifier: Modifier) {
+fun MessagesList(messages: List<Message>, chatViewModel: ChatViewModel, accountId: Int, modifier: Modifier) {
     LazyColumn(
         modifier = modifier
             .padding(horizontal = 16.dp)
     ) {
         items(messages) { message ->
-            MessageItem(message = message, chatViewModel = chatViewModel)
+            MessageItem(message = message, accountId = accountId, chatViewModel = chatViewModel)
         }
 
     }
 }
 
 @Composable
-fun MessageItem(message: Message, chatViewModel: ChatViewModel) {
+fun MessageItem(message: Message, accountId: Int, chatViewModel: ChatViewModel) {
     val coroutineScope = rememberCoroutineScope()
 
     Column(
@@ -113,11 +118,11 @@ fun MessageItem(message: Message, chatViewModel: ChatViewModel) {
     ) {
         when(message) {
             is TextMessage -> {
-                TextMessageComponent(message, true)
+                TextMessageComponent(message, true, currentAccountId = accountId)
             }
 
             is FileMessage -> {
-                FileMessageComponent(message, true)
+                FileMessageComponent(message, true, currentAccountId = accountId)
             }
         }
     }

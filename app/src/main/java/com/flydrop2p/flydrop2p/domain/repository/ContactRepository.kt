@@ -15,5 +15,5 @@ interface ContactRepository {
     suspend fun deleteContact(contact: Contact)
 
     // TODO: Only for testing purposes
-    suspend fun populateDatabase()
+    suspend fun populateDatabase(accountId: Int)
 }

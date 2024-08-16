@@ -36,7 +36,7 @@ class ContactLocalRepository(private val contactDAO: ContactDAO) : ContactReposi
     }
 
     // TODO: Only for testing purposes
-    override suspend fun populateDatabase() {
+    override suspend fun populateDatabase(accountId: Int) {
         withContext(Dispatchers.IO) {
             val contacts = DataSource.contacts
             for (contact in contacts) {
