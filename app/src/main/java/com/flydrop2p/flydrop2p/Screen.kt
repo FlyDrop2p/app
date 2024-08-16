@@ -1,11 +1,17 @@
 package com.flydrop2p.flydrop2p
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -20,6 +26,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -118,6 +127,83 @@ fun FlyDropTopAppBar(
                 }
             }
 
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surfaceBright,
+        ),
+        modifier = modifier.padding(bottom = 8.dp)
+    )
+}
+
+/**
+ * App bar to display title and conditionally display the back navigation.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ChatTopAppBar(
+    title: String,
+    canNavigateBack: Boolean,
+    onConnectionButtonClick: () -> Unit,
+    onSettingsButtonClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    navigateUp: () -> Unit = {}
+) {
+
+    TopAppBar(
+        navigationIcon = {
+            if (canNavigateBack) {
+                IconButton(onClick = {
+                    navigateUp()
+                }) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Go back"
+                    )
+                }
+            }
+        },
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.account_circle_24px),
+                    colorFilter = ColorFilter.tint(Color.Black),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(CircleShape)
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = title,
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+
+        },
+        actions = {
+
+            IconButton(
+                onClick = onSettingsButtonClick
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Call,
+                    contentDescription = "Call",
+                    modifier = Modifier.size(36.dp)
+                )
+            }
+            IconButton(
+                onClick = onSettingsButtonClick
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Info,
+                    contentDescription = "Info",
+                    modifier = Modifier.size(36.dp)
+                )
+            }
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.surfaceBright,

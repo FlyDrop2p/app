@@ -1,5 +1,9 @@
 package com.flydrop2p.flydrop2p.ui.screen.chat
 
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -29,7 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.flydrop2p.flydrop2p.FlyDropTopAppBar
+import com.flydrop2p.flydrop2p.ChatTopAppBar
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.Message
@@ -62,7 +67,7 @@ fun ChatScreen(
 
     Scaffold(
         topBar = {
-            FlyDropTopAppBar(
+            ChatTopAppBar(
                 title = chatState.contact.username,
                 canNavigateBack = true,
                 onConnectionButtonClick = onConnectionButtonClick,
@@ -87,9 +92,16 @@ fun ChatScreen(
                     modifier = Modifier.weight(1f)
                 )
 
-                SendMessageInput(onSendMessage = { messageText ->
-                    chatViewModel.sendTextMessage(accountId, messageText)
-                })
+                SendMessageInput(
+                    onSendMessage = { messageText ->
+                        chatViewModel.sendTextMessage(accountId, messageText)
+                    },
+                    onAttachFile = { uri ->
+                        uri?.let {
+                            Log.d("ChatScreen", "File attached: $uri")
+                        }
+                    }
+                )
             }
         }
     }
@@ -129,8 +141,17 @@ fun MessageItem(message: Message, accountId: Int, chatViewModel: ChatViewModel) 
 }
 
 @Composable
-fun SendMessageInput(onSendMessage: (String) -> Unit) {
+fun SendMessageInput(
+    onSendMessage: (String) -> Unit,
+    onAttachFile: (Uri?) -> Unit
+) {
     var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        onAttachFile(uri)
+    }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -138,6 +159,18 @@ fun SendMessageInput(onSendMessage: (String) -> Unit) {
             .fillMaxWidth()
             .padding(16.dp)
     ) {
+        IconButton(
+            onClick = {
+                filePickerLauncher.launch("*/*")
+            },
+            modifier = Modifier.padding(end = 8.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Share,
+                contentDescription = "Attach file",
+                tint = Color.Black
+            )
+        }
 
         TextField(
             value = textFieldValue,
