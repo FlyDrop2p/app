@@ -153,10 +153,10 @@ fun SettingsScreen(
                     onClick = {
                         settingsViewModel.updateUsername(usernameText)
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFbae6fd)),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Save", color = Color(0xFF083249))
+                    Text("Save", color = MaterialTheme.colorScheme.onPrimaryContainer)
                 }
             }
         }
