@@ -1,19 +1,28 @@
 package com.flydrop2p.flydrop2p.domain.repository
 
+import com.flydrop2p.flydrop2p.domain.model.contact.Account
 import com.flydrop2p.flydrop2p.domain.model.contact.Contact
+import com.flydrop2p.flydrop2p.domain.model.contact.Profile
 import kotlinx.coroutines.flow.Flow
 
 interface ContactRepository {
     fun getAllContacts(): Flow<List<Contact>>
 
-    fun getContactById(accountId: Int): Flow<Contact?>
+    fun getContactByAccountId(accountId: Int): Flow<Contact?>
 
-    suspend fun addContact(contact: Contact)
+    suspend fun addAccount(account: Account)
 
-    suspend fun updateContact(contact: Contact)
+    suspend fun addOrUpdateAccount(account: Account)
 
-    suspend fun deleteContact(contact: Contact)
+    suspend fun updateAccount(account: Account)
 
-    // TODO: Only for testing purposes
-    suspend fun populateDatabase(accountId: Int)
+    suspend fun deleteAccount(account: Account)
+
+    suspend fun addProfile(profile: Profile)
+
+    suspend fun addOrUpdateProfile(profile: Profile)
+
+    suspend fun updateProfile(profile: Profile)
+
+    suspend fun deleteProfile(profile: Profile)
 }

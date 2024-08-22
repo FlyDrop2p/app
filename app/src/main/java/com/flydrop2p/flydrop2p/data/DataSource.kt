@@ -7,13 +7,13 @@ import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 object DataSource {
     val contacts = listOf(
         // Contact(accountId = 0, profile = Profile(username = "Me")),
-        Contact(accountId = 7, profile = Profile(username = "Alice", imagePath = null)),
-        Contact(accountId = 6, profile = Profile(username = "Bob", imagePath = null)),
-        Contact(accountId = 3, profile = Profile(username = "Charlie", imagePath = null)),
-        Contact(accountId = 4, profile = Profile(username = "David", imagePath = null)),
-        Contact(accountId = 5, profile = Profile(username = "Eve", imagePath = null)),
-        Contact(accountId = 15, profile = Profile(username = "Frank", imagePath = null)),
-        Contact(accountId = 12, profile = Profile(username = "Grace", imagePath = null))
+        Contact(accountId = 7, profile = Profile(username = "Alice", imageFileName = null)),
+        Contact(accountId = 6, profile = Profile(username = "Bob", imageFileName = null)),
+        Contact(accountId = 3, profile = Profile(username = "Charlie", imageFileName = null)),
+        Contact(accountId = 4, profile = Profile(username = "David", imageFileName = null)),
+        Contact(accountId = 5, profile = Profile(username = "Eve", imageFileName = null)),
+        Contact(accountId = 15, profile = Profile(username = "Frank", imageFileName = null)),
+        Contact(accountId = 12, profile = Profile(username = "Grace", imageFileName = null))
     )
 
 

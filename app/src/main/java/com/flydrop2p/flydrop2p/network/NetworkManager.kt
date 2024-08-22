@@ -1,21 +1,26 @@
 package com.flydrop2p.flydrop2p.network
 
-import android.util.Log
 import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.data.local.FileManager
 import com.flydrop2p.flydrop2p.domain.model.contact.Contact
+import com.flydrop2p.flydrop2p.domain.model.contact.toAccount
+import com.flydrop2p.flydrop2p.domain.model.contact.toNetworkProfile
+import com.flydrop2p.flydrop2p.domain.model.contact.toProfile
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 import com.flydrop2p.flydrop2p.domain.model.message.toNetworkFileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.toNetworkTextMessage
 import com.flydrop2p.flydrop2p.domain.model.message.toTextMessage
-import com.flydrop2p.flydrop2p.domain.repository.AccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
-import com.flydrop2p.flydrop2p.domain.repository.ProfileRepository
-import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
+import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
+import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
+import com.flydrop2p.flydrop2p.network.model.contact.NetworkAccount
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
+import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
 import com.flydrop2p.flydrop2p.network.model.message.NetworkTextMessage
+import com.flydrop2p.flydrop2p.network.model.profile.NetworkProfileRequest
+import com.flydrop2p.flydrop2p.network.model.profile.NetworkProfileResponse
 import com.flydrop2p.flydrop2p.network.service.ClientService
 import com.flydrop2p.flydrop2p.network.service.ServerService
 import com.flydrop2p.flydrop2p.network.wifidirect.WiFiDirectBroadcastReceiver
@@ -25,15 +30,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.io.File
 
 
 class NetworkManager(
     activity: MainActivity,
-    accountRepository: AccountRepository,
-    profileRepository: ProfileRepository,
+    ownAccountRepository: OwnAccountRepository,
+    ownProfileRepository: OwnProfileRepository,
     private val chatRepository: ChatRepository,
     private val contactRepository: ContactRepository,
     private val fileManager: FileManager
@@ -42,38 +46,37 @@ class NetworkManager(
     val receiver: WiFiDirectBroadcastReceiver = WiFiDirectBroadcastReceiver(activity)
 
     private lateinit var thisDevice: Device
-    private val _connectedDevices = MutableStateFlow<List<Device>>(listOf())
-    val connectedDevices: StateFlow<List<Device>> = _connectedDevices
+    private val connectedDevices: MutableList<Device> = mutableListOf()
 
     private val serverService = ServerService()
     private val clientService = ClientService()
 
     init {
         coroutineScope.launch {
-            val account = accountRepository.account.first()
-            val profile = profileRepository.profile.first()
+            val account = ownAccountRepository.account.first()
+            val profile = ownProfileRepository.profile.first()
 
-            thisDevice = Device(null, Contact(account.accountId, profile))
+            thisDevice = Device(null, Contact(account, profile))
 
-            profileRepository.setUsername(profile.username)
-            accountRepository.setAccountId(account.accountId)
+            ownAccountRepository.setAccountId(account.accountId)
+            ownProfileRepository.setUsername(profile.username)
 
-            profileRepository.profile.collect {
-                thisDevice = thisDevice.copy(contact = thisDevice.contact.copy(profile = it))
+            ownAccountRepository.account.collect {
+                thisDevice = thisDevice.copy(contact = thisDevice.contact.copy(account = it))
             }
 
-            accountRepository.account.collect {
-                thisDevice = thisDevice.copy(contact = thisDevice.contact.copy(accountId = it.accountId))
+            ownProfileRepository.profile.collect {
+                thisDevice = thisDevice.copy(contact = thisDevice.contact.copy(profile = it))
             }
         }
     }
 
     fun sendKeepalive() {
         coroutineScope.launch {
-            val networkKeepalive = NetworkKeepalive(connectedDevices.value.map { it.toNetworkDevice(fileManager) } + thisDevice.toNetworkDevice(fileManager))
+            val networkKeepalive = NetworkKeepalive(connectedDevices.map { it.toNetworkDevice().account } + thisDevice.toNetworkDevice().account)
             clientService.sendKeepalive(IP_GROUP_OWNER, thisDevice, networkKeepalive)
 
-            for (device in connectedDevices.value) {
+            for (device in connectedDevices) {
                 device.ipAddress?.let {
                     clientService.sendKeepalive(it, thisDevice, networkKeepalive)
                 }
@@ -81,13 +84,39 @@ class NetworkManager(
         }
     }
 
-    fun sendTextMessage(accountId: Int, text: String) {
-        val connectedDevice = connectedDevices.value.find { it.accountId == accountId }
+    fun sendProfileRequest(accountId: Int) {
+        val connectedDevice = connectedDevices.find { it.account.accountId == accountId }
 
         connectedDevice?.let { device ->
             coroutineScope.launch {
                 device.ipAddress?.let {
-                    val textMessage = TextMessage(thisDevice.accountId, accountId, text, System.currentTimeMillis() / 1000)
+                    val networkProfileRequest = NetworkProfileRequest(thisDevice.account.accountId, accountId)
+                    clientService.sendProfileRequest(it, thisDevice, networkProfileRequest)
+                }
+            }
+        }
+    }
+
+    fun sendProfileResponse(accountId: Int) {
+        val connectedDevice = connectedDevices.find { it.account.accountId == accountId }
+
+        connectedDevice?.let { device ->
+            coroutineScope.launch {
+                device.ipAddress?.let {
+                    val networkProfileResponse = NetworkProfileResponse(thisDevice.account.accountId, accountId, thisDevice.profile?.toNetworkProfile()!!)
+                    clientService.sendProfileResponse(it, thisDevice, networkProfileResponse)
+                }
+            }
+        }
+    }
+
+    fun sendTextMessage(accountId: Int, text: String) {
+        val connectedDevice = connectedDevices.find { it.account.accountId == accountId }
+
+        connectedDevice?.let { device ->
+            coroutineScope.launch {
+                device.ipAddress?.let {
+                    val textMessage = TextMessage(thisDevice.account.accountId, accountId, text, System.currentTimeMillis() / 1000)
                     chatRepository.addChatMessage(textMessage)
                     clientService.sendTextMessage(it, thisDevice, textMessage.toNetworkTextMessage())
                 }
@@ -96,12 +125,12 @@ class NetworkManager(
     }
 
     fun sendFileMessage(accountId: Int, file: File) {
-        val connectedDevice = connectedDevices.value.find { it.accountId == accountId }
+        val connectedDevice = connectedDevices.find { it.account.accountId == accountId }
 
         connectedDevice?.let { device ->
             coroutineScope.launch {
                 device.ipAddress?.let {
-                    val fileMessage = FileMessage(thisDevice.accountId, accountId, file, System.currentTimeMillis() / 1000)
+                    val fileMessage = FileMessage(thisDevice.account.accountId, accountId, file, System.currentTimeMillis() / 1000)
                     chatRepository.addChatMessage(fileMessage)
                     clientService.sendFileMessage(it, thisDevice, fileMessage.toNetworkFileMessage())
                 }
@@ -113,6 +142,8 @@ class NetworkManager(
         startKeepaliveConnection()
         startTextMessageConnection()
         startFileMessageConnection()
+        startProfileRequestConnection()
+        startProfileResponseConnection()
     }
 
     private fun startKeepaliveConnection() {
@@ -120,10 +151,34 @@ class NetworkManager(
             while(true) {
                 val networkKeepalive = serverService.listenKeepalive()
 
-                for(device in networkKeepalive.networkDevices.map { it.toDevice(fileManager) }) {
-                    if(device.accountId != thisDevice.accountId) {
-                        handleDeviceKeepalive(device)
+                for(networkAccount in networkKeepalive.networkAccounts) {
+                    if(networkAccount.accountId != thisDevice.account.accountId) {
+                        handleDeviceKeepalive(networkAccount)
                     }
+                }
+            }
+        }
+    }
+
+    private fun startProfileRequestConnection() {
+        coroutineScope.launch {
+            while(true) {
+                val networkProfileRequest = serverService.listenProfileRequest()
+
+                if(networkProfileRequest.receiverId == thisDevice.account.accountId) {
+                    handleProfileRequest(networkProfileRequest)
+                }
+            }
+        }
+    }
+
+    private fun startProfileResponseConnection() {
+        coroutineScope.launch {
+            while(true) {
+                val networkProfileResponse = serverService.listenProfileResponse()
+
+                if(networkProfileResponse.receiverId == thisDevice.account.accountId) {
+                    handleProfileResponse(networkProfileResponse)
                 }
             }
         }
@@ -134,7 +189,7 @@ class NetworkManager(
             while(true) {
                 val networkTextMessage = serverService.listenTextMessage()
 
-                if(networkTextMessage.receiverId == thisDevice.accountId) {
+                if(networkTextMessage.receiverId == thisDevice.account.accountId) {
                     handleTextMessage(networkTextMessage)
                 }
             }
@@ -146,24 +201,46 @@ class NetworkManager(
             while(true) {
                 val networkFileMessage = serverService.listenFileMessage()
 
-                if(networkFileMessage.receiverId == thisDevice.accountId) {
+                if(networkFileMessage.receiverId == thisDevice.account.accountId) {
                     handleFileMessage(networkFileMessage)
                 }
             }
         }
     }
 
-    private fun handleDeviceKeepalive(device: Device) {
+    private fun handleDeviceKeepalive(networkAccount: NetworkAccount) {
         coroutineScope.launch {
-            val contact = contactRepository.getContactById(device.accountId)
+            contactRepository.addOrUpdateAccount(networkAccount.toAccount())
 
-            if(contact.firstOrNull() == null) {
-                contactRepository.addContact(device.contact)
-            } else {
-                contactRepository.updateContact(device.contact)
+            connectedDevices = connectedDevices.value.map { device ->
+                if(device.account.accountId != thisDevice.account.accountId) {
+                    device
+                } else {
+
+
+                    device.copy(contact = device.contact.copy(account = networkAccount.toAccount()))
+                }
             }
+        }
+    }
 
-            _connectedDevices.value = (_connectedDevices.value.filter { it.accountId != device.accountId } + device)
+    private fun handleProfileRequest(networkProfileRequest: NetworkProfileRequest) {
+        coroutineScope.launch {
+            sendProfileResponse(networkProfileRequest.senderId)
+        }
+    }
+
+    private fun handleProfileResponse(networkProfileResponse: NetworkProfileResponse) {
+        coroutineScope.launch {
+            contactRepository.addOrUpdateProfile(networkProfileResponse.profile.toProfile())
+
+            _connectedDevices.value = _connectedDevices.value.map { device ->
+                if(device.account.accountId != thisDevice.account.accountId) {
+                    device
+                } else {
+                    device.copy(contact = device.contact.copy(profile = networkProfileResponse.profile.toProfile()))
+                }
+            }
         }
     }
 

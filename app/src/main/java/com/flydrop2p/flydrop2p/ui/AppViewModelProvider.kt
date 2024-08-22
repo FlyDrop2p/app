@@ -22,14 +22,14 @@ object AppViewModelProvider {
             ChatViewModel(
                 application().container.chatRepository,
                 application().container.contactRepository,
-                application().container.accountRepository,
+                application().container.ownAccountRepository,
                 application().container.networkManager,
             )
         }
 
         initializer {
             SettingsViewModel(
-                application().container.profileRepository,
+                application().container.ownProfileRepository,
             )
         }
     }

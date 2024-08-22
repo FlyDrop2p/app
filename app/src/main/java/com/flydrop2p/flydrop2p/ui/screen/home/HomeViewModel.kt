@@ -21,15 +21,4 @@ class HomeViewModel(private val chatRepository: ChatRepository, private val cont
             }
         }
     }
-
-    // TODO: Only for testing purposes
-    fun populateDatabase() {
-//        viewModelScope.launch {
-//            try {
-//                loadContacts()
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
-//        }
-    }
 }

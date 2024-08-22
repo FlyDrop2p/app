@@ -2,9 +2,9 @@ package com.flydrop2p.flydrop2p.ui.screen.chat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.flydrop2p.flydrop2p.domain.repository.AccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
+import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
 import com.flydrop2p.flydrop2p.network.NetworkManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,13 +14,13 @@ import kotlinx.coroutines.launch
 class ChatViewModel(
     private val chatRepository: ChatRepository,
     private val contactRepository: ContactRepository,
-    private val accountRepository: AccountRepository,
+    private val ownAccountRepository: OwnAccountRepository,
     private val networkManager: NetworkManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ChatViewState())
     val uiState: StateFlow<ChatViewState> = _uiState.asStateFlow()
 
-    val myAccount = accountRepository.account
+    val myAccount = ownAccountRepository.account
 
     fun collectContact(accountId: Int) {
         viewModelScope.launch {
@@ -48,14 +48,5 @@ class ChatViewModel(
 
     fun resetChat() {
         _uiState.value = ChatViewState()
-    }
-
-    fun populateDatabase() {
-        viewModelScope.launch {
-            myAccount.collect { account ->
-                chatRepository.populateDatabase(account.accountId)
-                contactRepository.populateDatabase(account.accountId)
-            }
-        }
     }
 }

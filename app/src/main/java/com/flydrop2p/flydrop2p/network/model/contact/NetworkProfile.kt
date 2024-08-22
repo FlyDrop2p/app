@@ -1,9 +1,10 @@
-package com.flydrop2p.flydrop2p.network.model.keepalive
+package com.flydrop2p.flydrop2p.network.model.contact
 
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class NetworkProfile(
+    val accountId: Int,
     val username: String,
     val image: ByteArray?
 ) {

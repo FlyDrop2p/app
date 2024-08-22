@@ -5,14 +5,14 @@ import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.data.local.AppDataStore
 import com.flydrop2p.flydrop2p.data.local.AppDatabase
 import com.flydrop2p.flydrop2p.data.local.FileManager
-import com.flydrop2p.flydrop2p.data.repository.AccountLocalRepository
 import com.flydrop2p.flydrop2p.data.repository.ChatLocalRepository
 import com.flydrop2p.flydrop2p.data.repository.ContactLocalRepository
-import com.flydrop2p.flydrop2p.data.repository.ProfileLocalRepository
-import com.flydrop2p.flydrop2p.domain.repository.AccountRepository
+import com.flydrop2p.flydrop2p.data.repository.OwnAccountLocalRepository
+import com.flydrop2p.flydrop2p.data.repository.OwnProfileLocalRepository
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
-import com.flydrop2p.flydrop2p.domain.repository.ProfileRepository
+import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
+import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
 import com.flydrop2p.flydrop2p.network.NetworkManager
 
 /**
@@ -21,8 +21,8 @@ import com.flydrop2p.flydrop2p.network.NetworkManager
 interface AppContainer {
     val chatRepository: ChatRepository
     val contactRepository: ContactRepository
-    val accountRepository: AccountRepository
-    val profileRepository: ProfileRepository
+    val ownAccountRepository: OwnAccountRepository
+    val ownProfileRepository: OwnProfileRepository
     val fileManager: FileManager
     val networkManager: NetworkManager
 }
@@ -48,17 +48,17 @@ class AppDataContainer(private val context: Context, activity: MainActivity) : A
     }
 
     /**
-     * Implementation for [AccountRepository]
+     * Implementation for [OwnAccountRepository]
      */
-    override val accountRepository: AccountRepository by lazy {
-        AccountLocalRepository(AppDataStore.getAccountRepository(context))
+    override val ownAccountRepository: OwnAccountRepository by lazy {
+        OwnAccountLocalRepository(AppDataStore.getAccountRepository(context))
     }
 
     /**
-     * Implementation for [ProfileRepository]
+     * Implementation for [OwnProfileRepository]
      */
-    override val profileRepository: ProfileRepository by lazy {
-        ProfileLocalRepository(AppDataStore.getProfileRepository(context))
+    override val ownProfileRepository: OwnProfileRepository by lazy {
+        OwnProfileLocalRepository(AppDataStore.getProfileRepository(context))
     }
 
     /**
@@ -69,5 +69,5 @@ class AppDataContainer(private val context: Context, activity: MainActivity) : A
     /**
      * Implementation for [NetworkManager]
      */
-    override val networkManager: NetworkManager = NetworkManager(activity, accountRepository, profileRepository, chatRepository, contactRepository, fileManager)
+    override val networkManager: NetworkManager = NetworkManager(activity, ownAccountRepository, ownProfileRepository, chatRepository, contactRepository, fileManager)
 }

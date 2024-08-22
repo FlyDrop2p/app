@@ -1,51 +1,40 @@
 package com.flydrop2p.flydrop2p.domain.model.contact
 
-import com.flydrop2p.flydrop2p.data.local.FileManager
-import com.flydrop2p.flydrop2p.data.local.contact.ContactEntity
-import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkContact
+import com.flydrop2p.flydrop2p.network.model.contact.NetworkContact
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Contact(
-    val accountId: Int,
-    val profile: Profile
+    val account: Account,
+    val profile: Profile?
 ) : Comparable<Contact> {
-    val username: String
-        get() = profile.username
+    val accountId: Int
+        get() = account.accountId
 
-    val imagePath: String?
-        get() = profile.imagePath
+    val profileUpdate: Long
+        get() = account.profileUpdate
+
+    val username: String?
+        get() = profile?.username
+
+    val imageFileName: String?
+        get() = profile?.imageFileName
 
     override fun compareTo(other: Contact): Int {
         return compareValuesBy(this, other, Contact::username)
     }
 }
 
-fun Contact.toContactEntity(): ContactEntity {
-    return ContactEntity(
-        accountId = accountId,
-        username = profile.username,
-        imagePath = imagePath
-    )
-}
-
-fun ContactEntity.toContact(): Contact {
-    return Contact(
-        accountId = accountId,
-        profile = Profile(username, imagePath)
-    )
-}
-
-fun Contact.toNetworkContact(fileManager: FileManager): NetworkContact {
+fun Contact.toNetworkContact(): NetworkContact {
     return NetworkContact(
-        accountId = accountId,
-        networkProfile = profile.toNetworkProfile(fileManager)
+        account = account.toNetworkAccount(),
+        profile = profile?.toNetworkProfile()
     )
 }
 
-fun NetworkContact.toContact(fileManager: FileManager): Contact {
+fun NetworkContact.toContact(): Contact {
     return Contact(
-        accountId = accountId,
-        profile = networkProfile.toProfile(fileManager)
+        account = account.toAccount(),
+        profile = profile?.toProfile()
     )
 }

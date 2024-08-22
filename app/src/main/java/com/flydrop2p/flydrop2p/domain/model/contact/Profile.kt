@@ -1,25 +1,44 @@
 package com.flydrop2p.flydrop2p.domain.model.contact
 
-import com.flydrop2p.flydrop2p.data.local.FileManager
-import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkProfile
+import com.flydrop2p.flydrop2p.data.local.profile.ProfileEntity
+import com.flydrop2p.flydrop2p.network.model.contact.NetworkProfile
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Profile(
+    val accountId: Int,
     val username: String,
-    val imagePath: String?
+    val imageFileName: String?
 )
 
-fun Profile.toNetworkProfile(fileManager: FileManager): NetworkProfile {
-    return NetworkProfile(
+fun Profile.toProfileEntity(): ProfileEntity {
+    return ProfileEntity(
+        accountId = accountId,
         username = username,
-        image = fileManager.imagePathToByteArray(imagePath)
+        imageFileName = imageFileName
     )
 }
 
-fun NetworkProfile.toProfile(fileManager: FileManager): Profile {
+fun ProfileEntity.toProfile(): Profile {
     return Profile(
+        accountId = accountId,
         username = username,
-        imagePath = fileManager.byteArrayToImagePath(image, "${username}.JPG")
+        imageFileName = imageFileName
+    )
+}
+
+fun Profile.toNetworkProfile(): NetworkProfile {
+    return NetworkProfile(
+        accountId = accountId,
+        username = username,
+        image = byteArrayOf() // TODO
+    )
+}
+
+fun NetworkProfile.toProfile(): Profile {
+    return Profile(
+        accountId = accountId,
+        username = username,
+        imageFileName = accountId.toString()
     )
 }

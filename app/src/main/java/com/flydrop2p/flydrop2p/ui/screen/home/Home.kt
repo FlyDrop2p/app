@@ -76,8 +76,6 @@ fun HomeScreen(
             FloatingActionButton(
                 onClick = {
                     Log.d("ChatScreen", "FloatingActionButton onClick")
-                    chatViewModel.populateDatabase()
-                    homeViewModel.populateDatabase()
                 },
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(16.dp)

@@ -3,7 +3,6 @@ package com.flydrop2p.flydrop2p.data.local
 import android.content.ContentValues
 import android.net.Uri
 import android.provider.MediaStore
-import androidx.core.net.toFile
 import com.flydrop2p.flydrop2p.MainActivity
 import java.io.ByteArrayOutputStream
 import java.io.File

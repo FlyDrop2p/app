@@ -2,14 +2,14 @@ package com.flydrop2p.flydrop2p.ui.screen.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.flydrop2p.flydrop2p.domain.repository.ProfileRepository
+import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
-    private val profileRepository: ProfileRepository
+    private val ownProfileRepository: OwnProfileRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsViewState())
@@ -17,7 +17,7 @@ class SettingsViewModel(
 
     init {
         viewModelScope.launch {
-            profileRepository.profile.collect {
+            ownProfileRepository.profile.collect {
                 _uiState.value = SettingsViewState(it)
             }
         }
@@ -25,13 +25,13 @@ class SettingsViewModel(
 
     fun updateUsername(newUsername: String) {
         viewModelScope.launch {
-            profileRepository.setUsername(newUsername)
+            ownProfileRepository.setUsername(newUsername)
         }
     }
 
     fun updateProfileImage(newImagePath: String) {
         viewModelScope.launch {
-            profileRepository.setImageFilePath(newImagePath)
+            ownProfileRepository.setImageFilePath(newImagePath)
         }
     }
 }

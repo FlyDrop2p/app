@@ -10,7 +10,4 @@ interface ChatRepository {
     fun getAllChatPreviews(): Flow<List<ChatPreview>>
 
     suspend fun addChatMessage(message: Message)
-
-    // TODO: Only for testing purposes
-    suspend fun populateDatabase(accountId: Int)
 }
