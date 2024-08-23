@@ -11,10 +11,16 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface AccountDAO {
     @Query("SELECT * FROM AccountEntity")
-    fun getAllAccounts(): Flow<List<AccountEntity>>
+    fun getAllAccountsAsFlow(): Flow<List<AccountEntity>>
 
     @Query("SELECT * FROM AccountEntity WHERE accountId = :accountId")
-    fun getAccountByAccountId(accountId: Int): Flow<AccountEntity?>
+    fun getAccountByAccountIdAsFlow(accountId: Int): Flow<AccountEntity?>
+
+    @Query("SELECT * FROM AccountEntity")
+    fun getAllAccounts(): List<AccountEntity>
+
+    @Query("SELECT * FROM AccountEntity WHERE accountId = :accountId")
+    fun getAccountByAccountId(accountId: Int): AccountEntity?
 
     @Insert
     suspend fun insertAccount(account: AccountEntity)

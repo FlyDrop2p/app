@@ -24,7 +24,7 @@ class ChatViewModel(
 
     fun collectContact(accountId: Int) {
         viewModelScope.launch {
-            contactRepository.getContactById(accountId).collect {
+            contactRepository.getContactByAccountIdAsFlow(accountId).collect {
                 it?.let {
                     _uiState.value = _uiState.value.copy(contact = it)
                 }

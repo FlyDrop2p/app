@@ -11,10 +11,16 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ProfileDAO {
     @Query("SELECT * FROM ProfileEntity")
-    fun getAllProfiles(): Flow<List<ProfileEntity>>
+    fun getAllProfilesAsFlow(): Flow<List<ProfileEntity>>
 
     @Query("SELECT * FROM ProfileEntity WHERE accountId = :accountId")
-    fun getProfileByAccountId(accountId: Int): Flow<ProfileEntity?>
+    fun getProfileByAccountIdAsFlow(accountId: Int): Flow<ProfileEntity?>
+
+    @Query("SELECT * FROM ProfileEntity")
+    fun getAllProfiles(): List<ProfileEntity>
+
+    @Query("SELECT * FROM ProfileEntity WHERE accountId = :accountId")
+    fun getProfileByAccountId(accountId: Int): ProfileEntity?
 
     @Insert
     suspend fun insertProfile(profile: ProfileEntity)

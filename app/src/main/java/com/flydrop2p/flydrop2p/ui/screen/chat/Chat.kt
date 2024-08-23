@@ -68,7 +68,7 @@ fun ChatScreen(
     Scaffold(
         topBar = {
             ChatTopAppBar(
-                title = chatState.contact.username,
+                title = chatState.contact.username ?: "Connecting...",
                 canNavigateBack = true,
                 onConnectionButtonClick = onConnectionButtonClick,
                 onSettingsButtonClick = onSettingsButtonClick,

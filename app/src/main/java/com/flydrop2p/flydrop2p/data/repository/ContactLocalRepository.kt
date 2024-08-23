@@ -15,12 +15,12 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
 class ContactLocalRepository(private val accountDAO: AccountDAO, private val profileDAO: ProfileDAO) : ContactRepository {
-    override fun getAllContacts(): Flow<List<Contact>> {
-        val accountsFlow = accountDAO.getAllAccounts().map { accountEntities ->
+    override fun getAllContactsAsFlow(): Flow<List<Contact>> {
+        val accountsFlow = accountDAO.getAllAccountsAsFlow().map { accountEntities ->
             accountEntities.map { it.toAccount() }
         }
 
-        val profilesFlow = profileDAO.getAllProfiles().map { profileEntities ->
+        val profilesFlow = profileDAO.getAllProfilesAsFlow().map { profileEntities ->
             profileEntities.map { it.toProfile() }
         }
 
@@ -31,12 +31,12 @@ class ContactLocalRepository(private val accountDAO: AccountDAO, private val pro
         }
     }
 
-    override fun getContactByAccountId(accountId: Int): Flow<Contact?> {
-        val accountFlow = accountDAO.getAccountByAccountId(accountId).map { accountEntity ->
+    override fun getContactByAccountIdAsFlow(accountId: Int): Flow<Contact?> {
+        val accountFlow = accountDAO.getAccountByAccountIdAsFlow(accountId).map { accountEntity ->
             accountEntity?.toAccount()
         }
 
-        val profileFlow = profileDAO.getProfileByAccountId(accountId).map { profileEntity ->
+        val profileFlow = profileDAO.getProfileByAccountIdAsFlow(accountId).map { profileEntity ->
             profileEntity?.toProfile()
         }
 
@@ -47,6 +47,24 @@ class ContactLocalRepository(private val accountDAO: AccountDAO, private val pro
                 null
             }
         }
+    }
+
+    override fun getAllAccountsAsFlow(): Flow<List<Account>> {
+        return accountDAO.getAllAccountsAsFlow().map { accountEntities ->
+            accountEntities.map { it.toAccount() }
+        }
+    }
+
+    override fun getAccountByAccountIdAsFlow(accountId: Int): Flow<Account?> {
+        return accountDAO.getAccountByAccountIdAsFlow(accountId).map { it?.toAccount() }
+    }
+
+    override suspend fun getAllAccounts(): List<Account> {
+        return accountDAO.getAllAccounts().map { it.toAccount() }
+    }
+
+    override suspend fun getAccountByAccountId(accountId: Int): Account? {
+        return accountDAO.getAccountByAccountId(accountId)?.toAccount()
     }
 
     override suspend fun addAccount(account: Account) {
@@ -63,6 +81,24 @@ class ContactLocalRepository(private val accountDAO: AccountDAO, private val pro
 
     override suspend fun deleteAccount(account: Account) {
         accountDAO.deleteAccount(account.toAccountEntity())
+    }
+
+    override fun getAllProfilesAsFlow(): Flow<List<Profile>> {
+        return profileDAO.getAllProfilesAsFlow().map { profileEntities ->
+            profileEntities.map { it.toProfile() }
+        }
+    }
+
+    override fun getProfileByAccountIdAsFlow(accountId: Int): Flow<Profile?> {
+        return profileDAO.getProfileByAccountIdAsFlow(accountId).map { it?.toProfile() }
+    }
+
+    override suspend fun getAllProfiles(): List<Profile> {
+        return profileDAO.getAllProfiles().map { it.toProfile() }
+    }
+
+    override suspend fun getProfileByAccountId(accountId: Int): Profile? {
+        return profileDAO.getProfileByAccountId(accountId)?.toProfile()
     }
 
     override suspend fun addProfile(profile: Profile) {

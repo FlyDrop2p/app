@@ -12,7 +12,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 object ProfileSerializer : Serializer<Profile> {
-    override val defaultValue: Profile = Profile(Build.MODEL.toString(), null)
+    override val defaultValue: Profile = Profile(Build.MODEL[4].code, Build.MODEL.toString(), null)
 
     override suspend fun readFrom(input: InputStream): Profile {
         try {

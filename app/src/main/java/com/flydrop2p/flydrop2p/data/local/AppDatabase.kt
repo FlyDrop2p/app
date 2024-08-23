@@ -8,12 +8,16 @@ import com.flydrop2p.flydrop2p.data.local.account.AccountDAO
 import com.flydrop2p.flydrop2p.data.local.account.AccountEntity
 import com.flydrop2p.flydrop2p.data.local.message.MessageDAO
 import com.flydrop2p.flydrop2p.data.local.message.MessageEntity
+import com.flydrop2p.flydrop2p.data.local.profile.ProfileDAO
+import com.flydrop2p.flydrop2p.data.local.profile.ProfileEntity
 
-@Database(entities = [AccountEntity::class, MessageEntity::class], version = 1, exportSchema = false)
+@Database(entities = [AccountEntity::class, MessageEntity::class, ProfileEntity::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun contactDao(): AccountDAO
 
     abstract fun messageDao(): MessageDAO
+
+    abstract fun profileDao(): ProfileDAO
 
     companion object {
         @Volatile

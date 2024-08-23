@@ -138,7 +138,7 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier:
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = chatPreview.contact.username,
+                text = chatPreview.contact.username ?: "Connecting...",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )

@@ -2,7 +2,6 @@ package com.flydrop2p.flydrop2p.domain.model.contact
 
 import com.flydrop2p.flydrop2p.data.local.account.AccountEntity
 import com.flydrop2p.flydrop2p.network.model.contact.NetworkAccount
-import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkDevice
 import kotlinx.serialization.Serializable
 
 @Serializable

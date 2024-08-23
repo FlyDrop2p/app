@@ -29,6 +29,7 @@ object AppViewModelProvider {
 
         initializer {
             SettingsViewModel(
+                application().container.ownAccountRepository,
                 application().container.ownProfileRepository,
             )
         }

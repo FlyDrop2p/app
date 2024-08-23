@@ -2,6 +2,7 @@ package com.flydrop2p.flydrop2p.ui.screen.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
+    private val ownAccountRepository: OwnAccountRepository,
     private val ownProfileRepository: OwnProfileRepository
 ) : ViewModel() {
 
@@ -26,6 +28,7 @@ class SettingsViewModel(
     fun updateUsername(newUsername: String) {
         viewModelScope.launch {
             ownProfileRepository.setUsername(newUsername)
+            ownAccountRepository.setProfileUpdate(System.currentTimeMillis() / 1000)
         }
     }
 
