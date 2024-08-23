@@ -20,7 +20,8 @@ class ChatViewModel(
     private val _uiState = MutableStateFlow(ChatViewState())
     val uiState: StateFlow<ChatViewState> = _uiState.asStateFlow()
 
-    val myAccount = ownAccountRepository.account
+    val ownAccount
+        get() = ownAccountRepository.getAccountAsFlow()
 
     fun collectContact(accountId: Int) {
         viewModelScope.launch {

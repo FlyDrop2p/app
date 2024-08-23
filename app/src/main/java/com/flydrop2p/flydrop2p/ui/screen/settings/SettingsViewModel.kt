@@ -19,7 +19,7 @@ class SettingsViewModel(
 
     init {
         viewModelScope.launch {
-            ownProfileRepository.profile.collect {
+            ownProfileRepository.getProfileAsFlow().collect {
                 _uiState.value = SettingsViewState(it)
             }
         }
@@ -32,9 +32,10 @@ class SettingsViewModel(
         }
     }
 
-    fun updateProfileImage(newImagePath: String) {
+    fun updateProfileImage(newImageFileName: String) {
         viewModelScope.launch {
-            ownProfileRepository.setImageFilePath(newImagePath)
+            ownProfileRepository.setImageFileName(newImageFileName)
+            ownAccountRepository.setProfileUpdate(System.currentTimeMillis() / 1000)
         }
     }
 }

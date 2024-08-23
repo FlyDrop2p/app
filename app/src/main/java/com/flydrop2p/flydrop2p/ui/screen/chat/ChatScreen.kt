@@ -60,7 +60,7 @@ fun ChatScreen(
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val currentAccount by chatViewModel.myAccount.collectAsState(initial = null)
+    val currentAccount by chatViewModel.ownAccount.collectAsState(initial = null)
 
     val chatState by chatViewModel.uiState.collectAsState()
     val navBackStackEntry by navController.currentBackStackEntryAsState()

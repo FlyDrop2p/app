@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
             FlyDrop2pTheme {
                 FlyDropApp(
                     onConnectionButtonClick = {
-
+                        networkManager.receiver.connectToDevices()
                     }
                 )
             }

@@ -58,13 +58,13 @@ class NetworkManager(
 
     init {
         coroutineScope.launch {
-            ownAccountRepository.account.collect {
+            ownAccountRepository.getAccountAsFlow().collect {
                 thisDevice = thisDevice.copy(contact = thisDevice.contact.copy(account = it))
             }
         }
 
         coroutineScope.launch {
-            ownProfileRepository.profile.collect {
+            ownProfileRepository.getProfileAsFlow().collect {
                 thisDevice = thisDevice.copy(contact = thisDevice.contact.copy(profile = it))
             }
         }
@@ -218,8 +218,7 @@ class NetworkManager(
                 sendProfileRequest(networkDevice.account.accountId)
             }
 
-            _connectedDevices.value = _connectedDevices.value.filter { it.account.accountId != networkDevice.account.accountId }
-            _connectedDevices.value += Device(networkDevice, profile)
+            _connectedDevices.value = _connectedDevices.value.filter { it.account.accountId != networkDevice.account.accountId } + Device(networkDevice, profile)
         }
     }
 
