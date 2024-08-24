@@ -75,7 +75,8 @@ fun ChatScreen(
                 modifier = modifier,
                 navigateUp = {
                     navController.navigateUp()
-                }
+                },
+                contactImageFileName = chatState.contact.imageFileName
             )
         },
     ) { innerPadding ->

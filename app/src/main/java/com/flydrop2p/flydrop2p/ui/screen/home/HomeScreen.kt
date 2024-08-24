@@ -34,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.flydrop2p.flydrop2p.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.chat.ChatPreview
@@ -42,6 +43,7 @@ import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import com.flydrop2p.flydrop2p.ui.screen.chat.ChatViewModel
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -125,14 +127,28 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier:
             },
         verticalAlignment = Alignment.Top
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.account_circle_24px),
-            colorFilter = ColorFilter.tint(Color.Black),
-            contentDescription = null,
-            modifier = Modifier
-                .size(50.dp)
-                .clip(CircleShape)
-        )
+        val imageModifier = Modifier
+            .size(50.dp)
+            .clip(CircleShape)
+
+//        if (chatPreview.contact.imageFileName != null) {
+//            Image(
+//                painter = rememberAsyncImagePainter(model = chatPreview.contact.imageFileName?.let {
+//                    File(
+//                        it
+//                    )
+//                }),
+//                contentDescription = "Immagine profilo",
+//                modifier = imageModifier
+//            )
+//        } else {
+            Image(
+                painter = painterResource(id = R.drawable.account_circle_24px),
+                colorFilter = ColorFilter.tint(Color.Black),
+                contentDescription = "Immagine di default",
+                modifier = imageModifier
+            )
+        // }
         Spacer(modifier = Modifier.width(16.dp))
         Column(
             modifier = Modifier.weight(1f)
