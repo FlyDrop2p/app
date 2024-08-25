@@ -50,8 +50,7 @@ import java.util.Locale
 
 @Composable
 fun SentFileMessageComponent(
-    message: FileMessage,
-    visualized: Boolean
+    message: FileMessage
 ) {
     val context = LocalContext.current
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -133,14 +132,28 @@ fun SentFileMessageComponent(
                         fontSize = 12.sp,
                         color = Color(0xFF083249)
                     )
-                    Image(
-                        painter = painterResource(id = R.drawable.done_all_24px),
-                        colorFilter = if (visualized) ColorFilter.tint(Color(0xFF0e9de9)) else ColorFilter.tint(
-                            Color(0xFFADADAD)
-                        ),
-                        contentDescription = "Visualizzato",
-                        modifier = Modifier.size(20.dp)
-                    )
+
+                    when (message.messageState){
+                        MessageState.MESSAGE_READ -> Image(
+                            painter = painterResource(id = R.drawable.done_all_24px),
+                            colorFilter = ColorFilter.tint(Color(0xFF037971)),
+                            contentDescription = "Visualizzato",
+                            modifier = Modifier.size(16.dp)
+                        )
+                        MessageState.MESSAGE_RECEIVED -> Image(
+                            painter = painterResource(id = R.drawable.done_all_24px),
+                            colorFilter = ColorFilter.tint(Color(0xFFADADAD)),
+                            contentDescription = "Visualizzato",
+                            modifier = Modifier.size(16.dp)
+                        )
+                        MessageState.MESSAGE_SENT -> Image(
+                            painter = painterResource(id = R.drawable.check_24px),
+                            colorFilter = ColorFilter.tint(Color(0xFFADADAD)),
+                            contentDescription = "Visualizzato",
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+
                 }
             }
         }
@@ -247,7 +260,6 @@ fun FileMessageComponent(
     if (message.senderId == currentAccountId) {
         SentFileMessageComponent(
             message = message,
-            visualized = message.messageState == MessageState.MESSAGE_READ
         )
     } else {
         ReceivedFileMessageComponent(

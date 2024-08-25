@@ -95,7 +95,6 @@ fun ChatScreen(
                 )
 
                 if (attachedFile != null) {
-                    // Mostra la preview del file se è stato allegato
                     FilePreview(
                         file = attachedFile!!,
                         onSendFile = {
@@ -177,7 +176,7 @@ fun MessageItem(message: Message, accountId: Long, chatViewModel: ChatViewModel)
     ) {
         when (message) {
             is TextMessage -> {
-                TextMessageComponent(message, true, currentAccountId = accountId)
+                TextMessageComponent(message, currentAccountId = accountId)
             }
 
             is FileMessage -> {

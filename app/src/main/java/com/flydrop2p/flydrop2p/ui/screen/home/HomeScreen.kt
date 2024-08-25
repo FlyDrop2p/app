@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -150,7 +151,11 @@ fun ChatItem(
             Image(
                 painter = rememberAsyncImagePainter(model = chatPreview.contact.imageFileName?.let {
                     File(LocalContext.current.filesDir, it)
-                }), contentDescription = "Immagine profilo", modifier = imageModifier
+                }),
+                contentDescription = "Immagine profilo",
+                modifier = imageModifier.fillMaxSize(),
+
+                contentScale = androidx.compose.ui.layout.ContentScale.Crop
             )
         } else {
             Image(

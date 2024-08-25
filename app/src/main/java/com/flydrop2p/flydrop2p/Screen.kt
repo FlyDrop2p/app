@@ -177,7 +177,8 @@ fun ChatTopAppBar(
                     Image(
                         painter = rememberAsyncImagePainter(model = File(LocalContext.current.filesDir, contactImageFileName)),
                         contentDescription = "Immagine profilo",
-                        modifier = imageModifier
+                        modifier = imageModifier,
+                        contentScale = androidx.compose.ui.layout.ContentScale.Crop
                     )
                 } else {
                     Image(

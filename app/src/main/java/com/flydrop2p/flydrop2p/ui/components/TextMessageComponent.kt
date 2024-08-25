@@ -23,13 +23,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.flydrop2p.flydrop2p.R
+import com.flydrop2p.flydrop2p.domain.model.message.MessageState
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
-fun SentTextMessageComponent(message: TextMessage, visualized: Boolean) {
+fun SentTextMessageComponent(message: TextMessage) {
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     val timeString = timeFormat.format(Date(message.timestamp))
 
@@ -65,12 +66,28 @@ fun SentTextMessageComponent(message: TextMessage, visualized: Boolean) {
                         color = Color.Gray
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Image(
-                        painter = painterResource(id = R.drawable.done_all_24px),
-                        colorFilter = if (visualized) ColorFilter.tint(Color(0xFF037971)) else ColorFilter.tint(Color(0xFFADADAD)),
-                        contentDescription = "Visualizzato",
-                        modifier = Modifier.size(16.dp)
-                    )
+
+                    when (message.messageState){
+                        MessageState.MESSAGE_READ -> Image(
+                            painter = painterResource(id = R.drawable.done_all_24px),
+                            colorFilter = ColorFilter.tint(Color(0xFF037971)),
+                            contentDescription = "Visualizzato",
+                            modifier = Modifier.size(16.dp)
+                        )
+                        MessageState.MESSAGE_RECEIVED -> Image(
+                            painter = painterResource(id = R.drawable.done_all_24px),
+                            colorFilter = ColorFilter.tint(Color(0xFFADADAD)),
+                            contentDescription = "Visualizzato",
+                            modifier = Modifier.size(16.dp)
+                        )
+                        MessageState.MESSAGE_SENT -> Image(
+                            painter = painterResource(id = R.drawable.check_24px),
+                            colorFilter = ColorFilter.tint(Color(0xFFADADAD)),
+                            contentDescription = "Visualizzato",
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+
                 }
             }
         }
@@ -120,9 +137,9 @@ fun ReceivedTextMessageComponent(message: TextMessage) {
 }
 
 @Composable
-fun TextMessageComponent(message: TextMessage, visualized: Boolean, currentAccountId: Long) {
+fun TextMessageComponent(message: TextMessage, currentAccountId: Long) {
     if (message.senderId == currentAccountId) {
-        SentTextMessageComponent(message = message, visualized = visualized)
+        SentTextMessageComponent(message = message)
     } else {
         ReceivedTextMessageComponent(message = message)
     }
