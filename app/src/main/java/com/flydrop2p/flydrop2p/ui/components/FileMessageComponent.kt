@@ -2,6 +2,7 @@ package com.flydrop2p.flydrop2p.ui.components
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
@@ -40,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
+import okio.Path.Companion.toPath
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -53,6 +56,9 @@ fun SentFileMessageComponent(
     val context = LocalContext.current
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     val timeString = timeFormat.format(Date(message.timestamp))
+
+    val fileExtension = message.fileName.substringAfterLast(".") // TODO: check if this is correct
+    val isImageOrVideo = fileExtension in listOf("jpg", "jpeg", "png", "gif", "mp4", "mov", "avi")
 
     Row(
         modifier = Modifier
@@ -78,16 +84,14 @@ fun SentFileMessageComponent(
                         context.startActivity(intent)
                     }
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                if (isImageOrVideo) {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_launcher_background),
-                        contentDescription = "File Thumbnail",
+                        painter = rememberImagePainter(data = message.fileName.toPath()), // TODO: check if this is correct
+                        contentDescription = "Media Preview",
                         modifier = Modifier
-                            .size(45.dp)
-                            .background(Color.White, RoundedCornerShape(8.dp))
-                            .padding(8.dp)
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .clip(RoundedCornerShape(16.dp))
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
@@ -102,6 +106,20 @@ fun SentFileMessageComponent(
                             fontSize = 14.sp,
                             color = Color(0xFF075985)
                         )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text(
+                                text = message.fileName,
+                                fontSize = 16.sp,
+                                color = Color(0xFF075985),
+                                fontWeight = FontWeight.Medium
+                            )
+                            Text(
+                                text = message.fileName.length.toString(),
+                                fontSize = 14.sp,
+                                color = Color(0xFF075985)
+                            )
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -129,6 +147,7 @@ fun SentFileMessageComponent(
     }
 }
 
+
 @Composable
 fun ReceivedFileMessageComponent(
     message: FileMessage,
@@ -136,6 +155,9 @@ fun ReceivedFileMessageComponent(
     val context = LocalContext.current
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     val timeString = timeFormat.format(Date(message.timestamp))
+
+    val fileExtension = message.fileName.substringAfterLast(".").lowercase() // TODO: check if this is correct
+    val isImageOrVideo = fileExtension in listOf("jpg", "jpeg", "png", "gif", "mp4", "mov", "avi")
 
     Row(
         modifier = Modifier
@@ -161,16 +183,14 @@ fun ReceivedFileMessageComponent(
                         context.startActivity(intent)
                     }
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                if (isImageOrVideo) {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_launcher_background),
-                        contentDescription = "File Thumbnail",
+                        painter = rememberImagePainter(data = message.fileName.toPath()),
+                        contentDescription = "Media Preview",
                         modifier = Modifier
-                            .size(45.dp)
-                            .background(Color.White, RoundedCornerShape(8.dp))
-                            .padding(8.dp)
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .clip(RoundedCornerShape(16.dp))
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
@@ -185,6 +205,20 @@ fun ReceivedFileMessageComponent(
                             fontSize = 14.sp,
                             color = Color(0xFF075985)
                         )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text(
+                                text = message.fileName,
+                                fontSize = 16.sp,
+                                color = Color(0xFF075985),
+                                fontWeight = FontWeight.Medium
+                            )
+                            Text(
+                                text = message.fileName.length.toString(),
+                                fontSize = 14.sp,
+                                color = Color(0xFF075985)
+                            )
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -204,16 +238,16 @@ fun ReceivedFileMessageComponent(
     }
 }
 
+
 @Composable
 fun FileMessageComponent(
     message: FileMessage,
-    visualized: Boolean,
     currentAccountId: Long
 ) {
     if (message.senderId == currentAccountId) {
         SentFileMessageComponent(
             message = message,
-            visualized = visualized
+            visualized = message.isRead
         )
     } else {
         ReceivedFileMessageComponent(
@@ -308,9 +342,9 @@ fun FileMessageComponentPreview() {
             senderId = 0,
             receiverId = 1,
             timestamp = System.currentTimeMillis(),
-            fileName = ""
+            fileName = "",
+            isRead = true
         ),
-        visualized = true,
         currentAccountId = 0
     )
 }

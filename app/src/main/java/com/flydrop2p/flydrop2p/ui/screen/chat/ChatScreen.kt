@@ -181,7 +181,7 @@ fun MessageItem(message: Message, accountId: Long, chatViewModel: ChatViewModel)
             }
 
             is FileMessage -> {
-                FileMessageComponent(message, true, currentAccountId = accountId)
+                FileMessageComponent(message, currentAccountId = accountId)
             }
         }
     }

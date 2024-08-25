@@ -34,6 +34,8 @@ class ChatLocalRepository(private val accountDAO: AccountDAO, private val messag
             accounts.map { account ->
                 ChatPreview(
                     Contact(account, profiles.find { it.accountId == account.accountId }),
+                    true, // TODO: Implement online status
+                    messageDAO.getNumberOfUnreadMessagesByAccountId(account.accountId).toInt(),
                     messageDAO.getLastMessageByAccountId(account.accountId)?.toMessage()
                 )
             }.sorted().reversed()

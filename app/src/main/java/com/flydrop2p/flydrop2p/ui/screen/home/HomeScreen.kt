@@ -2,12 +2,14 @@ package com.flydrop2p.flydrop2p.ui.screen.home
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -33,13 +35,16 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.flydrop2p.flydrop2p.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.chat.ChatPreview
+import com.flydrop2p.flydrop2p.domain.model.contact.Account
 import com.flydrop2p.flydrop2p.domain.model.contact.Contact
+import com.flydrop2p.flydrop2p.domain.model.contact.Profile
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
@@ -152,11 +157,24 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier:
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            Text(
-                text = chatPreview.contact.username ?: "Connecting...",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
-            )
+            Row (
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = chatPreview.contact.username ?: "Connecting...",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                if (chatPreview.online) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column(
+                        modifier = Modifier
+                            .size(10.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFF16a34a))
+                    ) {}
+                }
+            }
 
             when(chatPreview.lastMessage) {
                 is TextMessage -> {
@@ -181,7 +199,7 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier:
             }
         }
         Column(
-            verticalArrangement = Arrangement.Top,
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.End
         ) {
             Text(
@@ -189,6 +207,54 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier:
                 fontSize = 10.sp,
                 color = Color.Gray
             )
+
+            if (chatPreview.unreadMessagesCount > 0) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Column(
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFF16a34a)),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = chatPreview.unreadMessagesCount.toString(),
+                        fontSize = 12.sp,
+                        color = Color.White
+                    )
+                }
+            }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChatItemPreview() {
+//    ChatItem(
+//        chatPreview = ChatPreview(
+//            contact = Contact(
+//                account = Account(
+//                    accountId = 1,
+//                    profileUpdate = System.currentTimeMillis()
+//                ),
+//                profile = Profile(
+//                    accountId = 1,
+//                    username = "Alice",
+//                    imageFileName = null
+//                )
+//            ),
+//            online = true,
+//            unreadMessagesCount = 3,
+//            lastMessage = TextMessage(
+//                senderId = 1,
+//                receiverId = 2,
+//                text = "Ciao!",
+//                timestamp = System.currentTimeMillis(),
+//                isRead = false
+//            )
+//        ),
+//        onChatClick = {}
+//    )
 }

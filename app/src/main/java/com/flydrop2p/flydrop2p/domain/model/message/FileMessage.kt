@@ -8,7 +8,8 @@ data class FileMessage(
     override val senderId: Long,
     override val receiverId: Long,
     override val timestamp: Long,
-    val fileName: String
+    val fileName: String,
+override val isRead: Boolean
 ) : Message() {
     override fun toMessageEntity(): MessageEntity {
         return MessageEntity(
@@ -16,7 +17,8 @@ data class FileMessage(
             receiverId = receiverId,
             messageType = MessageType.FILE_MESSAGE,
             timestamp = timestamp,
-            content = fileName
+            content = fileName,
+            isRead = isRead
         )
     }
 }
@@ -27,6 +29,7 @@ fun MessageEntity.toFileMessage(): FileMessage {
         senderId = senderId,
         receiverId = receiverId,
         timestamp = timestamp,
-        fileName = content
+        fileName = content,
+        isRead = false
     )
 }

@@ -8,6 +8,7 @@ sealed class Message : Comparable<Message> {
     abstract val senderId: Long
     abstract val receiverId: Long
     abstract val timestamp: Long
+    abstract val isRead: Boolean
 
     abstract fun toMessageEntity(): MessageEntity
 

@@ -9,7 +9,8 @@ data class TextMessage(
     override val senderId: Long,
     override val receiverId: Long,
     override val timestamp: Long,
-    val text: String
+    val text: String,
+    override val isRead: Boolean
 ) : Message() {
     override fun toMessageEntity(): MessageEntity {
         return MessageEntity(
@@ -17,7 +18,8 @@ data class TextMessage(
             receiverId = receiverId,
             messageType = MessageType.TEXT_MESSAGE,
             timestamp = timestamp,
-            content = text
+            content = text,
+            isRead = isRead
         )
     }
 }
@@ -28,7 +30,8 @@ fun MessageEntity.toTextMessage(): TextMessage {
         senderId = senderId,
         receiverId = receiverId,
         timestamp = timestamp,
-        text = content
+        text = content,
+        isRead = isRead
     )
 }
 
@@ -48,6 +51,7 @@ fun NetworkTextMessage.toTextMessage(): TextMessage {
         senderId = senderId,
         receiverId = receiverId,
         timestamp = timestamp,
-        text = text
+        text = text,
+        isRead = false
     )
 }

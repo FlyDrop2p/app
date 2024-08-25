@@ -119,7 +119,7 @@ class NetworkManager(
         connectedDevice?.let { device ->
             coroutineScope.launch {
                 device.ipAddress?.let {
-                    val textMessage = TextMessage(0, ownDevice.account.accountId, accountId, System.currentTimeMillis(), text)
+                    val textMessage = TextMessage(0, ownDevice.account.accountId, accountId, System.currentTimeMillis(), text, false)
                     textMessage.messageId = chatRepository.addChatMessage(textMessage)
                     clientService.sendTextMessage(it, ownDevice, textMessage.toNetworkTextMessage())
                 }
@@ -133,7 +133,7 @@ class NetworkManager(
         connectedDevice?.let { device ->
             coroutineScope.launch {
                 device.ipAddress?.let {
-//                    val fileMessage = FileMessage(0, ownDevice.account.accountId, accountId, System.currentTimeMillis(), file)
+//                    val fileMessage = FileMessage(0, ownDevice.account.accountId, accountId, System.currentTimeMillis(), file, false)
 //                    chatRepository.addChatMessage(fileMessage)
 //                    clientService.sendFileMessage(it, ownDevice, fileMessage.toNetworkFileMessage())
                 }

@@ -16,4 +16,5 @@ data class MessageEntity(
     val timestamp: Long,
     val messageType: MessageType,
     val content: String,
+    val isRead: Boolean
 )
