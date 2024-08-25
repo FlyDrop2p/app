@@ -165,7 +165,7 @@ class NetworkManager(
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
                     val networkMessageAck = NetworkMessageAck(messageId, ownDevice.account.accountId, accountId)
-                    clientService.sendMessageReceivedAck(ipAddress, ownDevice, networkMessageAck)
+                    clientService.sendMessageReadAck(ipAddress, ownDevice, networkMessageAck)
                 }
             }
         }

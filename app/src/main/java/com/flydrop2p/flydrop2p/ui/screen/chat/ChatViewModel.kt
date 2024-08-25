@@ -3,6 +3,7 @@ package com.flydrop2p.flydrop2p.ui.screen.chat
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.flydrop2p.flydrop2p.domain.model.message.Message
 import com.flydrop2p.flydrop2p.domain.model.message.MessageState
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
@@ -55,10 +56,12 @@ class ChatViewModel(
         }
     }
 
-    fun sendMessageReadAck(accountId: Long, messageId: Long) {
+    fun updateMessageToRead(message: Message) {
         viewModelScope.launch {
-            chatRepository.updateMessageState(messageId, MessageState.MESSAGE_READ)
-            networkManager.sendMessageReadAck(accountId, messageId)
+            if(message.senderId != ownAccountRepository.getAccount().accountId) {
+                chatRepository.updateMessageState(message.messageId, MessageState.MESSAGE_READ)
+                networkManager.sendMessageReadAck(message.senderId, message.messageId)
+            }
         }
     }
 

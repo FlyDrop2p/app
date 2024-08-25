@@ -71,7 +71,7 @@ fun ChatScreen(
 
     chatState.messages.forEach { message ->
         if(message.messageState < MessageState.MESSAGE_READ) {
-            chatViewModel.sendMessageReadAck(message.senderId, message.messageId)
+            chatViewModel.updateMessageToRead(message)
         }
     }
 
