@@ -1,5 +1,6 @@
 package com.flydrop2p.flydrop2p.domain.model.message
 
+import android.content.Context
 import com.flydrop2p.flydrop2p.data.local.message.MessageEntity
 import com.flydrop2p.flydrop2p.data.local.message.MessageType
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
@@ -35,16 +36,19 @@ fun FileMessage.toNetworkFileMessage(): NetworkFileMessage {
     return NetworkFileMessage(
         senderId = senderId,
         receiverId = receiverId,
-        file = byteArrayOf(), // TODO
+        file = file.readBytes(),
         timestamp = timestamp
     )
 }
 
-fun NetworkFileMessage.toFileMessage(): FileMessage {
+fun NetworkFileMessage.toFileMessage(context: Context): FileMessage {
+    val file = File(context.filesDir, "${System.currentTimeMillis()}_file")
+    file.writeBytes(this.file)
+
     return FileMessage(
         senderId = senderId,
         receiverId = receiverId,
-        file = File(""), // TODO
+        file = file,
         timestamp = timestamp
     )
 }

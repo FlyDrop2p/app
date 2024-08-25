@@ -16,6 +16,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,12 +29,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import java.io.File
@@ -109,7 +117,9 @@ fun SentFileMessageComponent(
                     )
                     Image(
                         painter = painterResource(id = R.drawable.done_all_24px),
-                        colorFilter = if (visualized) ColorFilter.tint(Color(0xFF0e9de9)) else ColorFilter.tint(Color(0xFFADADAD)),
+                        colorFilter = if (visualized) ColorFilter.tint(Color(0xFF0e9de9)) else ColorFilter.tint(
+                            Color(0xFFADADAD)
+                        ),
                         contentDescription = "Visualizzato",
                         modifier = Modifier.size(20.dp)
                     )
@@ -211,6 +221,83 @@ fun FileMessageComponent(
         )
     }
 }
+
+@Composable
+fun FilePreview(file: File, onSendFile: (File) -> Unit, onDeleteFile: (File) -> Unit) {
+    val context = LocalContext.current
+    val fileUri = Uri.fromFile(file)
+    val mimeType = context.contentResolver.getType(fileUri) ?: "application/octet-stream"
+
+    @Composable
+    fun getPreviewPainter(): Painter {
+        return rememberImagePainter(
+            data = fileUri,
+            builder = {
+                crossfade(true)
+            }
+        )
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        if (mimeType.startsWith("image/")) {
+            Image(
+                painter = getPreviewPainter(),
+                contentDescription = "Image Preview",
+                modifier = Modifier
+                    .size(70.dp)
+                    .padding(end = 16.dp)
+            )
+        } else {
+            Image(
+                painter = getPreviewPainter(),
+                contentDescription = "File Preview",
+                modifier = Modifier
+                    .size(70.dp)
+                    .padding(end = 16.dp)
+            )
+            Text(
+                text = file.name,
+                color = Color.Black,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        IconButton(
+            onClick = {
+                onDeleteFile(file)
+            },
+            modifier = Modifier.padding(end = 8.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Delete,
+                contentDescription = "Delete",
+                tint = Color.Red
+            )
+        }
+
+        IconButton(
+            onClick = {
+                onSendFile(file)
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Send,
+                contentDescription = "Send",
+                tint = Color.Black
+            )
+        }
+    }
+}
+
+
 
 @Preview(showBackground = true)
 @Composable

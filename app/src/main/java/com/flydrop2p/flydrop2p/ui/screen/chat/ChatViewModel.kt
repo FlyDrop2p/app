@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.io.File
 
 class ChatViewModel(
     private val chatRepository: ChatRepository,
@@ -44,6 +45,12 @@ class ChatViewModel(
     fun sendTextMessage(receiverId: Int, text: String) {
         viewModelScope.launch {
             networkManager.sendTextMessage(receiverId, text)
+        }
+    }
+
+    fun sendFileMessage(receiverId: Int, file: File) {
+        viewModelScope.launch {
+            networkManager.sendFileMessage(receiverId, file)
         }
     }
 

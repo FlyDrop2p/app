@@ -1,15 +1,16 @@
 package com.flydrop2p.flydrop2p.network
 
+import android.content.Context
 import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.data.local.FileManager
 import com.flydrop2p.flydrop2p.domain.model.contact.Account
 import com.flydrop2p.flydrop2p.domain.model.contact.Contact
-import com.flydrop2p.flydrop2p.domain.model.contact.Profile
 import com.flydrop2p.flydrop2p.domain.model.contact.toAccount
 import com.flydrop2p.flydrop2p.domain.model.contact.toNetworkProfile
 import com.flydrop2p.flydrop2p.domain.model.contact.toProfile
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
+import com.flydrop2p.flydrop2p.domain.model.message.toFileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.toNetworkFileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.toNetworkTextMessage
 import com.flydrop2p.flydrop2p.domain.model.message.toTextMessage
@@ -251,7 +252,12 @@ class NetworkManager(
     
     private fun handleFileMessage(networkFileMessage: NetworkFileMessage) {
         coroutineScope.launch {
-            // TODO
+//            val fileMessage = networkFileMessage.toFileMessage()
+//
+//            val file = File(fileMessage.file.path)
+//            file.writeBytes(networkFileMessage.file)
+//
+//            chatRepository.addChatMessage(fileMessage)
         }
     }
 }
