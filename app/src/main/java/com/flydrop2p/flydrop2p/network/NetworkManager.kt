@@ -2,11 +2,9 @@ package com.flydrop2p.flydrop2p.network
 
 import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.data.local.FileManager
-import com.flydrop2p.flydrop2p.domain.model.contact.Account
 import com.flydrop2p.flydrop2p.domain.model.contact.Contact
 import com.flydrop2p.flydrop2p.domain.model.contact.Profile
 import com.flydrop2p.flydrop2p.domain.model.contact.toAccount
-import com.flydrop2p.flydrop2p.domain.model.contact.toProfile
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 import com.flydrop2p.flydrop2p.domain.model.message.toNetworkFileMessage
@@ -46,10 +44,10 @@ class NetworkManager(
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     val receiver: WiFiDirectBroadcastReceiver = WiFiDirectBroadcastReceiver(activity)
 
-    private var thisDevice = Device(null, Contact(Account(0, 0), null))
+    private lateinit var ownDevice: Device
 
-    private val _connectedDevices: MutableStateFlow<List<Device>> = MutableStateFlow(listOf())
-    val connectedDevices: StateFlow<List<Device>>
+    private val _connectedDevices: MutableStateFlow<List<NetworkDevice>> = MutableStateFlow(listOf())
+    val connectedDevices: StateFlow<List<NetworkDevice>>
         get() = _connectedDevices
 
     private val serverService = ServerService()
@@ -57,26 +55,30 @@ class NetworkManager(
 
     init {
         coroutineScope.launch {
+            ownDevice = Device(null, ownAccountRepository.getAccount(), ownProfileRepository.getProfile())
+        }
+
+        coroutineScope.launch {
             ownAccountRepository.getAccountAsFlow().collect {
-                thisDevice = thisDevice.copy(contact = thisDevice.contact.copy(account = it))
+                ownDevice = ownDevice.copy(account = it)
             }
         }
 
         coroutineScope.launch {
             ownProfileRepository.getProfileAsFlow().collect {
-                thisDevice = thisDevice.copy(contact = thisDevice.contact.copy(profile = it))
+                ownDevice = ownDevice.copy(profile = it)
             }
         }
     }
 
     fun sendKeepalive() {
         coroutineScope.launch {
-            val networkKeepalive = NetworkKeepalive(connectedDevices.value.map { it.toNetworkDevice() } + thisDevice.toNetworkDevice())
-            clientService.sendKeepalive(IP_GROUP_OWNER, thisDevice, networkKeepalive)
+            val networkKeepalive = NetworkKeepalive(connectedDevices.value + ownDevice.toNetworkDevice())
+            clientService.sendKeepalive(IP_GROUP_OWNER, ownDevice, networkKeepalive)
 
             for (device in connectedDevices.value) {
                 device.ipAddress?.let {
-                    clientService.sendKeepalive(it, thisDevice, networkKeepalive)
+                    clientService.sendKeepalive(it, ownDevice, networkKeepalive)
                 }
             }
         }
@@ -88,8 +90,8 @@ class NetworkManager(
         connectedDevice?.let { device ->
             coroutineScope.launch {
                 device.ipAddress?.let {
-                    val networkProfileRequest = NetworkProfileRequest(thisDevice.account.accountId, accountId)
-                    clientService.sendProfileRequest(it, thisDevice, networkProfileRequest)
+                    val networkProfileRequest = NetworkProfileRequest(ownDevice.account.accountId, accountId)
+                    clientService.sendProfileRequest(it, ownDevice, networkProfileRequest)
                 }
             }
         }
@@ -101,14 +103,14 @@ class NetworkManager(
         connectedDevice?.let { device ->
             coroutineScope.launch {
                 device.ipAddress?.let {
-                    val image = thisDevice.profile?.imageFileName?.let { fileName ->
+                    val image = ownDevice.profile.imageFileName?.let { fileName ->
                         fileManager.loadFile(fileName)
                     }
 
-                    val networkProfile = NetworkProfile(thisDevice.profile!!, image) // TODO: REMOVE !!
+                    val networkProfile = NetworkProfile(ownDevice.profile, image)
 
-                    val networkProfileResponse = NetworkProfileResponse(thisDevice.account.accountId, accountId, networkProfile)
-                    clientService.sendProfileResponse(it, thisDevice, networkProfileResponse)
+                    val networkProfileResponse = NetworkProfileResponse(ownDevice.account.accountId, accountId, networkProfile)
+                    clientService.sendProfileResponse(it, ownDevice, networkProfileResponse)
                 }
             }
         }
@@ -120,9 +122,9 @@ class NetworkManager(
         connectedDevice?.let { device ->
             coroutineScope.launch {
                 device.ipAddress?.let {
-                    val textMessage = TextMessage(thisDevice.account.accountId, accountId, text, System.currentTimeMillis() / 1000)
+                    val textMessage = TextMessage(ownDevice.account.accountId, accountId, text, System.currentTimeMillis() / 1000)
                     chatRepository.addChatMessage(textMessage)
-                    clientService.sendTextMessage(it, thisDevice, textMessage.toNetworkTextMessage())
+                    clientService.sendTextMessage(it, ownDevice, textMessage.toNetworkTextMessage())
                 }
             }
         }
@@ -134,9 +136,9 @@ class NetworkManager(
         connectedDevice?.let { device ->
             coroutineScope.launch {
                 device.ipAddress?.let {
-                    val fileMessage = FileMessage(thisDevice.account.accountId, accountId, file, System.currentTimeMillis() / 1000)
+                    val fileMessage = FileMessage(ownDevice.account.accountId, accountId, file, System.currentTimeMillis() / 1000)
                     chatRepository.addChatMessage(fileMessage)
-                    clientService.sendFileMessage(it, thisDevice, fileMessage.toNetworkFileMessage())
+                    clientService.sendFileMessage(it, ownDevice, fileMessage.toNetworkFileMessage())
                 }
             }
         }
@@ -156,7 +158,7 @@ class NetworkManager(
                 val networkKeepalive = serverService.listenKeepalive()
 
                 for(networkDevice in networkKeepalive.networkDevices) {
-                    if(networkDevice.account.accountId != thisDevice.account.accountId) {
+                    if(networkDevice.account.accountId != ownDevice.account.accountId) {
                         handleDeviceKeepalive(networkDevice)
                     }
                 }
@@ -169,7 +171,7 @@ class NetworkManager(
             while(true) {
                 val networkProfileRequest = serverService.listenProfileRequest()
 
-                if(networkProfileRequest.receiverId == thisDevice.account.accountId) {
+                if(networkProfileRequest.receiverId == ownDevice.account.accountId) {
                     handleProfileRequest(networkProfileRequest)
                 }
             }
@@ -181,7 +183,7 @@ class NetworkManager(
             while(true) {
                 val networkProfileResponse = serverService.listenProfileResponse()
 
-                if(networkProfileResponse.receiverId == thisDevice.account.accountId) {
+                if(networkProfileResponse.receiverId == ownDevice.account.accountId) {
                     handleProfileResponse(networkProfileResponse)
                 }
             }
@@ -193,7 +195,7 @@ class NetworkManager(
             while(true) {
                 val networkTextMessage = serverService.listenTextMessage()
 
-                if(networkTextMessage.receiverId == thisDevice.account.accountId) {
+                if(networkTextMessage.receiverId == ownDevice.account.accountId) {
                     handleTextMessage(networkTextMessage)
                 }
             }
@@ -205,7 +207,7 @@ class NetworkManager(
             while(true) {
                 val networkFileMessage = serverService.listenFileMessage()
 
-                if(networkFileMessage.receiverId == thisDevice.account.accountId) {
+                if(networkFileMessage.receiverId == ownDevice.account.accountId) {
                     handleFileMessage(networkFileMessage)
                 }
             }
@@ -223,7 +225,7 @@ class NetworkManager(
                 sendProfileRequest(networkDevice.account.accountId)
             }
 
-            _connectedDevices.value = _connectedDevices.value.filter { it.account.accountId != networkDevice.account.accountId } + Device(networkDevice, profile)
+            _connectedDevices.value = _connectedDevices.value.filter { it.account.accountId != networkDevice.account.accountId } + networkDevice
         }
     }
 
@@ -239,17 +241,7 @@ class NetworkManager(
                 fileManager.saveProfileImage(it, networkProfileResponse.profile.accountId)
             }
 
-            val profile = Profile(networkProfileResponse.profile, imageFileName)
-
-            contactRepository.addOrUpdateProfile(profile)
-
-            _connectedDevices.value = _connectedDevices.value.map { device ->
-                if(device.account.accountId != thisDevice.account.accountId) {
-                    device
-                } else {
-                    device.copy(contact = device.contact.copy(profile = profile))
-                }
-            }
+            contactRepository.addOrUpdateProfile(Profile(networkProfileResponse.profile, imageFileName))
         }
     }
 

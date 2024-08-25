@@ -9,8 +9,8 @@ import java.io.File
 data class FileMessage(
     override val senderId: Int,
     override val receiverId: Int,
-    val file: File,
-    override val timestamp: Long
+    override val timestamp: Long,
+    val file: File
 ) : Message() {
     override fun toMessageEntity(): MessageEntity {
         return MessageEntity(

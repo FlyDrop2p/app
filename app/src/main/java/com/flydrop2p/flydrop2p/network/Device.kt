@@ -11,16 +11,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Device(
     var ipAddress: String?,
-    var contact: Contact
+    val account: Account,
+    val profile: Profile
 ) {
-    constructor(networkDevice: NetworkDevice, profile: Profile?)
-            : this(networkDevice.ipAddress, Contact(networkDevice.account.toAccount(), profile))
-
-    val account: Account
-        get() = contact.account
-    
-    val profile: Profile?
-        get() = contact.profile
+    constructor(networkDevice: NetworkDevice, profile: Profile)
+            : this(networkDevice.ipAddress, networkDevice.account.toAccount(), profile)
 }
 
 fun Device.toNetworkDevice(): NetworkDevice {

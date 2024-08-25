@@ -7,8 +7,8 @@ import com.flydrop2p.flydrop2p.network.model.message.NetworkTextMessage
 data class TextMessage(
     override val senderId: Int,
     override val receiverId: Int,
-    val text: String,
-    override val timestamp: Long
+    override val timestamp: Long,
+    val text: String
 ) : Message() {
     override fun toMessageEntity(): MessageEntity {
         return MessageEntity(

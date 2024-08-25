@@ -9,7 +9,6 @@ data class NetworkProfile(
     val username: String,
     val image: String?
 ) {
-
     constructor(profile: Profile, image: String?)
             : this(profile.accountId, profile.username, image)
 }

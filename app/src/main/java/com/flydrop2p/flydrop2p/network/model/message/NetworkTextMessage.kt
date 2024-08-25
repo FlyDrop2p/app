@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 data class NetworkTextMessage(
     val senderId: Int,
     val receiverId: Int,
+    val timestamp: Long,
     val text: String,
-    val timestamp: Long
 )
