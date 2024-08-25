@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,11 +38,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
 import com.flydrop2p.flydrop2p.ui.AppViewModelProvider
 import com.flydrop2p.flydrop2p.ui.navigation.FlyDropNavHost
 import com.flydrop2p.flydrop2p.ui.screen.chat.ChatViewModel
 import com.flydrop2p.flydrop2p.ui.screen.home.HomeViewModel
 import com.flydrop2p.flydrop2p.ui.screen.settings.SettingsViewModel
+import java.io.File
 
 
 @Composable
@@ -170,20 +173,20 @@ fun ChatTopAppBar(
                     .size(50.dp)
                     .clip(CircleShape)
 
-//                if (contactImageFileName != null) {
-//                    Image(
-//                        painter = rememberAsyncImagePainter(model = File(contactImageFileName)),
-//                        contentDescription = "Immagine profilo",
-//                        modifier = imageModifier
-//                    )
-//                } else {
+                if (contactImageFileName != null) {
+                    Image(
+                        painter = rememberAsyncImagePainter(model = File(LocalContext.current.filesDir, contactImageFileName)),
+                        contentDescription = "Immagine profilo",
+                        modifier = imageModifier
+                    )
+                } else {
                     Image(
                         painter = painterResource(id = R.drawable.account_circle_24px),
                         colorFilter = ColorFilter.tint(Color.Black),
                         contentDescription = "Immagine di default",
                         modifier = imageModifier
                     )
-//                }
+                }
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     text = title,

@@ -7,27 +7,9 @@ import kotlinx.serialization.Serializable
 data class NetworkProfile(
     val accountId: Int,
     val username: String,
-    val image: ByteArray?
+    val image: String?
 ) {
 
-    constructor(profile: Profile, image: ByteArray?)
+    constructor(profile: Profile, image: String?)
             : this(profile.accountId, profile.username, image)
-
-    override fun equals(other: Any?): Boolean {
-        if(this === other) {
-            return true
-        }
-
-        if(other is NetworkProfile && other.username == this.username && other.image.contentEquals(this.image)) {
-            return true
-        }
-
-        return false
-    }
-
-    override fun hashCode(): Int {
-        var result = username.hashCode()
-        result = 31 * result + (image?.contentHashCode() ?: 0)
-        return result
-    }
 }

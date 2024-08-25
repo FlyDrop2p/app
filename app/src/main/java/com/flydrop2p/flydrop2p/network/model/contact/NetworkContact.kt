@@ -16,7 +16,7 @@ data class NetworkContact(
     val username: String?
         get() = profile?.username
 
-    val image: ByteArray?
+    val image: String?
         get() = profile?.image
 
     override fun compareTo(other: NetworkContact): Int {

@@ -1,38 +1,41 @@
 package com.flydrop2p.flydrop2p.data.local
 
 import android.content.ContentResolver
-import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
-import android.provider.MediaStore
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStream
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 class FileManager(private val context: Context) {
-    fun loadFile(fileName: String): ByteArray? {
+    @OptIn(ExperimentalEncodingApi::class)
+    fun loadFile(fileName: String): String? {
         val file = File(context.filesDir, fileName)
 
         return try {
-            FileInputStream(file).use { inputStream ->
+            val byteArray = FileInputStream(file).use { inputStream ->
                 inputStream.readBytes()
             }
+
+            Base64.encode(byteArray)
         } catch (e: Exception) {
             e.printStackTrace()
             null
         }
     }
 
-    fun saveProfileImage(image: ByteArray, accountId: Int): String? {
-        val tempFile = File.createTempFile("temp_profile_image_${accountId}", null, context.cacheDir).apply {
+    @OptIn(ExperimentalEncodingApi::class)
+    fun saveProfileImage(image: String, accountId: Int): String? {
+        val tempFile = File.createTempFile("temp_profile_image_${accountId}_${System.currentTimeMillis() / 1000}", null, context.cacheDir).apply {
             deleteOnExit()
         }
 
         return try {
             FileOutputStream(tempFile).use { outputStream ->
-                outputStream.write(image)
+                outputStream.write(Base64.decode(image))
             }
 
             saveProfileImage(Uri.fromFile(tempFile), accountId)
@@ -47,14 +50,14 @@ class FileManager(private val context: Context) {
     fun saveProfileImage(imageUri: Uri, accountId: Int): String? {
         val contentResolver: ContentResolver = context.contentResolver
         val inputStream: InputStream? = contentResolver.openInputStream(imageUri)
-        val file = File(context.filesDir, "profile_image_${accountId}")
+        val file = File(context.filesDir, "profile_image_${accountId}_${System.currentTimeMillis() / 1000}")
 
         return try {
             FileOutputStream(file).use { outputStream ->
                 inputStream?.copyTo(outputStream)
             }
 
-            "profile_image_${accountId}"
+            "profile_image_${accountId}_${System.currentTimeMillis() / 1000}"
         } catch (e: Exception) {
             e.printStackTrace()
             null
