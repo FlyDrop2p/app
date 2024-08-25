@@ -3,6 +3,7 @@ package com.flydrop2p.flydrop2p.network.service
 import com.flydrop2p.flydrop2p.network.Device
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
+import com.flydrop2p.flydrop2p.network.model.message.NetworkMessageReceivedAck
 import com.flydrop2p.flydrop2p.network.model.message.NetworkTextMessage
 import com.flydrop2p.flydrop2p.network.model.profile.NetworkProfileRequest
 import com.flydrop2p.flydrop2p.network.model.profile.NetworkProfileResponse
@@ -15,14 +16,14 @@ import java.net.InetSocketAddress
 import java.net.Socket
 
 class ClientService {
-    suspend fun sendKeepalive(ipAddress: String, thisDevice: Device, networkKeepalive: NetworkKeepalive) {
+    suspend fun sendKeepalive(ipAddress: String, ownDevice: Device, networkKeepalive: NetworkKeepalive) {
         withContext(Dispatchers.IO) {
             try {
                 val socket = Socket()
                 socket.bind(null)
                 socket.connect((InetSocketAddress(InetAddress.getByName(ipAddress), ServerService.PORT_KEEPALIVE)))
 
-                thisDevice.ipAddress = socket.localAddress.hostAddress?.toString()
+                ownDevice.ipAddress = socket.localAddress.hostAddress?.toString()
 
                 val outputStream = socket.getOutputStream()
                 outputStream.write(Json.encodeToString(networkKeepalive).encodeToByteArray())
@@ -33,14 +34,14 @@ class ClientService {
         }
     }
 
-    suspend fun sendProfileRequest(ipAddress: String, thisDevice: Device, networkProfileRequest: NetworkProfileRequest) {
+    suspend fun sendProfileRequest(ipAddress: String, ownDevice: Device, networkProfileRequest: NetworkProfileRequest) {
         withContext(Dispatchers.IO) {
             try {
                 val socket = Socket()
                 socket.bind(null)
                 socket.connect((InetSocketAddress(InetAddress.getByName(ipAddress), ServerService.PORT_PROFILE_REQUEST)))
 
-                thisDevice.ipAddress = socket.localAddress.hostAddress?.toString()
+                ownDevice.ipAddress = socket.localAddress.hostAddress?.toString()
 
                 val outputStream = socket.getOutputStream()
                 outputStream.write(Json.encodeToString(networkProfileRequest).encodeToByteArray())
@@ -51,14 +52,14 @@ class ClientService {
         }
     }
 
-    suspend fun sendProfileResponse(ipAddress: String, thisDevice: Device, networkProfileRequest: NetworkProfileResponse) {
+    suspend fun sendProfileResponse(ipAddress: String, ownDevice: Device, networkProfileRequest: NetworkProfileResponse) {
         withContext(Dispatchers.IO) {
             try {
                 val socket = Socket()
                 socket.bind(null)
                 socket.connect((InetSocketAddress(InetAddress.getByName(ipAddress), ServerService.PORT_PROFILE_RESPONSE)))
 
-                thisDevice.ipAddress = socket.localAddress.hostAddress?.toString()
+                ownDevice.ipAddress = socket.localAddress.hostAddress?.toString()
 
                 val outputStream = socket.getOutputStream()
                 outputStream.write(Json.encodeToString(networkProfileRequest).encodeToByteArray())
@@ -69,14 +70,14 @@ class ClientService {
         }
     }
 
-    suspend fun sendTextMessage(ipAddress: String, thisDevice: Device, networkTextMessage: NetworkTextMessage) {
+    suspend fun sendTextMessage(ipAddress: String, ownDevice: Device, networkTextMessage: NetworkTextMessage) {
         withContext(Dispatchers.IO) {
             try {
                 val socket = Socket()
                 socket.bind(null)
                 socket.connect((InetSocketAddress(InetAddress.getByName(ipAddress), ServerService.PORT_TEXT_MESSAGE)))
 
-                thisDevice.ipAddress = socket.localAddress.hostAddress?.toString()
+                ownDevice.ipAddress = socket.localAddress.hostAddress?.toString()
 
                 val outputStream = socket.getOutputStream()
                 outputStream.write(Json.encodeToString(networkTextMessage).encodeToByteArray())
@@ -87,17 +88,35 @@ class ClientService {
         }
     }
 
-    suspend fun sendFileMessage(ipAddress: String, thisDevice: Device, networkFileMessage: NetworkFileMessage) {
+    suspend fun sendFileMessage(ipAddress: String, ownDevice: Device, networkFileMessage: NetworkFileMessage) {
         withContext(Dispatchers.IO) {
             try {
                 val socket = Socket()
                 socket.bind(null)
                 socket.connect(InetSocketAddress(InetAddress.getByName(ipAddress), ServerService.PORT_FILE_MESSAGE))
 
-                thisDevice.ipAddress = socket.localAddress.hostAddress?.toString()
+                ownDevice.ipAddress = socket.localAddress.hostAddress?.toString()
 
                 val outputStream = socket.getOutputStream()
                 outputStream.write(Json.encodeToString(networkFileMessage).encodeToByteArray())
+                outputStream.close()
+            } catch (_: Exception) {
+
+            }
+        }
+    }
+
+    suspend fun sendMessageReceivedAck(ipAddress: String, ownDevice: Device, networkMessageReceivedAck: NetworkMessageReceivedAck) {
+        withContext(Dispatchers.IO) {
+            try {
+                val socket = Socket()
+                socket.bind(null)
+                socket.connect(InetSocketAddress(InetAddress.getByName(ipAddress), ServerService.PORT_MESSAGE_RECEIVED_ACK))
+
+                ownDevice.ipAddress = socket.localAddress.hostAddress?.toString()
+
+                val outputStream = socket.getOutputStream()
+                outputStream.write(Json.encodeToString(networkMessageReceivedAck).encodeToByteArray())
                 outputStream.close()
             } catch (_: Exception) {
 

@@ -1,13 +1,21 @@
 package com.flydrop2p.flydrop2p.domain.model.message
 
 import com.flydrop2p.flydrop2p.data.local.message.MessageEntity
-import com.flydrop2p.flydrop2p.data.local.message.MessageType
+
+enum class MessageType {
+    TEXT_MESSAGE, FILE_MESSAGE
+}
+
+enum class MessageState {
+    MESSAGE_SENT, MESSAGE_RECEIVED, MESSAGE_READ
+}
 
 sealed class Message : Comparable<Message> {
     abstract val messageId: Long
     abstract val senderId: Long
     abstract val receiverId: Long
     abstract val timestamp: Long
+    abstract val messageState: MessageState
 
     abstract fun toMessageEntity(): MessageEntity
 

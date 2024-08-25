@@ -99,7 +99,7 @@ fun ChatScreen(
                     FilePreview(
                         file = attachedFile!!,
                         onSendFile = {
-                            chatViewModel.sendFileMessage(accountId, it)
+                            chatViewModel.sendFileMessage(accountId, Uri.fromFile(it))
                             attachedFile = null
                         },
                         onDeleteFile = {

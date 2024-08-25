@@ -8,6 +8,7 @@ import com.flydrop2p.flydrop2p.domain.model.contact.Contact
 import com.flydrop2p.flydrop2p.domain.model.contact.toAccount
 import com.flydrop2p.flydrop2p.domain.model.contact.toProfile
 import com.flydrop2p.flydrop2p.domain.model.message.Message
+import com.flydrop2p.flydrop2p.domain.model.message.MessageState
 import com.flydrop2p.flydrop2p.domain.model.message.toMessage
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import kotlinx.coroutines.flow.Flow
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
 class ChatLocalRepository(private val accountDAO: AccountDAO, private val messageDAO: MessageDAO, private val profileDAO: ProfileDAO) : ChatRepository {
-    override fun getChatMessagesByAccountId(accountId: Long): Flow<List<Message>> {
+    override fun getMessagesByAccountId(accountId: Long): Flow<List<Message>> {
         return messageDAO.getAllMessagesByAccountId(accountId).map { messageEntities ->
             messageEntities.map { it.toMessage() }
         }
@@ -40,7 +41,19 @@ class ChatLocalRepository(private val accountDAO: AccountDAO, private val messag
         }
     }
 
-    override suspend fun addChatMessage(message: Message): Long {
+    override suspend fun getMessageByMessageId(messageId: Long): Message? {
+        return messageDAO.getMessageByMessageId(messageId)?.toMessage()
+    }
+
+    override suspend fun addMessage(message: Message): Long {
         return messageDAO.insertMessage(message.toMessageEntity())
+    }
+
+    override suspend fun updateMessage(message: Message) {
+        messageDAO.updateMessage(message.toMessageEntity())
+    }
+
+    override suspend fun updateMessageState(messageId: Long, messageState: MessageState) {
+        messageDAO.updateMessageState(messageId, messageState)
     }
 }

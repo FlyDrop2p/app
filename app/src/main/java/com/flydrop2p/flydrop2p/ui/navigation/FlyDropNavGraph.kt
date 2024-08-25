@@ -54,7 +54,7 @@ fun FlyDropNavHost(
         composable(
             route = ChatDestination.routeWithArgs,
             arguments = listOf(navArgument(ChatDestination.itemIdArg) {
-                type = NavType.IntType
+                type = NavType.LongType
             })
 
         ) { backStackEntry ->

@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
+import com.flydrop2p.flydrop2p.domain.model.message.MessageState
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -308,6 +309,7 @@ fun FileMessageComponentPreview() {
             senderId = 0,
             receiverId = 1,
             timestamp = System.currentTimeMillis(),
+            messageState = MessageState.MESSAGE_RECEIVED,
             fileName = ""
         ),
         visualized = true,

@@ -2,10 +2,8 @@ package com.flydrop2p.flydrop2p.data.local.message
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-
-enum class MessageType {
-    TEXT_MESSAGE, FILE_MESSAGE
-}
+import com.flydrop2p.flydrop2p.domain.model.message.MessageState
+import com.flydrop2p.flydrop2p.domain.model.message.MessageType
 
 @Entity
 data class MessageEntity(
@@ -14,6 +12,7 @@ data class MessageEntity(
     val senderId: Long,
     val receiverId: Long,
     val timestamp: Long,
+    val messageState: MessageState,
     val messageType: MessageType,
     val content: String,
 )

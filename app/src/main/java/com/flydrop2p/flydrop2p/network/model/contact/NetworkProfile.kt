@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 data class NetworkProfile(
     val accountId: Long,
     val username: String,
-    val image: String?
+    val imageBase64: String?
 ) {
-    constructor(profile: Profile, image: String?)
-            : this(profile.accountId, profile.username, image)
+    constructor(profile: Profile, imageBase64: String?)
+            : this(profile.accountId, profile.username, imageBase64)
 }
