@@ -42,7 +42,6 @@ class ChatViewModel(
 
                 for(message in messages) {
                     if(message.messageState < MessageState.MESSAGE_READ) {
-                        chatRepository.updateMessageState(message.messageId, MessageState.MESSAGE_READ)
                         networkManager.sendMessageReadAck(message.senderId, message.messageId)
                     }
                 }
@@ -59,12 +58,6 @@ class ChatViewModel(
     fun sendFileMessage(receiverId: Long, fileUri: Uri) {
         viewModelScope.launch {
             networkManager.sendFileMessage(receiverId, fileUri)
-        }
-    }
-
-    fun sendMessageReadAck(receiverId: Long, messageId: Long) {
-        viewModelScope.launch {
-            networkManager.sendMessageReadAck(receiverId, messageId)
         }
     }
 
