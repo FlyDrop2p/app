@@ -3,6 +3,7 @@ package com.flydrop2p.flydrop2p.ui.screen.chat
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.flydrop2p.flydrop2p.domain.model.message.MessageState
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
@@ -26,9 +27,9 @@ class ChatViewModel(
 
     fun collectContact(accountId: Long) {
         viewModelScope.launch {
-            contactRepository.getContactByAccountIdAsFlow(accountId).collect {
-                it?.let {
-                    _uiState.value = _uiState.value.copy(contact = it)
+            contactRepository.getContactByAccountIdAsFlow(accountId).collect { contact ->
+                if(contact != null) {
+                    _uiState.value = _uiState.value.copy(contact = contact)
                 }
             }
         }
@@ -36,10 +37,14 @@ class ChatViewModel(
 
     fun collectMessages(accountId: Long) {
         viewModelScope.launch {
-            chatRepository.getMessagesByAccountId(accountId).collect {
-                // TODO: sign message as read
-                // chatRepository.signMessagesAsRead(accountId) // from accountId to me
-                _uiState.value = _uiState.value.copy(messages = it)
+            chatRepository.getMessagesByAccountId(accountId).collect { messages ->
+                _uiState.value = _uiState.value.copy(messages = messages)
+
+                for(message in messages) {
+                    if(message.messageState < MessageState.MESSAGE_READ) {
+                        networkManager.sendMessageReadAck(message.senderId, message.messageId)
+                    }
+                }
             }
         }
     }
@@ -53,12 +58,6 @@ class ChatViewModel(
     fun sendFileMessage(receiverId: Long, fileUri: Uri) {
         viewModelScope.launch {
             networkManager.sendFileMessage(receiverId, fileUri)
-        }
-    }
-
-    fun sendMessageReadAck(receiverId: Long, messageId: Long) {
-        viewModelScope.launch {
-            networkManager.sendMessageReadAck(receiverId, messageId)
         }
     }
 

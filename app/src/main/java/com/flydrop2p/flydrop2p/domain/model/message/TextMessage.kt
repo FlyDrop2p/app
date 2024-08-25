@@ -24,9 +24,9 @@ data class TextMessage(
         return MessageEntity(
             senderId = senderId,
             receiverId = receiverId,
-            messageType = MessageType.TEXT_MESSAGE,
             timestamp = timestamp,
             messageState = messageState,
+            messageType = MessageType.TEXT_MESSAGE,
             content = text
         )
     }
