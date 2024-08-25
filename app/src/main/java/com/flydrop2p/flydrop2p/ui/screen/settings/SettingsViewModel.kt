@@ -1,7 +1,9 @@
 package com.flydrop2p.flydrop2p.ui.screen.settings
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.flydrop2p.flydrop2p.data.local.FileManager
 import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +13,8 @@ import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val ownAccountRepository: OwnAccountRepository,
-    private val ownProfileRepository: OwnProfileRepository
+    private val ownProfileRepository: OwnProfileRepository,
+    private val fileManager: FileManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsViewState())
@@ -25,17 +28,19 @@ class SettingsViewModel(
         }
     }
 
-    fun updateUsername(newUsername: String) {
+    fun updateUsername(username: String) {
         viewModelScope.launch {
-            ownProfileRepository.setUsername(newUsername)
+            ownProfileRepository.setUsername(username)
             ownAccountRepository.setProfileUpdate(System.currentTimeMillis() / 1000)
         }
     }
 
-    fun updateProfileImage(newImageFileName: String) {
+    fun updateProfileImage(profileImageUri: Uri) {
         viewModelScope.launch {
-            ownProfileRepository.setImageFileName(newImageFileName)
-            ownAccountRepository.setProfileUpdate(System.currentTimeMillis() / 1000)
+            fileManager.saveProfileImage(profileImageUri, ownAccountRepository.getAccount().accountId)?.let { profileImageName ->
+                ownProfileRepository.setImageFileName(profileImageName)
+                ownAccountRepository.setProfileUpdate(System.currentTimeMillis() / 1000)
+            }
         }
     }
 }

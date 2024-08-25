@@ -9,7 +9,10 @@ data class Profile(
     val accountId: Int,
     val username: String,
     val imageFileName: String?
-)
+) {
+    constructor(networkProfile: NetworkProfile, imageFileName: String?)
+        : this(networkProfile.accountId, networkProfile.username, imageFileName)
+}
 
 fun Profile.toProfileEntity(): ProfileEntity {
     return ProfileEntity(
@@ -24,21 +27,5 @@ fun ProfileEntity.toProfile(): Profile {
         accountId = accountId,
         username = username,
         imageFileName = imageFileName
-    )
-}
-
-fun Profile.toNetworkProfile(): NetworkProfile {
-    return NetworkProfile(
-        accountId = accountId,
-        username = username,
-        image = byteArrayOf() // TODO
-    )
-}
-
-fun NetworkProfile.toProfile(): Profile {
-    return Profile(
-        accountId = accountId,
-        username = username,
-        imageFileName = accountId.toString()
     )
 }

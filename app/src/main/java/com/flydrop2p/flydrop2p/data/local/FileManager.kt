@@ -1,50 +1,65 @@
 package com.flydrop2p.flydrop2p.data.local
 
+import android.content.ContentResolver
 import android.content.ContentValues
+import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
-import com.flydrop2p.flydrop2p.MainActivity
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.InputStream
 
-class FileManager(private val activity: MainActivity) {
-    fun imagePathToByteArray(imagePath: String?): ByteArray? {
-        if (imagePath == null) return null
+class FileManager(private val context: Context) {
+    fun loadFile(fileName: String): ByteArray? {
+        val file = File(context.filesDir, fileName)
 
-        val uri = Uri.fromFile(File(imagePath))
-        val contentResolver = activity.contentResolver
-        val inputStream: InputStream? = contentResolver.openInputStream(uri)
-
-        return inputStream?.use {
-            val byteBuffer = ByteArrayOutputStream()
-            val buffer = ByteArray(1024)
-            var len: Int
-            while (inputStream.read(buffer).also { len = it } != -1) {
-                byteBuffer.write(buffer, 0, len)
+        return try {
+            FileInputStream(file).use { inputStream ->
+                inputStream.readBytes()
             }
-            byteBuffer.toByteArray()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 
-
-    fun byteArrayToImagePath(image: ByteArray?, fileName: String): String? {
-        if (image == null) return null
-
-        val contentResolver = activity.contentResolver
-        val values = ContentValues().apply {
-            put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
-            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+    fun saveProfileImage(image: ByteArray, accountId: Int): String? {
+        val tempFile = File.createTempFile("temp_profile_image_${accountId}", null, context.cacheDir).apply {
+            deleteOnExit()
         }
 
-        val uri: Uri? = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-
-        uri?.let {
-            contentResolver.openOutputStream(it)?.use { outputStream ->
+        return try {
+            FileOutputStream(tempFile).use { outputStream ->
                 outputStream.write(image)
             }
-        }
 
-        return uri?.toString()
+            saveProfileImage(Uri.fromFile(tempFile), accountId)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            tempFile.delete()
+        }
+    }
+
+    fun saveProfileImage(imageUri: Uri, accountId: Int): String? {
+        val contentResolver: ContentResolver = context.contentResolver
+        val inputStream: InputStream? = contentResolver.openInputStream(imageUri)
+        val file = File(context.filesDir, "profile_image_${accountId}")
+
+        return try {
+            FileOutputStream(file).use { outputStream ->
+                inputStream?.copyTo(outputStream)
+            }
+
+            "profile_image_${accountId}"
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            inputStream?.close()
+        }
     }
 }

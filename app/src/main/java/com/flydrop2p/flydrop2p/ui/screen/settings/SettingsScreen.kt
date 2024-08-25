@@ -1,8 +1,5 @@
 package com.flydrop2p.flydrop2p.ui.screen.settings
 
-import android.content.ContentResolver
-import android.content.Context
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -45,8 +42,6 @@ import com.flydrop2p.flydrop2p.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
 import kotlin.random.Random
 
 object SettingsDestination : NavigationDestination {
@@ -65,17 +60,14 @@ fun SettingsScreen(
     val context = LocalContext.current
     val settingsState by settingsViewModel.uiState.collectAsState()
     var usernameText by remember { mutableStateOf(settingsState.profile.username) }
-    var profileImagePath by remember { mutableStateOf(settingsState.profile.imageFileName ?: "") }
+    var profileImageFileName by remember { mutableStateOf(settingsState.profile.imageFileName ?: "") }
 
-    val imagePickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        uri?.let { imageUri ->
-            val newImagePath = saveImageToInternalStorage(context = context, imageUri)
-            newImagePath?.let {
-                profileImagePath = it
-                settingsViewModel.updateProfileImage(it)
+    val imagePickerLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            uri?.let { imageUri ->
+                settingsViewModel.updateProfileImage(imageUri)
             }
         }
-    }
 
     fun generateRandomColor(): Color {
         return Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat())
@@ -110,17 +102,17 @@ fun SettingsScreen(
                         .size(100.dp)
                         .clip(CircleShape)
                         .background(
-                            if (profileImagePath.isEmpty()) Color.Gray else generateRandomColor()
+                            if (profileImageFileName.isEmpty()) Color.Gray else generateRandomColor()
                         )
                         .clickable {
                             imagePickerLauncher.launch("image/*")
                         }
                 ) {
-                    if (profileImagePath.isNotEmpty()) {
+                    if (profileImageFileName.isNotEmpty()) {
                         Image(
                             painter = rememberAsyncImagePainter(
                                 model = ImageRequest.Builder(context)
-                                    .data(profileImagePath)
+                                    .data(File(context.filesDir, profileImageFileName))
                                     .crossfade(true)
                                     .build()
                             ),
@@ -146,7 +138,8 @@ fun SettingsScreen(
                         usernameText = it
                     },
                     label = { Text("Update Username") },
-                    modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.tertiaryContainer)
+                    modifier = Modifier.fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.tertiaryContainer)
                 )
 
                 Button(
@@ -161,22 +154,4 @@ fun SettingsScreen(
             }
         }
     )
-}
-
-fun saveImageToInternalStorage(context: Context, imageUri: Uri): String? {
-    val contentResolver: ContentResolver = context.contentResolver
-    val inputStream: InputStream? = contentResolver.openInputStream(imageUri)
-    val file = File(context.filesDir, "profile_image_${System.currentTimeMillis()}.jpg")
-
-    return try {
-        FileOutputStream(file).use { outputStream ->
-            inputStream?.copyTo(outputStream)
-        }
-        file.absolutePath
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    } finally {
-        inputStream?.close()
-    }
 }

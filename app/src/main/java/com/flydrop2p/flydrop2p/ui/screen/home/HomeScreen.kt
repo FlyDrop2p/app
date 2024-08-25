@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -131,24 +132,22 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier:
             .size(50.dp)
             .clip(CircleShape)
 
-//        if (chatPreview.contact.imageFileName != null) {
-//            Image(
-//                painter = rememberAsyncImagePainter(model = chatPreview.contact.imageFileName?.let {
-//                    File(
-//                        it
-//                    )
-//                }),
-//                contentDescription = "Immagine profilo",
-//                modifier = imageModifier
-//            )
-//        } else {
+        if (chatPreview.contact.imageFileName != null) {
+            Image(
+                painter = rememberAsyncImagePainter(model = chatPreview.contact.imageFileName?.let {
+                    File(LocalContext.current.filesDir, it)
+                }),
+                contentDescription = "Immagine profilo",
+                modifier = imageModifier
+            )
+        } else {
             Image(
                 painter = painterResource(id = R.drawable.account_circle_24px),
                 colorFilter = ColorFilter.tint(Color.Black),
                 contentDescription = "Immagine di default",
                 modifier = imageModifier
             )
-        // }
+        }
         Spacer(modifier = Modifier.width(16.dp))
         Column(
             modifier = Modifier.weight(1f)

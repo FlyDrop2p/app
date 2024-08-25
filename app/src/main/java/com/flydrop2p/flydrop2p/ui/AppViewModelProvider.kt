@@ -31,6 +31,7 @@ object AppViewModelProvider {
             SettingsViewModel(
                 application().container.ownAccountRepository,
                 application().container.ownProfileRepository,
+                application().container.fileManager
             )
         }
     }

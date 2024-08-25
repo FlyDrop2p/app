@@ -5,7 +5,6 @@ import com.flydrop2p.flydrop2p.domain.model.contact.Account
 import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 
 class OwnAccountLocalRepository(private val ownAccountDataStore: DataStore<Account>) : OwnAccountRepository {
     override fun getAccountAsFlow(): Flow<Account> {

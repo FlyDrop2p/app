@@ -1,6 +1,5 @@
 package com.flydrop2p.flydrop2p.domain.model.contact
 
-import com.flydrop2p.flydrop2p.network.model.contact.NetworkContact
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -23,18 +22,4 @@ data class Contact(
     override fun compareTo(other: Contact): Int {
         return compareValuesBy(this, other, Contact::username)
     }
-}
-
-fun Contact.toNetworkContact(): NetworkContact {
-    return NetworkContact(
-        account = account.toNetworkAccount(),
-        profile = profile?.toNetworkProfile()
-    )
-}
-
-fun NetworkContact.toContact(): Contact {
-    return Contact(
-        account = account.toAccount(),
-        profile = profile?.toProfile()
-    )
 }

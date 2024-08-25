@@ -1,16 +1,14 @@
 package com.flydrop2p.flydrop2p.network
 
-import android.content.Context
 import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.data.local.FileManager
 import com.flydrop2p.flydrop2p.domain.model.contact.Account
 import com.flydrop2p.flydrop2p.domain.model.contact.Contact
+import com.flydrop2p.flydrop2p.domain.model.contact.Profile
 import com.flydrop2p.flydrop2p.domain.model.contact.toAccount
-import com.flydrop2p.flydrop2p.domain.model.contact.toNetworkProfile
 import com.flydrop2p.flydrop2p.domain.model.contact.toProfile
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
-import com.flydrop2p.flydrop2p.domain.model.message.toFileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.toNetworkFileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.toNetworkTextMessage
 import com.flydrop2p.flydrop2p.domain.model.message.toTextMessage
@@ -18,6 +16,7 @@ import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
+import com.flydrop2p.flydrop2p.network.model.contact.NetworkProfile
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkDevice
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
@@ -32,7 +31,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -103,7 +101,13 @@ class NetworkManager(
         connectedDevice?.let { device ->
             coroutineScope.launch {
                 device.ipAddress?.let {
-                    val networkProfileResponse = NetworkProfileResponse(thisDevice.account.accountId, accountId, thisDevice.profile?.toNetworkProfile()!!)
+                    val image = thisDevice.profile?.imageFileName?.let { fileName ->
+                        fileManager.loadFile(fileName)
+                    }
+
+                    val networkProfile = NetworkProfile(thisDevice.profile!!, image) // TODO: REMOVE !!
+
+                    val networkProfileResponse = NetworkProfileResponse(thisDevice.account.accountId, accountId, networkProfile)
                     clientService.sendProfileResponse(it, thisDevice, networkProfileResponse)
                 }
             }
@@ -231,13 +235,19 @@ class NetworkManager(
 
     private fun handleProfileResponse(networkProfileResponse: NetworkProfileResponse) {
         coroutineScope.launch {
-            contactRepository.addOrUpdateProfile(networkProfileResponse.profile.toProfile())
+            val imageFileName = networkProfileResponse.profile.image?.let {
+                fileManager.saveProfileImage(it, networkProfileResponse.profile.accountId)
+            }
+
+            val profile = Profile(networkProfileResponse.profile, imageFileName)
+
+            contactRepository.addOrUpdateProfile(profile)
 
             _connectedDevices.value = _connectedDevices.value.map { device ->
                 if(device.account.accountId != thisDevice.account.accountId) {
                     device
                 } else {
-                    device.copy(contact = device.contact.copy(profile = networkProfileResponse.profile.toProfile()))
+                    device.copy(contact = device.contact.copy(profile = profile))
                 }
             }
         }
