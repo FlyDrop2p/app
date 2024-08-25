@@ -39,25 +39,26 @@ class ChatViewModel(
         viewModelScope.launch {
             chatRepository.getMessagesByAccountId(accountId).collect { messages ->
                 _uiState.value = _uiState.value.copy(messages = messages)
-
-                for(message in messages) {
-                    if(message.messageState < MessageState.MESSAGE_READ) {
-                        networkManager.sendMessageReadAck(message.senderId, message.messageId)
-                    }
-                }
             }
         }
     }
 
-    fun sendTextMessage(receiverId: Long, text: String) {
+    fun sendTextMessage(accountId: Long, text: String) {
         viewModelScope.launch {
-            networkManager.sendTextMessage(receiverId, text)
+            networkManager.sendTextMessage(accountId, text)
         }
     }
 
-    fun sendFileMessage(receiverId: Long, fileUri: Uri) {
+    fun sendFileMessage(accountId: Long, fileUri: Uri) {
         viewModelScope.launch {
-            networkManager.sendFileMessage(receiverId, fileUri)
+            networkManager.sendFileMessage(accountId, fileUri)
+        }
+    }
+
+    fun sendMessageReadAck(accountId: Long, messageId: Long) {
+        viewModelScope.launch {
+            chatRepository.updateMessageState(messageId, MessageState.MESSAGE_READ)
+            networkManager.sendMessageReadAck(accountId, messageId)
         }
     }
 

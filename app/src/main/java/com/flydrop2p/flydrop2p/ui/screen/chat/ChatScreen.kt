@@ -38,6 +38,7 @@ import com.flydrop2p.flydrop2p.ChatTopAppBar
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.Message
+import com.flydrop2p.flydrop2p.domain.model.message.MessageState
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 import com.flydrop2p.flydrop2p.ui.components.FileMessageComponent
 import com.flydrop2p.flydrop2p.ui.components.FilePreview
@@ -67,6 +68,12 @@ fun ChatScreen(
     val chatState by chatViewModel.uiState.collectAsState()
 
     var attachedFile by remember { mutableStateOf<File?>(null) }
+
+    chatState.messages.forEach { message ->
+        if(message.messageState < MessageState.MESSAGE_READ) {
+            chatViewModel.sendMessageReadAck(message.senderId, message.messageId)
+        }
+    }
 
     Scaffold(
         topBar = {
