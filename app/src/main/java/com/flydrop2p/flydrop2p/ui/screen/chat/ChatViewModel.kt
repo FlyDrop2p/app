@@ -54,6 +54,12 @@ class ChatViewModel(
         }
     }
 
+    fun sendMessageReadAck(receiverId: Long, messageId: Long) {
+        viewModelScope.launch {
+            networkManager.sendMessageReadAck(receiverId, messageId)
+        }
+    }
+
     fun resetChat() {
         _uiState.value = ChatViewState()
     }
