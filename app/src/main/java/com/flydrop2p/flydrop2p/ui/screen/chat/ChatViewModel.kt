@@ -1,5 +1,6 @@
 package com.flydrop2p.flydrop2p.ui.screen.chat
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
@@ -10,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.io.File
 
 class ChatViewModel(
     private val chatRepository: ChatRepository,
@@ -36,7 +36,9 @@ class ChatViewModel(
 
     fun collectMessages(accountId: Long) {
         viewModelScope.launch {
-            chatRepository.getChatMessagesByAccountId(accountId).collect {
+            chatRepository.getMessagesByAccountId(accountId).collect {
+                // TODO: sign message as read
+                // chatRepository.signMessagesAsRead(accountId) // from accountId to me
                 _uiState.value = _uiState.value.copy(messages = it)
             }
         }
@@ -48,9 +50,9 @@ class ChatViewModel(
         }
     }
 
-    fun sendFileMessage(receiverId: Long, file: File) {
+    fun sendFileMessage(receiverId: Long, fileUri: Uri) {
         viewModelScope.launch {
-            networkManager.sendFileMessage(receiverId, file)
+            networkManager.sendFileMessage(receiverId, fileUri)
         }
     }
 

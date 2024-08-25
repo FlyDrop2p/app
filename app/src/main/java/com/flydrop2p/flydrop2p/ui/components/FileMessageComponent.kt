@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
-import okio.Path.Companion.toPath
+import com.flydrop2p.flydrop2p.domain.model.message.MessageState
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -86,7 +86,7 @@ fun SentFileMessageComponent(
             ) {
                 if (isImageOrVideo) {
                     Image(
-                        painter = rememberImagePainter(data = message.fileName.toPath()), // TODO: check if this is correct
+                        painter = rememberImagePainter(data = message.fileName), // TODO: check if this is correct
                         contentDescription = "Media Preview",
                         modifier = Modifier
                             .fillMaxWidth()
@@ -185,7 +185,7 @@ fun ReceivedFileMessageComponent(
             ) {
                 if (isImageOrVideo) {
                     Image(
-                        painter = rememberImagePainter(data = message.fileName.toPath()),
+                        painter = rememberImagePainter(data = message.fileName),
                         contentDescription = "Media Preview",
                         modifier = Modifier
                             .fillMaxWidth()
@@ -247,7 +247,7 @@ fun FileMessageComponent(
     if (message.senderId == currentAccountId) {
         SentFileMessageComponent(
             message = message,
-            visualized = message.isRead
+            visualized = message.messageState == MessageState.MESSAGE_READ
         )
     } else {
         ReceivedFileMessageComponent(
@@ -342,8 +342,8 @@ fun FileMessageComponentPreview() {
             senderId = 0,
             receiverId = 1,
             timestamp = System.currentTimeMillis(),
-            fileName = "",
-            isRead = true
+            messageState = MessageState.MESSAGE_RECEIVED,
+            fileName = ""
         ),
         currentAccountId = 0
     )

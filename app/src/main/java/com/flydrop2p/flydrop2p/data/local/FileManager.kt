@@ -28,14 +28,14 @@ class FileManager(private val context: Context) {
     }
 
     @OptIn(ExperimentalEncodingApi::class)
-    fun saveProfileImage(image: String, accountId: Long): String? {
+    fun saveProfileImage(imageBase64: String, accountId: Long): String? {
         val tempFile = File.createTempFile("temp_profile_image_${accountId}_${System.currentTimeMillis()}", null, context.cacheDir).apply {
             deleteOnExit()
         }
 
         return try {
             FileOutputStream(tempFile).use { outputStream ->
-                outputStream.write(Base64.decode(image))
+                outputStream.write(Base64.decode(imageBase64))
             }
 
             saveProfileImage(Uri.fromFile(tempFile), accountId)
@@ -57,7 +57,46 @@ class FileManager(private val context: Context) {
                 inputStream?.copyTo(outputStream)
             }
 
-            "profile_image_${accountId}_${System.currentTimeMillis()}"
+            file.name
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            inputStream?.close()
+        }
+    }
+
+    @OptIn(ExperimentalEncodingApi::class)
+    fun saveFile(fileBase64: String, accountId: Long): String? {
+        val tempFile = File.createTempFile("temp_file_${accountId}_${System.currentTimeMillis()}", null, context.cacheDir).apply {
+            deleteOnExit()
+        }
+
+        return try {
+            FileOutputStream(tempFile).use { outputStream ->
+                outputStream.write(Base64.decode(fileBase64))
+            }
+
+            saveFile(Uri.fromFile(tempFile), accountId)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            tempFile.delete()
+        }
+    }
+
+    fun saveFile(fileUri: Uri, accountId: Long): String? {
+        val contentResolver: ContentResolver = context.contentResolver
+        val inputStream: InputStream? = contentResolver.openInputStream(fileUri)
+        val file = File(context.filesDir, "file_${accountId}_${System.currentTimeMillis()}")
+
+        return try {
+            FileOutputStream(file).use { outputStream ->
+                inputStream?.copyTo(outputStream)
+            }
+
+            file.name
         } catch (e: Exception) {
             e.printStackTrace()
             null

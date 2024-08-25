@@ -2,12 +2,19 @@ package com.flydrop2p.flydrop2p.domain.repository
 
 import com.flydrop2p.flydrop2p.domain.model.chat.ChatPreview
 import com.flydrop2p.flydrop2p.domain.model.message.Message
+import com.flydrop2p.flydrop2p.domain.model.message.MessageState
 import kotlinx.coroutines.flow.Flow
 
 interface ChatRepository {
-    fun getChatMessagesByAccountId(accountId: Long): Flow<List<Message>>
+    fun getMessagesByAccountId(accountId: Long): Flow<List<Message>>
 
     fun getAllChatPreviews(): Flow<List<ChatPreview>>
 
-    suspend fun addChatMessage(message: Message): Long
+    suspend fun getMessageByMessageId(messageId: Long): Message?
+
+    suspend fun addMessage(message: Message): Long
+
+    suspend fun updateMessage(message: Message)
+    
+    suspend fun updateMessageState(messageId: Long, messageState: MessageState)
 }

@@ -46,6 +46,7 @@ import com.flydrop2p.flydrop2p.domain.model.contact.Account
 import com.flydrop2p.flydrop2p.domain.model.contact.Contact
 import com.flydrop2p.flydrop2p.domain.model.contact.Profile
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
+import com.flydrop2p.flydrop2p.domain.model.message.MessageState
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import com.flydrop2p.flydrop2p.ui.screen.chat.ChatViewModel
@@ -70,45 +71,49 @@ fun HomeScreen(
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
 
-    Scaffold(
-        topBar = {
-            FlyDropTopAppBar(
-                title = "Chat",
-                canNavigateBack = false,
-                onConnectionButtonClick = onConnectionButtonClick,
-                onSettingsButtonClick = onSettingsButtonClick,
-                modifier = modifier
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    Log.d("ChatScreen", "FloatingActionButton onClick")
-                },
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add",
-                )
-            }
-        },
-        content = { innerPadding ->
-            ChatList(
-                chatPreviews = uiState.chatPreviews,
-                onChatClick = onChatClick,
-                modifier = Modifier.padding(innerPadding)
+    Scaffold(topBar = {
+        FlyDropTopAppBar(
+            title = "Chat",
+            canNavigateBack = false,
+            onConnectionButtonClick = onConnectionButtonClick,
+            onSettingsButtonClick = onSettingsButtonClick,
+            modifier = modifier
+        )
+    }, floatingActionButton = {
+        FloatingActionButton(
+            onClick = {
+                Log.d("ChatScreen", "FloatingActionButton onClick")
+            }, shape = MaterialTheme.shapes.medium, modifier = Modifier.padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Add",
             )
         }
-    )
+    }, content = { innerPadding ->
+        ChatList(
+            chatPreviews = uiState.chatPreviews,
+            onlineChats = uiState.onlineChats,
+            onChatClick = onChatClick,
+            modifier = Modifier.padding(innerPadding)
+        )
+    })
 }
 
 @Composable
-fun ChatList(chatPreviews: List<ChatPreview>, onChatClick: (Contact) -> Unit, modifier: Modifier = Modifier) { // Aggiungi il parametro modifier qui
+fun ChatList(
+    chatPreviews: List<ChatPreview>,
+    onlineChats: Set<Long>,
+    onChatClick: (Contact) -> Unit,
+    modifier: Modifier = Modifier
+) {
     LazyColumn(modifier = modifier) {
         items(chatPreviews) { chatPreview ->
-            ChatItem(chatPreview = chatPreview, onChatClick = onChatClick)
+            ChatItem(
+                chatPreview = chatPreview,
+                online = onlineChats.contains(chatPreview.contact.accountId),
+                onChatClick = onChatClick
+            )
             HorizontalDivider(
                 modifier = Modifier.padding(start = 82.dp, end = 16.dp),
                 thickness = 1.dp,
@@ -119,10 +124,15 @@ fun ChatList(chatPreviews: List<ChatPreview>, onChatClick: (Contact) -> Unit, mo
 }
 
 @Composable
-fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier: Modifier = Modifier) {
+fun ChatItem(
+    chatPreview: ChatPreview,
+    online: Boolean,
+    onChatClick: (Contact) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-    val timeString = chatPreview.lastMessage?.let { Date(it.timestamp) }
-        ?.let { timeFormat.format(it) }
+    val timeString =
+        chatPreview.lastMessage?.let { Date(it.timestamp) }?.let { timeFormat.format(it) }
 
     Row(
         modifier = modifier
@@ -130,8 +140,7 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier:
             .fillMaxWidth()
             .clickable {
                 onChatClick(chatPreview.contact)
-            },
-        verticalAlignment = Alignment.Top
+            }, verticalAlignment = Alignment.Top
     ) {
         val imageModifier = Modifier
             .size(50.dp)
@@ -141,9 +150,7 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier:
             Image(
                 painter = rememberAsyncImagePainter(model = chatPreview.contact.imageFileName?.let {
                     File(LocalContext.current.filesDir, it)
-                }),
-                contentDescription = "Immagine profilo",
-                modifier = imageModifier
+                }), contentDescription = "Immagine profilo", modifier = imageModifier
             )
         } else {
             Image(
@@ -157,7 +164,7 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier:
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            Row (
+            Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -165,7 +172,7 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier:
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
-                if (chatPreview.online) {
+                if (online) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Column(
                         modifier = Modifier
@@ -176,21 +183,17 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier:
                 }
             }
 
-            when(chatPreview.lastMessage) {
+            when (chatPreview.lastMessage) {
                 is TextMessage -> {
                     Text(
-                        text = chatPreview.lastMessage.text,
-                        fontSize = 14.sp,
-                        color = Color.Gray
+                        text = chatPreview.lastMessage.text, fontSize = 14.sp, color = Color.Gray
                     )
                 }
 
                 is FileMessage -> {
                     chatPreview.lastMessage.fileName.let {
                         Text(
-                            text = it,
-                            fontSize = 14.sp,
-                            color = Color.Gray
+                            text = it, fontSize = 14.sp, color = Color.Gray
                         )
                     }
                 }
@@ -199,13 +202,10 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier:
             }
         }
         Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.End
+            verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.End
         ) {
             Text(
-                text = timeString ?: "",
-                fontSize = 10.sp,
-                color = Color.Gray
+                text = timeString ?: "", fontSize = 10.sp, color = Color.Gray
             )
 
             if (chatPreview.unreadMessagesCount > 0) {
@@ -232,29 +232,27 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier:
 @Preview(showBackground = true)
 @Composable
 fun ChatItemPreview() {
-//    ChatItem(
-//        chatPreview = ChatPreview(
-//            contact = Contact(
-//                account = Account(
-//                    accountId = 1,
-//                    profileUpdate = System.currentTimeMillis()
-//                ),
-//                profile = Profile(
-//                    accountId = 1,
-//                    username = "Alice",
-//                    imageFileName = null
-//                )
-//            ),
-//            online = true,
-//            unreadMessagesCount = 3,
-//            lastMessage = TextMessage(
-//                senderId = 1,
-//                receiverId = 2,
-//                text = "Ciao!",
-//                timestamp = System.currentTimeMillis(),
-//                isRead = false
-//            )
-//        ),
-//        onChatClick = {}
-//    )
+    ChatItem(
+        chatPreview = ChatPreview(
+            contact = Contact(
+                account = Account(
+                    accountId = 1, profileUpdate = 1
+                ), profile = Profile(
+                    accountId = 1, username = "Alice", imageFileName = null
+                )
+            ),
+            unreadMessagesCount = 1,
+            lastMessage = TextMessage(
+                messageId = 1,
+                senderId = 1,
+                receiverId = 2,
+                text = "Ciao!",
+                timestamp = System.currentTimeMillis(),
+                messageState = MessageState.MESSAGE_READ,
+            ),
+        ),
+        online = true,
+        onChatClick = {
+
+        })
 }

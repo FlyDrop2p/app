@@ -1,13 +1,15 @@
 package com.flydrop2p.flydrop2p.network
 
+import android.net.Uri
 import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.data.local.FileManager
+import com.flydrop2p.flydrop2p.domain.model.contact.Account
 import com.flydrop2p.flydrop2p.domain.model.contact.Profile
 import com.flydrop2p.flydrop2p.domain.model.contact.toAccount
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
+import com.flydrop2p.flydrop2p.domain.model.message.MessageState
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 import com.flydrop2p.flydrop2p.domain.model.message.toNetworkTextMessage
-import com.flydrop2p.flydrop2p.domain.model.message.toTextMessage
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
@@ -16,6 +18,7 @@ import com.flydrop2p.flydrop2p.network.model.contact.NetworkProfile
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkDevice
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
+import com.flydrop2p.flydrop2p.network.model.message.NetworkMessageReceivedAck
 import com.flydrop2p.flydrop2p.network.model.message.NetworkTextMessage
 import com.flydrop2p.flydrop2p.network.model.profile.NetworkProfileRequest
 import com.flydrop2p.flydrop2p.network.model.profile.NetworkProfileResponse
@@ -28,7 +31,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.io.File
 
 
 class NetworkManager(
@@ -42,7 +44,7 @@ class NetworkManager(
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     val receiver: WiFiDirectBroadcastReceiver = WiFiDirectBroadcastReceiver(activity)
 
-    private lateinit var ownDevice: Device
+    private var ownDevice = Device(null, Account(0, 0), Profile(0, "", null))
 
     private val _connectedDevices: MutableStateFlow<List<NetworkDevice>> = MutableStateFlow(listOf())
     val connectedDevices: StateFlow<List<NetworkDevice>>
@@ -52,10 +54,6 @@ class NetworkManager(
     private val clientService = ClientService()
 
     init {
-        coroutineScope.launch {
-            ownDevice = Device(null, ownAccountRepository.getAccount(), ownProfileRepository.getProfile())
-        }
-
         coroutineScope.launch {
             ownAccountRepository.getAccountAsFlow().collect {
                 ownDevice = ownDevice.copy(account = it)
@@ -86,10 +84,10 @@ class NetworkManager(
         val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
 
         connectedDevice?.let { device ->
-            coroutineScope.launch {
-                device.ipAddress?.let {
+            device.ipAddress?.let { ipAddress ->
+                coroutineScope.launch {
                     val networkProfileRequest = NetworkProfileRequest(ownDevice.account.accountId, accountId)
-                    clientService.sendProfileRequest(it, ownDevice, networkProfileRequest)
+                    clientService.sendProfileRequest(ipAddress, ownDevice, networkProfileRequest)
                 }
             }
         }
@@ -99,15 +97,15 @@ class NetworkManager(
         val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
 
         connectedDevice?.let { device ->
-            coroutineScope.launch {
-                device.ipAddress?.let {
+            device.ipAddress?.let { ipAddress ->
+                coroutineScope.launch {
                     val image = ownDevice.profile.imageFileName?.let { fileName ->
                         fileManager.loadFile(fileName)
                     }
 
                     val networkProfile = NetworkProfile(ownDevice.profile, image)
                     val networkProfileResponse = NetworkProfileResponse(ownDevice.account.accountId, accountId, networkProfile)
-                    clientService.sendProfileResponse(it, ownDevice, networkProfileResponse)
+                    clientService.sendProfileResponse(ipAddress, ownDevice, networkProfileResponse)
                 }
             }
         }
@@ -117,25 +115,46 @@ class NetworkManager(
         val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
 
         connectedDevice?.let { device ->
-            coroutineScope.launch {
-                device.ipAddress?.let {
-                    val textMessage = TextMessage(0, ownDevice.account.accountId, accountId, System.currentTimeMillis(), text, false)
-                    textMessage.messageId = chatRepository.addChatMessage(textMessage)
-                    clientService.sendTextMessage(it, ownDevice, textMessage.toNetworkTextMessage())
+            device.ipAddress?.let { ipAddress ->
+                coroutineScope.launch {
+                    var textMessage = TextMessage(0, ownDevice.account.accountId, accountId, System.currentTimeMillis(), MessageState.MESSAGE_SENT, text)
+                    textMessage = textMessage.copy(messageId = chatRepository.addMessage(textMessage))
+                    clientService.sendTextMessage(ipAddress, ownDevice, textMessage.toNetworkTextMessage())
                 }
             }
         }
     }
 
-    fun sendFileMessage(accountId: Long, file: File) {
+    fun sendFileMessage(accountId: Long, fileUri: Uri) {
         val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
 
         connectedDevice?.let { device ->
-            coroutineScope.launch {
-                device.ipAddress?.let {
-//                    val fileMessage = FileMessage(0, ownDevice.account.accountId, accountId, System.currentTimeMillis(), file, false)
-//                    chatRepository.addChatMessage(fileMessage)
-//                    clientService.sendFileMessage(it, ownDevice, fileMessage.toNetworkFileMessage())
+            device.ipAddress?.let { ipAddress ->
+                coroutineScope.launch {
+                    val fileName = fileManager.saveFile(fileUri, ownDevice.account.accountId)?.let {
+                        fileManager.loadFile(it)
+                    }
+
+                    if(fileName != null) {
+                        var fileMessage = FileMessage(0, ownDevice.account.accountId, accountId, System.currentTimeMillis(), MessageState.MESSAGE_SENT, fileName)
+                        fileMessage = fileMessage.copy(messageId = chatRepository.addMessage(fileMessage))
+
+                        val networkFileMessage = NetworkFileMessage(fileMessage, fileName)
+                        clientService.sendFileMessage(ipAddress, ownDevice, networkFileMessage)
+                    }
+                }
+            }
+        }
+    }
+
+    fun sendMessageReceivedAck(accountId: Long, messageId: Long) {
+        val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
+
+        connectedDevice?.let { device ->
+            device.ipAddress?.let { ipAddress ->
+                coroutineScope.launch {
+                    val networkMessageReceivedAck = NetworkMessageReceivedAck(messageId, ownDevice.account.accountId, accountId)
+                    clientService.sendMessageReceivedAck(ipAddress, ownDevice, networkMessageReceivedAck)
                 }
             }
         }
@@ -147,6 +166,7 @@ class NetworkManager(
         startFileMessageConnection()
         startProfileRequestConnection()
         startProfileResponseConnection()
+        startMessageReceivedAck()
     }
 
     private fun startKeepaliveConnection() {
@@ -211,6 +231,18 @@ class NetworkManager(
         }
     }
 
+    private fun startMessageReceivedAck() {
+        coroutineScope.launch {
+            while(true) {
+                val networkMessageReceivedAck = serverService.listenMessageReceivedAck()
+
+                if(networkMessageReceivedAck.receiverId == ownDevice.account.accountId) {
+                    handleMessageReceivedAck(networkMessageReceivedAck)
+                }
+            }
+        }
+    }
+
     private fun handleDeviceKeepalive(networkDevice: NetworkDevice) {
         coroutineScope.launch {
             val lastAccount = contactRepository.getAccountByAccountId(networkDevice.account.accountId)
@@ -234,7 +266,7 @@ class NetworkManager(
 
     private fun handleProfileResponse(networkProfileResponse: NetworkProfileResponse) {
         coroutineScope.launch {
-            val imageFileName = networkProfileResponse.profile.image?.let {
+            val imageFileName = networkProfileResponse.profile.imageBase64?.let {
                 fileManager.saveProfileImage(it, networkProfileResponse.profile.accountId)
             }
 
@@ -244,19 +276,27 @@ class NetworkManager(
 
     private fun handleTextMessage(networkTextMessage: NetworkTextMessage) {
         coroutineScope.launch {
-            val textMessage = networkTextMessage.toTextMessage()
-            chatRepository.addChatMessage(textMessage)
+            val textMessage = TextMessage(networkTextMessage, MessageState.MESSAGE_RECEIVED)
+            chatRepository.addMessage(textMessage)
+            sendMessageReceivedAck(networkTextMessage.senderId, networkTextMessage.messageId)
         }
     }
     
     private fun handleFileMessage(networkFileMessage: NetworkFileMessage) {
         coroutineScope.launch {
-//            val fileMessage = networkFileMessage.toFileMessage()
-//
-//            val file = File(fileMessage.file.path)
-//            file.writeBytes(networkFileMessage.file)
-//
-//            chatRepository.addChatMessage(fileMessage)
+            fileManager.saveFile(networkFileMessage.fileBase64, networkFileMessage.senderId)?.let { fileName ->
+                chatRepository.addMessage(FileMessage(networkFileMessage, MessageState.MESSAGE_READ, fileName))
+            }
+        }
+    }
+
+    private fun handleMessageReceivedAck(networkMessageReceivedAck: NetworkMessageReceivedAck) {
+        coroutineScope.launch {
+            chatRepository.getMessageByMessageId(networkMessageReceivedAck.messageId)?.let { message ->
+                if(message.messageState < MessageState.MESSAGE_RECEIVED) {
+                    chatRepository.updateMessageState(message.messageId, MessageState.MESSAGE_RECEIVED)
+                }
+            }
         }
     }
 }

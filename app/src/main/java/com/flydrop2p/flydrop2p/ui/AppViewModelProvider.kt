@@ -14,7 +14,8 @@ object AppViewModelProvider {
         initializer {
             HomeViewModel(
                 application().container.chatRepository,
-                application().container.contactRepository
+                application().container.contactRepository,
+                application().container.networkManager
             )
         }
 

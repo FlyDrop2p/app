@@ -3,6 +3,7 @@ package com.flydrop2p.flydrop2p.network.service
 import android.util.Log
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
+import com.flydrop2p.flydrop2p.network.model.message.NetworkMessageReceivedAck
 import com.flydrop2p.flydrop2p.network.model.message.NetworkTextMessage
 import com.flydrop2p.flydrop2p.network.model.profile.NetworkProfileRequest
 import com.flydrop2p.flydrop2p.network.model.profile.NetworkProfileResponse
@@ -18,6 +19,7 @@ class ServerService {
         const val PORT_PROFILE_RESPONSE: Int = 8802
         const val PORT_TEXT_MESSAGE: Int = 8803
         const val PORT_FILE_MESSAGE: Int = 8804
+        const val PORT_MESSAGE_RECEIVED_ACK = 8805
     }
 
     suspend fun listenKeepalive(): NetworkKeepalive {
@@ -113,5 +115,24 @@ class ServerService {
         }
 
         return networkFileMessage
+    }
+
+    suspend fun listenMessageReceivedAck(): NetworkMessageReceivedAck {
+        val networkMessageReceivedAck: NetworkMessageReceivedAck
+
+        withContext(Dispatchers.IO) {
+            val socket = ServerSocket(PORT_MESSAGE_RECEIVED_ACK)
+            val client = socket.accept()
+
+            val inputStream = client.getInputStream()
+            val buffer = inputStream.readBytes()
+            networkMessageReceivedAck = Json.decodeFromString(buffer.decodeToString())
+
+            socket.close()
+
+            Log.d("MESSAGE RECEIVED ACK", networkMessageReceivedAck.toString())
+        }
+
+        return networkMessageReceivedAck
     }
 }
