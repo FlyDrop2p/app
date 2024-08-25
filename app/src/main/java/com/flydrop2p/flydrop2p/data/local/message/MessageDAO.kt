@@ -27,6 +27,6 @@ interface MessageDAO {
     @Update
     suspend fun updateMessage(messageEntity: MessageEntity)
 
-    @Query("UPDATE messageentity SET messageState = :messageState WHERE messageId = :messageId")
+    @Query("UPDATE MessageEntity SET messageState = :messageState WHERE messageId = :messageId")
     suspend fun updateMessageState(messageId: Long, messageState: MessageState)
 }

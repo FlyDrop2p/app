@@ -24,9 +24,9 @@ data class FileMessage(
         return MessageEntity(
             senderId = senderId,
             receiverId = receiverId,
-            messageType = MessageType.FILE_MESSAGE,
             timestamp = timestamp,
             messageState = messageState,
+            messageType = MessageType.FILE_MESSAGE,
             content = fileName
         )
     }

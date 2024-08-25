@@ -138,9 +138,7 @@ class NetworkManager(
                     if(fileName != null) {
                         var fileMessage = FileMessage(0, ownDevice.account.accountId, accountId, System.currentTimeMillis(), MessageState.MESSAGE_SENT, fileName)
                         fileMessage = fileMessage.copy(messageId = chatRepository.addMessage(fileMessage))
-
-                        val networkFileMessage = NetworkFileMessage(fileMessage, fileName)
-                        clientService.sendFileMessage(ipAddress, ownDevice, networkFileMessage)
+                        clientService.sendFileMessage(ipAddress, ownDevice, NetworkFileMessage(fileMessage, fileName))
                     }
                 }
             }
@@ -248,7 +246,7 @@ class NetworkManager(
     private fun startMessageReceivedAck() {
         coroutineScope.launch {
             while(true) {
-                val networkMessageAck = serverService.listenMessageReadAck()
+                val networkMessageAck = serverService.listenMessageReceivedAck()
 
                 if(networkMessageAck.receiverId == ownDevice.account.accountId) {
                     handleMessageReceivedAck(networkMessageAck)
@@ -260,7 +258,7 @@ class NetworkManager(
     private fun startMessageReadAck() {
         coroutineScope.launch {
             while(true) {
-                val networkMessageAck = serverService.listenMessageReceivedAck()
+                val networkMessageAck = serverService.listenMessageReadAck()
 
                 if(networkMessageAck.receiverId == ownDevice.account.accountId) {
                     handleMessageReadAck(networkMessageAck)
