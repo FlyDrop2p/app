@@ -302,8 +302,7 @@ class NetworkManager(
 
     private fun handleTextMessage(networkTextMessage: NetworkTextMessage) {
         coroutineScope.launch {
-            val textMessage = TextMessage(networkTextMessage, MessageState.MESSAGE_RECEIVED)
-            chatRepository.addMessage(textMessage)
+            chatRepository.addMessage(TextMessage(networkTextMessage, MessageState.MESSAGE_RECEIVED))
             sendMessageReceivedAck(networkTextMessage.senderId, networkTextMessage.messageId)
         }
     }
@@ -311,7 +310,8 @@ class NetworkManager(
     private fun handleFileMessage(networkFileMessage: NetworkFileMessage) {
         coroutineScope.launch {
             fileManager.saveFile(networkFileMessage.fileBase64, networkFileMessage.senderId)?.let { fileName ->
-                chatRepository.addMessage(FileMessage(networkFileMessage, MessageState.MESSAGE_READ, fileName))
+                chatRepository.addMessage(FileMessage(networkFileMessage, MessageState.MESSAGE_RECEIVED, fileName))
+                sendMessageReceivedAck(networkFileMessage.senderId, networkFileMessage.messageId)
             }
         }
     }
