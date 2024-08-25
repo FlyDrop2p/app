@@ -3,7 +3,7 @@ package com.flydrop2p.flydrop2p.network.service
 import com.flydrop2p.flydrop2p.network.Device
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
-import com.flydrop2p.flydrop2p.network.model.message.NetworkMessageReceivedAck
+import com.flydrop2p.flydrop2p.network.model.message.NetworkMessageAck
 import com.flydrop2p.flydrop2p.network.model.message.NetworkTextMessage
 import com.flydrop2p.flydrop2p.network.model.profile.NetworkProfileRequest
 import com.flydrop2p.flydrop2p.network.model.profile.NetworkProfileResponse
@@ -106,7 +106,7 @@ class ClientService {
         }
     }
 
-    suspend fun sendMessageReceivedAck(ipAddress: String, ownDevice: Device, networkMessageReceivedAck: NetworkMessageReceivedAck) {
+    suspend fun sendMessageReceivedAck(ipAddress: String, ownDevice: Device, networkMessageAck: NetworkMessageAck) {
         withContext(Dispatchers.IO) {
             try {
                 val socket = Socket()
@@ -116,7 +116,25 @@ class ClientService {
                 ownDevice.ipAddress = socket.localAddress.hostAddress?.toString()
 
                 val outputStream = socket.getOutputStream()
-                outputStream.write(Json.encodeToString(networkMessageReceivedAck).encodeToByteArray())
+                outputStream.write(Json.encodeToString(networkMessageAck).encodeToByteArray())
+                outputStream.close()
+            } catch (_: Exception) {
+
+            }
+        }
+    }
+
+    suspend fun sendMessageReadAck(ipAddress: String, ownDevice: Device, networkMessageAck: NetworkMessageAck) {
+        withContext(Dispatchers.IO) {
+            try {
+                val socket = Socket()
+                socket.bind(null)
+                socket.connect(InetSocketAddress(InetAddress.getByName(ipAddress), ServerService.PORT_MESSAGE_READ_ACK))
+
+                ownDevice.ipAddress = socket.localAddress.hostAddress?.toString()
+
+                val outputStream = socket.getOutputStream()
+                outputStream.write(Json.encodeToString(networkMessageAck).encodeToByteArray())
                 outputStream.close()
             } catch (_: Exception) {
 

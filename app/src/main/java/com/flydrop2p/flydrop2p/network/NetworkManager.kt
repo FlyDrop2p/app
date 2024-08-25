@@ -18,7 +18,7 @@ import com.flydrop2p.flydrop2p.network.model.contact.NetworkProfile
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkDevice
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
-import com.flydrop2p.flydrop2p.network.model.message.NetworkMessageReceivedAck
+import com.flydrop2p.flydrop2p.network.model.message.NetworkMessageAck
 import com.flydrop2p.flydrop2p.network.model.message.NetworkTextMessage
 import com.flydrop2p.flydrop2p.network.model.profile.NetworkProfileRequest
 import com.flydrop2p.flydrop2p.network.model.profile.NetworkProfileResponse
@@ -153,8 +153,21 @@ class NetworkManager(
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
-                    val networkMessageReceivedAck = NetworkMessageReceivedAck(messageId, ownDevice.account.accountId, accountId)
-                    clientService.sendMessageReceivedAck(ipAddress, ownDevice, networkMessageReceivedAck)
+                    val networkMessageAck = NetworkMessageAck(messageId, ownDevice.account.accountId, accountId)
+                    clientService.sendMessageReceivedAck(ipAddress, ownDevice, networkMessageAck)
+                }
+            }
+        }
+    }
+
+    fun sendMessageReadAck(accountId: Long, messageId: Long) {
+        val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
+
+        connectedDevice?.let { device ->
+            device.ipAddress?.let { ipAddress ->
+                coroutineScope.launch {
+                    val networkMessageAck = NetworkMessageAck(messageId, ownDevice.account.accountId, accountId)
+                    clientService.sendMessageReceivedAck(ipAddress, ownDevice, networkMessageAck)
                 }
             }
         }
@@ -167,6 +180,7 @@ class NetworkManager(
         startProfileRequestConnection()
         startProfileResponseConnection()
         startMessageReceivedAck()
+        startMessageReadAck()
     }
 
     private fun startKeepaliveConnection() {
@@ -234,10 +248,22 @@ class NetworkManager(
     private fun startMessageReceivedAck() {
         coroutineScope.launch {
             while(true) {
-                val networkMessageReceivedAck = serverService.listenMessageReceivedAck()
+                val networkMessageAck = serverService.listenMessageReadAck()
 
-                if(networkMessageReceivedAck.receiverId == ownDevice.account.accountId) {
-                    handleMessageReceivedAck(networkMessageReceivedAck)
+                if(networkMessageAck.receiverId == ownDevice.account.accountId) {
+                    handleMessageReceivedAck(networkMessageAck)
+                }
+            }
+        }
+    }
+
+    private fun startMessageReadAck() {
+        coroutineScope.launch {
+            while(true) {
+                val networkMessageAck = serverService.listenMessageReceivedAck()
+
+                if(networkMessageAck.receiverId == ownDevice.account.accountId) {
+                    handleMessageReadAck(networkMessageAck)
                 }
             }
         }
@@ -276,8 +302,7 @@ class NetworkManager(
 
     private fun handleTextMessage(networkTextMessage: NetworkTextMessage) {
         coroutineScope.launch {
-            val textMessage = TextMessage(networkTextMessage, MessageState.MESSAGE_RECEIVED)
-            chatRepository.addMessage(textMessage)
+            chatRepository.addMessage(TextMessage(networkTextMessage, MessageState.MESSAGE_RECEIVED))
             sendMessageReceivedAck(networkTextMessage.senderId, networkTextMessage.messageId)
         }
     }
@@ -285,16 +310,27 @@ class NetworkManager(
     private fun handleFileMessage(networkFileMessage: NetworkFileMessage) {
         coroutineScope.launch {
             fileManager.saveFile(networkFileMessage.fileBase64, networkFileMessage.senderId)?.let { fileName ->
-                chatRepository.addMessage(FileMessage(networkFileMessage, MessageState.MESSAGE_READ, fileName))
+                chatRepository.addMessage(FileMessage(networkFileMessage, MessageState.MESSAGE_RECEIVED, fileName))
+                sendMessageReceivedAck(networkFileMessage.senderId, networkFileMessage.messageId)
             }
         }
     }
 
-    private fun handleMessageReceivedAck(networkMessageReceivedAck: NetworkMessageReceivedAck) {
+    private fun handleMessageReceivedAck(networkMessageAck: NetworkMessageAck) {
         coroutineScope.launch {
-            chatRepository.getMessageByMessageId(networkMessageReceivedAck.messageId)?.let { message ->
+            chatRepository.getMessageByMessageId(networkMessageAck.messageId)?.let { message ->
                 if(message.messageState < MessageState.MESSAGE_RECEIVED) {
                     chatRepository.updateMessageState(message.messageId, MessageState.MESSAGE_RECEIVED)
+                }
+            }
+        }
+    }
+
+    private fun handleMessageReadAck(networkMessageAck: NetworkMessageAck) {
+        coroutineScope.launch {
+            chatRepository.getMessageByMessageId(networkMessageAck.messageId)?.let { message ->
+                if(message.messageState < MessageState.MESSAGE_READ) {
+                    chatRepository.updateMessageState(message.messageId, MessageState.MESSAGE_READ)
                 }
             }
         }
