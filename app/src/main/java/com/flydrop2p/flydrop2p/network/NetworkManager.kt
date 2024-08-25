@@ -248,7 +248,7 @@ class NetworkManager(
     private fun startMessageReceivedAck() {
         coroutineScope.launch {
             while(true) {
-                val networkMessageAck = serverService.listenMessageReceivedAck()
+                val networkMessageAck = serverService.listenMessageReadAck()
 
                 if(networkMessageAck.receiverId == ownDevice.account.accountId) {
                     handleMessageReceivedAck(networkMessageAck)
