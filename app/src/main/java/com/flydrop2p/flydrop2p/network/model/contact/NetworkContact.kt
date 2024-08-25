@@ -7,7 +7,7 @@ data class NetworkContact(
     val account: NetworkAccount,
     val profile: NetworkProfile?
 ) : Comparable<NetworkContact> {
-    val accountId: Int
+    val accountId: Long
         get() = account.accountId
 
     val profileUpdate: Long

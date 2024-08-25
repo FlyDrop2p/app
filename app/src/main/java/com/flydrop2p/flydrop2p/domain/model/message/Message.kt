@@ -4,8 +4,9 @@ import com.flydrop2p.flydrop2p.data.local.message.MessageEntity
 import com.flydrop2p.flydrop2p.data.local.message.MessageType
 
 sealed class Message : Comparable<Message> {
-    abstract val senderId: Int
-    abstract val receiverId: Int
+    abstract val messageId: Long
+    abstract val senderId: Long
+    abstract val receiverId: Long
     abstract val timestamp: Long
 
     abstract fun toMessageEntity(): MessageEntity

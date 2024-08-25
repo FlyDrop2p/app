@@ -31,7 +31,7 @@ class ContactLocalRepository(private val accountDAO: AccountDAO, private val pro
         }
     }
 
-    override fun getContactByAccountIdAsFlow(accountId: Int): Flow<Contact?> {
+    override fun getContactByAccountIdAsFlow(accountId: Long): Flow<Contact?> {
         val accountFlow = accountDAO.getAccountByAccountIdAsFlow(accountId).map { accountEntity ->
             accountEntity?.toAccount()
         }
@@ -55,7 +55,7 @@ class ContactLocalRepository(private val accountDAO: AccountDAO, private val pro
         }
     }
 
-    override fun getAccountByAccountIdAsFlow(accountId: Int): Flow<Account?> {
+    override fun getAccountByAccountIdAsFlow(accountId: Long): Flow<Account?> {
         return accountDAO.getAccountByAccountIdAsFlow(accountId).map { it?.toAccount() }
     }
 
@@ -63,16 +63,16 @@ class ContactLocalRepository(private val accountDAO: AccountDAO, private val pro
         return accountDAO.getAllAccounts().map { it.toAccount() }
     }
 
-    override suspend fun getAccountByAccountId(accountId: Int): Account? {
+    override suspend fun getAccountByAccountId(accountId: Long): Account? {
         return accountDAO.getAccountByAccountId(accountId)?.toAccount()
     }
 
-    override suspend fun addAccount(account: Account) {
-        accountDAO.insertAccount(account.toAccountEntity())
+    override suspend fun addAccount(account: Account): Long {
+        return accountDAO.insertAccount(account.toAccountEntity())
     }
 
-    override suspend fun addOrUpdateAccount(account: Account) {
-        accountDAO.insertOrUpdateAccount(account.toAccountEntity())
+    override suspend fun addOrUpdateAccount(account: Account): Long {
+        return accountDAO.insertOrUpdateAccount(account.toAccountEntity())
     }
 
     override suspend fun updateAccount(account: Account) {
@@ -89,7 +89,7 @@ class ContactLocalRepository(private val accountDAO: AccountDAO, private val pro
         }
     }
 
-    override fun getProfileByAccountIdAsFlow(accountId: Int): Flow<Profile?> {
+    override fun getProfileByAccountIdAsFlow(accountId: Long): Flow<Profile?> {
         return profileDAO.getProfileByAccountIdAsFlow(accountId).map { it?.toProfile() }
     }
 
@@ -97,16 +97,16 @@ class ContactLocalRepository(private val accountDAO: AccountDAO, private val pro
         return profileDAO.getAllProfiles().map { it.toProfile() }
     }
 
-    override suspend fun getProfileByAccountId(accountId: Int): Profile? {
+    override suspend fun getProfileByAccountId(accountId: Long): Profile? {
         return profileDAO.getProfileByAccountId(accountId)?.toProfile()
     }
 
-    override suspend fun addProfile(profile: Profile) {
-        profileDAO.insertProfile(profile.toProfileEntity())
+    override suspend fun addProfile(profile: Profile): Long {
+        return profileDAO.insertProfile(profile.toProfileEntity())
     }
 
-    override suspend fun addOrUpdateProfile(profile: Profile) {
-        profileDAO.insertOrUpdateProfile(profile.toProfileEntity())
+    override suspend fun addOrUpdateProfile(profile: Profile): Long {
+        return profileDAO.insertOrUpdateProfile(profile.toProfileEntity())
     }
 
     override suspend fun updateProfile(profile: Profile) {

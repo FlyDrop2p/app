@@ -2,12 +2,10 @@ package com.flydrop2p.flydrop2p.network
 
 import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.data.local.FileManager
-import com.flydrop2p.flydrop2p.domain.model.contact.Contact
 import com.flydrop2p.flydrop2p.domain.model.contact.Profile
 import com.flydrop2p.flydrop2p.domain.model.contact.toAccount
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
-import com.flydrop2p.flydrop2p.domain.model.message.toNetworkFileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.toNetworkTextMessage
 import com.flydrop2p.flydrop2p.domain.model.message.toTextMessage
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
@@ -84,7 +82,7 @@ class NetworkManager(
         }
     }
 
-    fun sendProfileRequest(accountId: Int) {
+    fun sendProfileRequest(accountId: Long) {
         val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
 
         connectedDevice?.let { device ->
@@ -97,7 +95,7 @@ class NetworkManager(
         }
     }
 
-    fun sendProfileResponse(accountId: Int) {
+    fun sendProfileResponse(accountId: Long) {
         val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
 
         connectedDevice?.let { device ->
@@ -108,7 +106,6 @@ class NetworkManager(
                     }
 
                     val networkProfile = NetworkProfile(ownDevice.profile, image)
-
                     val networkProfileResponse = NetworkProfileResponse(ownDevice.account.accountId, accountId, networkProfile)
                     clientService.sendProfileResponse(it, ownDevice, networkProfileResponse)
                 }
@@ -116,29 +113,29 @@ class NetworkManager(
         }
     }
 
-    fun sendTextMessage(accountId: Int, text: String) {
+    fun sendTextMessage(accountId: Long, text: String) {
         val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
 
         connectedDevice?.let { device ->
             coroutineScope.launch {
                 device.ipAddress?.let {
-                    val textMessage = TextMessage(ownDevice.account.accountId, accountId, text, System.currentTimeMillis() / 1000)
-                    chatRepository.addChatMessage(textMessage)
+                    val textMessage = TextMessage(0, ownDevice.account.accountId, accountId, System.currentTimeMillis(), text)
+                    textMessage.messageId = chatRepository.addChatMessage(textMessage)
                     clientService.sendTextMessage(it, ownDevice, textMessage.toNetworkTextMessage())
                 }
             }
         }
     }
 
-    fun sendFileMessage(accountId: Int, file: File) {
+    fun sendFileMessage(accountId: Long, file: File) {
         val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
 
         connectedDevice?.let { device ->
             coroutineScope.launch {
                 device.ipAddress?.let {
-                    val fileMessage = FileMessage(ownDevice.account.accountId, accountId, file, System.currentTimeMillis() / 1000)
-                    chatRepository.addChatMessage(fileMessage)
-                    clientService.sendFileMessage(it, ownDevice, fileMessage.toNetworkFileMessage())
+//                    val fileMessage = FileMessage(0, ownDevice.account.accountId, accountId, System.currentTimeMillis(), file)
+//                    chatRepository.addChatMessage(fileMessage)
+//                    clientService.sendFileMessage(it, ownDevice, fileMessage.toNetworkFileMessage())
                 }
             }
         }

@@ -14,19 +14,19 @@ interface ProfileDAO {
     fun getAllProfilesAsFlow(): Flow<List<ProfileEntity>>
 
     @Query("SELECT * FROM ProfileEntity WHERE accountId = :accountId")
-    fun getProfileByAccountIdAsFlow(accountId: Int): Flow<ProfileEntity?>
+    fun getProfileByAccountIdAsFlow(accountId: Long): Flow<ProfileEntity?>
 
     @Query("SELECT * FROM ProfileEntity")
     fun getAllProfiles(): List<ProfileEntity>
 
     @Query("SELECT * FROM ProfileEntity WHERE accountId = :accountId")
-    fun getProfileByAccountId(accountId: Int): ProfileEntity?
+    fun getProfileByAccountId(accountId: Long): ProfileEntity?
 
     @Insert
-    suspend fun insertProfile(profile: ProfileEntity)
+    suspend fun insertProfile(profile: ProfileEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrUpdateProfile(profile: ProfileEntity)
+    suspend fun insertOrUpdateProfile(profile: ProfileEntity): Long
 
     @Update
     suspend fun updateProfile(profile: ProfileEntity)

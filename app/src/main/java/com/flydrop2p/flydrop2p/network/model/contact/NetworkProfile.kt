@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class NetworkProfile(
-    val accountId: Int,
+    val accountId: Long,
     val username: String,
     val image: String?
 ) {

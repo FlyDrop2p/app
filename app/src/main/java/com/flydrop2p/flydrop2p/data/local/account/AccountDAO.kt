@@ -14,19 +14,19 @@ interface AccountDAO {
     fun getAllAccountsAsFlow(): Flow<List<AccountEntity>>
 
     @Query("SELECT * FROM AccountEntity WHERE accountId = :accountId")
-    fun getAccountByAccountIdAsFlow(accountId: Int): Flow<AccountEntity?>
+    fun getAccountByAccountIdAsFlow(accountId: Long): Flow<AccountEntity?>
 
     @Query("SELECT * FROM AccountEntity")
     fun getAllAccounts(): List<AccountEntity>
 
     @Query("SELECT * FROM AccountEntity WHERE accountId = :accountId")
-    fun getAccountByAccountId(accountId: Int): AccountEntity?
+    fun getAccountByAccountId(accountId: Long): AccountEntity?
 
     @Insert
-    suspend fun insertAccount(account: AccountEntity)
+    suspend fun insertAccount(account: AccountEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrUpdateAccount(account: AccountEntity)
+    suspend fun insertOrUpdateAccount(account: AccountEntity): Long
 
     @Update
     suspend fun updateAccount(account: AccountEntity)

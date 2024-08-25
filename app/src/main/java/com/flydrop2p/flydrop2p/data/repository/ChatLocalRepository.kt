@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
 class ChatLocalRepository(private val accountDAO: AccountDAO, private val messageDAO: MessageDAO, private val profileDAO: ProfileDAO) : ChatRepository {
-    override fun getChatMessagesByAccountId(accountId: Int): Flow<List<Message>> {
+    override fun getChatMessagesByAccountId(accountId: Long): Flow<List<Message>> {
         return messageDAO.getAllMessagesByAccountId(accountId).map { messageEntities ->
             messageEntities.map { it.toMessage() }
         }
@@ -40,7 +40,7 @@ class ChatLocalRepository(private val accountDAO: AccountDAO, private val messag
         }
     }
 
-    override suspend fun addChatMessage(message: Message) {
-        messageDAO.insertMessage(message.toMessageEntity())
+    override suspend fun addChatMessage(message: Message): Long {
+        return messageDAO.insertMessage(message.toMessageEntity())
     }
 }

@@ -24,7 +24,7 @@ class ChatViewModel(
     val ownAccount
         get() = ownAccountRepository.getAccountAsFlow()
 
-    fun collectContact(accountId: Int) {
+    fun collectContact(accountId: Long) {
         viewModelScope.launch {
             contactRepository.getContactByAccountIdAsFlow(accountId).collect {
                 it?.let {
@@ -34,7 +34,7 @@ class ChatViewModel(
         }
     }
 
-    fun collectMessages(accountId: Int) {
+    fun collectMessages(accountId: Long) {
         viewModelScope.launch {
             chatRepository.getChatMessagesByAccountId(accountId).collect {
                 _uiState.value = _uiState.value.copy(messages = it)
@@ -42,13 +42,13 @@ class ChatViewModel(
         }
     }
 
-    fun sendTextMessage(receiverId: Int, text: String) {
+    fun sendTextMessage(receiverId: Long, text: String) {
         viewModelScope.launch {
             networkManager.sendTextMessage(receiverId, text)
         }
     }
 
-    fun sendFileMessage(receiverId: Int, file: File) {
+    fun sendFileMessage(receiverId: Long, file: File) {
         viewModelScope.launch {
             networkManager.sendFileMessage(receiverId, file)
         }

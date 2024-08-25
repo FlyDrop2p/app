@@ -6,6 +6,6 @@ import androidx.room.PrimaryKey
 @Entity
 data class AccountEntity(
     @PrimaryKey
-    val accountId: Int,
+    val accountId: Long,
     val profileUpdate: Long
 )

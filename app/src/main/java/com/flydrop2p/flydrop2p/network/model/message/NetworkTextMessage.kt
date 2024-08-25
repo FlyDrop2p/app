@@ -4,8 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class NetworkTextMessage(
-    val senderId: Int,
-    val receiverId: Int,
+    val messageId: Long,
+    val senderId: Long,
+    val receiverId: Long,
     val timestamp: Long,
     val text: String,
 )

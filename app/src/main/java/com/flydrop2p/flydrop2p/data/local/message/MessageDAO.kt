@@ -8,11 +8,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MessageDAO {
     @Query("SELECT * FROM MessageEntity WHERE (senderId = :accountId OR receiverId = :accountId) ORDER BY timestamp ASC")
-    fun getAllMessagesByAccountId(accountId: Int): Flow<List<MessageEntity>>
+    fun getAllMessagesByAccountId(accountId: Long): Flow<List<MessageEntity>>
 
     @Query("SELECT * FROM MessageEntity WHERE (senderId = :accountId OR receiverId = :accountId) ORDER BY timestamp DESC LIMIT 1")
-    suspend fun getLastMessageByAccountId(accountId: Int): MessageEntity?
+    suspend fun getLastMessageByAccountId(accountId: Long): MessageEntity?
 
     @Insert
-    suspend fun insertMessage(messageEntity: MessageEntity)
+    suspend fun insertMessage(messageEntity: MessageEntity): Long
 }

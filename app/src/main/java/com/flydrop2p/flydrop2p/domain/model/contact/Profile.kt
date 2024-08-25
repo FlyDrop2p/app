@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Profile(
-    val accountId: Int,
+    val accountId: Long,
     val username: String,
     val imageFileName: String?
 ) {

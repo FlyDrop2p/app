@@ -120,7 +120,7 @@ fun ReceivedTextMessageComponent(message: TextMessage) {
 }
 
 @Composable
-fun TextMessageComponent(message: TextMessage, visualized: Boolean, currentAccountId: Int) {
+fun TextMessageComponent(message: TextMessage, visualized: Boolean, currentAccountId: Long) {
     if (message.senderId == currentAccountId) {
         SentTextMessageComponent(message = message, visualized = visualized)
     } else {

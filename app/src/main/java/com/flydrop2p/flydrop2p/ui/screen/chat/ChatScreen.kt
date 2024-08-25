@@ -55,7 +55,7 @@ object ChatDestination : NavigationDestination {
 
 @Composable
 fun ChatScreen(
-    accountId: Int,
+    accountId: Long,
     chatViewModel: ChatViewModel,
     navController: NavHostController,
     onConnectionButtonClick: () -> Unit,
@@ -156,7 +156,7 @@ fun ChatScreen(
 fun MessagesList(
     messages: List<Message>,
     chatViewModel: ChatViewModel,
-    accountId: Int,
+    accountId: Long,
     modifier: Modifier
 ) {
     LazyColumn(
@@ -170,7 +170,7 @@ fun MessagesList(
 }
 
 @Composable
-fun MessageItem(message: Message, accountId: Int, chatViewModel: ChatViewModel) {
+fun MessageItem(message: Message, accountId: Long, chatViewModel: ChatViewModel) {
     Column(
         modifier = Modifier
             .padding(vertical = 8.dp)

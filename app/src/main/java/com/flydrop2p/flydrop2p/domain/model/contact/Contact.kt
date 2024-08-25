@@ -1,13 +1,10 @@
 package com.flydrop2p.flydrop2p.domain.model.contact
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class Contact(
     val account: Account,
     val profile: Profile?
 ) : Comparable<Contact> {
-    val accountId: Int
+    val accountId: Long
         get() = account.accountId
 
     val profileUpdate: Long

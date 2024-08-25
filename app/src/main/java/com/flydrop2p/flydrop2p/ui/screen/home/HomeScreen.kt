@@ -168,9 +168,9 @@ fun ChatItem(chatPreview: ChatPreview, onChatClick: (Contact) -> Unit, modifier:
                 }
 
                 is FileMessage -> {
-                    chatPreview.lastMessage.file.let {
+                    chatPreview.lastMessage.fileName.let {
                         Text(
-                            text = it.name,
+                            text = it,
                             fontSize = 14.sp,
                             color = Color.Gray
                         )

@@ -28,8 +28,8 @@ class FileManager(private val context: Context) {
     }
 
     @OptIn(ExperimentalEncodingApi::class)
-    fun saveProfileImage(image: String, accountId: Int): String? {
-        val tempFile = File.createTempFile("temp_profile_image_${accountId}_${System.currentTimeMillis() / 1000}", null, context.cacheDir).apply {
+    fun saveProfileImage(image: String, accountId: Long): String? {
+        val tempFile = File.createTempFile("temp_profile_image_${accountId}_${System.currentTimeMillis()}", null, context.cacheDir).apply {
             deleteOnExit()
         }
 
@@ -47,17 +47,17 @@ class FileManager(private val context: Context) {
         }
     }
 
-    fun saveProfileImage(imageUri: Uri, accountId: Int): String? {
+    fun saveProfileImage(imageUri: Uri, accountId: Long): String? {
         val contentResolver: ContentResolver = context.contentResolver
         val inputStream: InputStream? = contentResolver.openInputStream(imageUri)
-        val file = File(context.filesDir, "profile_image_${accountId}_${System.currentTimeMillis() / 1000}")
+        val file = File(context.filesDir, "profile_image_${accountId}_${System.currentTimeMillis()}")
 
         return try {
             FileOutputStream(file).use { outputStream ->
                 inputStream?.copyTo(outputStream)
             }
 
-            "profile_image_${accountId}_${System.currentTimeMillis() / 1000}"
+            "profile_image_${accountId}_${System.currentTimeMillis()}"
         } catch (e: Exception) {
             e.printStackTrace()
             null

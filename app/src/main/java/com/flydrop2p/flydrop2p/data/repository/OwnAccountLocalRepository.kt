@@ -15,7 +15,7 @@ class OwnAccountLocalRepository(private val ownAccountDataStore: DataStore<Accou
         return ownAccountDataStore.data.first()
     }
 
-    override suspend fun setAccountId(accountId: Int) {
+    override suspend fun setAccountId(accountId: Long) {
         ownAccountDataStore.updateData { it.copy(accountId = accountId) }
     }
 

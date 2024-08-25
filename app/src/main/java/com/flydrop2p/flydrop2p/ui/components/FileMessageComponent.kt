@@ -69,7 +69,7 @@ fun SentFileMessageComponent(
                 modifier = Modifier
                     .padding(12.dp)
                     .clickable {
-                        val file = File(message.file.path)
+                        val file = File(context.filesDir, message.fileName)
                         val uri = Uri.fromFile(file)
                         val intent = Intent(Intent.ACTION_VIEW).apply {
                             setDataAndType(uri, "*/*")
@@ -92,13 +92,13 @@ fun SentFileMessageComponent(
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
                         Text(
-                            text = message.file.name,
+                            text = message.fileName,
                             fontSize = 16.sp,
                             color = Color(0xFF075985),
                             fontWeight = FontWeight.Medium
                         )
                         Text(
-                            text = message.file.length().toString(),
+                            text = message.fileName.length.toString(),
                             fontSize = 14.sp,
                             color = Color(0xFF075985)
                         )
@@ -152,7 +152,7 @@ fun ReceivedFileMessageComponent(
                 modifier = Modifier
                     .padding(12.dp)
                     .clickable {
-                        val file = File(message.file.path)
+                        val file = File(context.filesDir, message.fileName)
                         val uri = Uri.fromFile(file)
                         val intent = Intent(Intent.ACTION_VIEW).apply {
                             setDataAndType(uri, "*/*")
@@ -175,13 +175,13 @@ fun ReceivedFileMessageComponent(
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
                         Text(
-                            text = message.file.name,
+                            text = message.fileName,
                             fontSize = 16.sp,
                             color = Color(0xFF075985),
                             fontWeight = FontWeight.Medium
                         )
                         Text(
-                            text = message.file.length().toString(),
+                            text = message.fileName.length.toString(),
                             fontSize = 14.sp,
                             color = Color(0xFF075985)
                         )
@@ -208,7 +208,7 @@ fun ReceivedFileMessageComponent(
 fun FileMessageComponent(
     message: FileMessage,
     visualized: Boolean,
-    currentAccountId: Int
+    currentAccountId: Long
 ) {
     if (message.senderId == currentAccountId) {
         SentFileMessageComponent(
@@ -304,10 +304,11 @@ fun FilePreview(file: File, onSendFile: (File) -> Unit, onDeleteFile: (File) -> 
 fun FileMessageComponentPreview() {
     FileMessageComponent(
         message = FileMessage(
+            messageId = 0,
             senderId = 0,
             receiverId = 1,
-            file = File(""),
-            timestamp = System.currentTimeMillis() / 1000
+            timestamp = System.currentTimeMillis(),
+            fileName = ""
         ),
         visualized = true,
         currentAccountId = 0

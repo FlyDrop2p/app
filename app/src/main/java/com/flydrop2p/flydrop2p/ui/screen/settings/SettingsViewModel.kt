@@ -31,7 +31,7 @@ class SettingsViewModel(
     fun updateUsername(username: String) {
         viewModelScope.launch {
             ownProfileRepository.setUsername(username)
-            ownAccountRepository.setProfileUpdate(System.currentTimeMillis() / 1000)
+            ownAccountRepository.setProfileUpdate(System.currentTimeMillis())
         }
     }
 
@@ -39,7 +39,7 @@ class SettingsViewModel(
         viewModelScope.launch {
             fileManager.saveProfileImage(profileImageUri, ownAccountRepository.getAccount().accountId)?.let { profileImageName ->
                 ownProfileRepository.setImageFileName(profileImageName)
-                ownAccountRepository.setProfileUpdate(System.currentTimeMillis() / 1000)
+                ownAccountRepository.setProfileUpdate(System.currentTimeMillis())
             }
         }
     }

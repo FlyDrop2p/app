@@ -58,7 +58,7 @@ fun FlyDropNavHost(
             })
 
         ) { backStackEntry ->
-            val accountId = backStackEntry.arguments?.getInt(ChatDestination.itemIdArg)
+            val accountId = backStackEntry.arguments?.getLong(ChatDestination.itemIdArg)
             accountId?.let {
                 chatViewModel.collectContact(accountId)
                 chatViewModel.collectMessages(accountId)

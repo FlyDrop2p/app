@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class NetworkProfileRequest(
-    val senderId: Int,
-    val receiverId: Int
+    val senderId: Long,
+    val receiverId: Long
 )

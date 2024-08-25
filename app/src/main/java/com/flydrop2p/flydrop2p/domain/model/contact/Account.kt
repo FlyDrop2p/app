@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Account(
-    val accountId: Int,
+    val accountId: Long,
     val profileUpdate: Long
 )
 

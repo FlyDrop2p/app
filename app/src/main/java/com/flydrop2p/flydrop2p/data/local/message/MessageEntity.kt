@@ -10,10 +10,10 @@ enum class MessageType {
 @Entity
 data class MessageEntity(
     @PrimaryKey(autoGenerate = true)
-    val messageId: Int = 0,
-    val senderId: Int,
-    val receiverId: Int,
+    val messageId: Long = 0,
+    val senderId: Long,
+    val receiverId: Long,
+    val timestamp: Long,
     val messageType: MessageType,
     val content: String,
-    val timestamp: Long
 )
