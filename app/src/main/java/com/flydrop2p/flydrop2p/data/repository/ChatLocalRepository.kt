@@ -16,13 +16,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
 class ChatLocalRepository(private val accountDAO: AccountDAO, private val messageDAO: MessageDAO, private val profileDAO: ProfileDAO) : ChatRepository {
-    override fun getMessagesByAccountId(accountId: Long): Flow<List<Message>> {
-        return messageDAO.getAllMessagesByAccountId(accountId).map { messageEntities ->
-            messageEntities.map { it.toMessage() }
-        }
-    }
-
-    override fun getAllChatPreviews(): Flow<List<ChatPreview>> {
+    override fun getAllChatPreviewsAsFlow(): Flow<List<ChatPreview>> {
         val accountsFlow = accountDAO.getAllAccountsAsFlow().map { accountEntities ->
             accountEntities.map { it.toAccount() }
         }
@@ -35,11 +29,21 @@ class ChatLocalRepository(private val accountDAO: AccountDAO, private val messag
             accounts.map { account ->
                 ChatPreview(
                     Contact(account, profiles.find { it.accountId == account.accountId }),
-                    messageDAO.getNumberOfUnreadMessagesByAccountId(account.accountId).toInt(),
+                    messageDAO.getCountOfUnreadMessagesByAccountId(account.accountId).toInt(),
                     messageDAO.getLastMessageByAccountId(account.accountId)?.toMessage()
                 )
             }.sorted().reversed()
         }
+    }
+
+    override fun getAllMessagesByAccountIdAsFlow(accountId: Long): Flow<List<Message>> {
+        return messageDAO.getAllMessagesByAccountId(accountId).map { messageEntities ->
+            messageEntities.map { it.toMessage() }
+        }
+    }
+
+    override fun getAllMessagesByReceiverAccountId(accountId: Long): List<Message> {
+        return messageDAO.getMessagesByReceiverAccountId(accountId).map { it.toMessage() }
     }
 
     override suspend fun getMessageByMessageId(messageId: Long): Message? {

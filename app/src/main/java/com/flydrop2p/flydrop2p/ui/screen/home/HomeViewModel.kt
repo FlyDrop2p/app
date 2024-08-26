@@ -17,7 +17,7 @@ class HomeViewModel(private val chatRepository: ChatRepository, private val cont
 
     init {
         viewModelScope.launch {
-            chatRepository.getAllChatPreviews().collect {
+            chatRepository.getAllChatPreviewsAsFlow().collect {
                 _uiState.value = _uiState.value.copy(chatPreviews = it)
             }
         }

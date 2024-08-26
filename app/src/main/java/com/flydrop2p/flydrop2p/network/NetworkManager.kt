@@ -332,16 +332,16 @@ class NetworkManager(
     private fun handleMessageReceivedAck(networkMessageAck: NetworkMessageAck) {
         coroutineScope.launch {
             chatRepository.getMessageByMessageId(networkMessageAck.messageId)?.let { message ->
-                if(message.messageState < MessageState.MESSAGE_RECEIVED) {
-                    chatRepository.updateMessageState(message.messageId, MessageState.MESSAGE_RECEIVED)
+                    if(message.messageState < MessageState.MESSAGE_RECEIVED) {
+                        chatRepository.updateMessageState(message.messageId, MessageState.MESSAGE_RECEIVED)
+                    }
                 }
-            }
         }
     }
 
     private fun handleMessageReadAck(networkMessageAck: NetworkMessageAck) {
         coroutineScope.launch {
-            chatRepository.getMessageByMessageId(networkMessageAck.messageId)?.let { message ->
+            chatRepository.getAllMessagesByReceiverAccountId(networkMessageAck.senderId).forEach { message ->
                 if(message.messageState < MessageState.MESSAGE_READ) {
                     chatRepository.updateMessageState(message.messageId, MessageState.MESSAGE_READ)
                 }

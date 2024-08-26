@@ -38,7 +38,7 @@ class ChatViewModel(
 
     fun collectMessages(accountId: Long) {
         viewModelScope.launch {
-            chatRepository.getMessagesByAccountId(accountId).collect { messages ->
+            chatRepository.getAllMessagesByAccountIdAsFlow(accountId).collect { messages ->
                 _uiState.value = _uiState.value.copy(messages = messages)
             }
         }
@@ -60,13 +60,16 @@ class ChatViewModel(
         viewModelScope.launch {
             val ownAccountId = ownAccountRepository.getAccount().accountId
 
-            messages.forEach { message ->
-                if(message.messageState < MessageState.MESSAGE_READ && message.senderId != ownAccountId) {
-                        chatRepository.updateMessageState(message.messageId, MessageState.MESSAGE_READ)
-                        networkManager.sendMessageReadAck(message.senderId, message.messageId)
-                    }
-                }
+            val receivedMessages = messages.filter { it.messageState < MessageState.MESSAGE_READ && it.senderId != ownAccountId }
+
+            receivedMessages.forEach { message ->
+                chatRepository.updateMessageState(message.messageId, MessageState.MESSAGE_READ)
             }
+
+            receivedMessages.lastOrNull()?.let { message ->
+                networkManager.sendMessageReadAck(message.senderId, message.messageId)
+            }
+        }
     }
 
     fun resetChat() {

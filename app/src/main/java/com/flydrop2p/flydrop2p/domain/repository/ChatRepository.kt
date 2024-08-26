@@ -6,9 +6,11 @@ import com.flydrop2p.flydrop2p.domain.model.message.MessageState
 import kotlinx.coroutines.flow.Flow
 
 interface ChatRepository {
-    fun getMessagesByAccountId(accountId: Long): Flow<List<Message>>
+    fun getAllChatPreviewsAsFlow(): Flow<List<ChatPreview>>
 
-    fun getAllChatPreviews(): Flow<List<ChatPreview>>
+    fun getAllMessagesByAccountIdAsFlow(accountId: Long): Flow<List<Message>>
+
+    fun getAllMessagesByReceiverAccountId(accountId: Long): List<Message>
 
     suspend fun getMessageByMessageId(messageId: Long): Message?
 
