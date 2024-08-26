@@ -7,5 +7,5 @@ interface OwnAccountRepository {
     fun getAccountAsFlow(): Flow<Account>
     suspend fun getAccount(): Account
     suspend fun setAccountId(accountId: Long)
-    suspend fun setProfileUpdate(profileUpdate: Long)
+    suspend fun setProfileUpdateTimestamp(profileUpdateTimestamp: Long)
 }

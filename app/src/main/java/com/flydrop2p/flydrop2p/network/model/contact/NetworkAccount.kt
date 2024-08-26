@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class NetworkAccount(
     val accountId: Long,
-    val profileUpdate: Long
+    val profileUpdateTimestamp: Long
 )

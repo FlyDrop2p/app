@@ -7,8 +7,8 @@ data class Contact(
     val accountId: Long
         get() = account.accountId
 
-    val profileUpdate: Long
-        get() = account.profileUpdate
+    val profileUpdateTimestamp: Long
+        get() = account.profileUpdateTimestamp
 
     val username: String?
         get() = profile?.username

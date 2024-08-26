@@ -1,6 +1,5 @@
 package com.flydrop2p.flydrop2p.ui.screen.home
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -231,9 +230,9 @@ fun ChatItemPreview() {
         chatPreview = ChatPreview(
             contact = Contact(
                 account = Account(
-                    accountId = 1, profileUpdate = 1
+                    accountId = 1, profileUpdateTimestamp = 1
                 ), profile = Profile(
-                    accountId = 1, username = "Alice", imageFileName = null
+                    accountId = 1, 0, username = "Alice", imageFileName = null
                 )
             ),
             unreadMessagesCount = 1,

@@ -124,7 +124,7 @@ class ServerService {
         val networkAudioMessage: NetworkAudioMessage
 
         withContext(Dispatchers.IO) {
-            val socket = ServerSocket(PORT_FILE_MESSAGE)
+            val socket = ServerSocket(PORT_AUDIO_MESSAGE)
             val client = socket.accept()
 
             val inputStream = client.getInputStream()
