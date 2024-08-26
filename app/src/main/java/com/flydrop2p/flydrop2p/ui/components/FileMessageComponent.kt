@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import coil.compose.rememberImagePainter
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
@@ -90,11 +91,7 @@ fun SentFileMessageComponent(
             modifier = Modifier
                 .widthIn(min = 150.dp, max = 300.dp)
                 .clickable {
-                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                        setDataAndType(fileUri, mimeType)
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    }
-                    context.startActivity(intent)
+                    shareFile(context, message.fileName)
                 }
         ) {
             Column(
@@ -207,11 +204,7 @@ fun ReceivedFileMessageComponent(
                 modifier = Modifier
                     .padding(12.dp)
                     .clickable {
-                        val intent = Intent(Intent.ACTION_VIEW).apply {
-                            setDataAndType(fileUri, "*/*")
-                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        }
-                        context.startActivity(intent)
+                        shareFile(context, message.fileName)
                     }
             ) {
                 Row(
@@ -391,4 +384,18 @@ fun getMimeType(fileUri: Uri, context: Context): String {
         "pdf" -> "application/pdf"
         else -> "application/octet-stream" // Tipo generico
     }
+}
+
+
+fun shareFile(context: Context, fileName: String) {
+    val file = File(context.filesDir, fileName)
+
+    val fileUri: Uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(fileUri, context.contentResolver.getType(fileUri) ?: "*/*")
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+
+    context.startActivity(intent)
 }
