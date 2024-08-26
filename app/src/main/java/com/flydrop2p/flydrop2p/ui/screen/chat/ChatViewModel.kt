@@ -58,14 +58,15 @@ class ChatViewModel(
         audioManager.apply {
             if(isRecording) {
                 stopRecording()
-                networkManager.sendAudioMessage(accountId, fileUri)
+                networkManager.sendAudioMessage(accountId, recordingFileUri)
             }
         }
     }
 
     fun startRecordingAudio() = audioManager.startRecording()
     fun stopRecordingAudio() = audioManager.stopRecording()
-    fun startReproducingAudio(fileName: String) = audioManager.startReproducing(fileName)
+    fun startPlayingAudio(fileName: String) = audioManager.startPlaying(fileName)
+    fun stopPlayingAudio() = audioManager.stopPlaying()
 
     fun updateMessagesState(messages: List<Message>) {
         viewModelScope.launch {
