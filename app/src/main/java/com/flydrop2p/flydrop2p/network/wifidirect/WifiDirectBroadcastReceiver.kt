@@ -15,9 +15,7 @@ class WiFiDirectBroadcastReceiver(activity: MainActivity) : BroadcastReceiver() 
         const val IP_GROUP_OWNER: String = "192.168.49.1"
     }
 
-    fun requestGroupInfo(listener: WifiP2pManager.GroupInfoListener) = manager.requestGroupInfo(listener)
-
-    fun connectToDevices() {
+    fun discoverPeers() {
         manager.discoverPeers(object : WifiP2pManager.ActionListener {
             override fun onSuccess() {
                 Log.d("WifiDirectBroadcastReceiver", "discoverPeers() onSuccess()")
@@ -27,6 +25,15 @@ class WiFiDirectBroadcastReceiver(activity: MainActivity) : BroadcastReceiver() 
                 Log.d("WifiDirectBroadcastReceiver", "discoverPeers() onFailure()")
             }
         })
+    }
+
+    private fun connectToDevices() {
+        manager.requestPeers { devices ->
+            for(device in devices.deviceList) {
+                Log.d("WifiDirectBroadcastReceiver", device.toString())
+                connectToDevice(device)
+            }
+        }
     }
 
     private fun connectToDevice(device: WifiP2pDevice) {
@@ -48,18 +55,22 @@ class WiFiDirectBroadcastReceiver(activity: MainActivity) : BroadcastReceiver() 
         when (action) {
             WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION -> {
                 Log.d("WifiDirectBroadcastReceiver", "WIFI_P2P_STATE_CHANGED_ACTION")
+                connectToDevices()
             }
 
             WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION -> {
                 Log.d("WifiDirectBroadcastReceiver", "WIFI_P2P_PEERS_CHANGED_ACTION")
+                connectToDevices()
             }
 
             WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
                 Log.d("WifiDirectBroadcastReceiver", "WIFI_P2P_CONNECTION_CHANGED_ACTION")
+                connectToDevices()
             }
 
             WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {
                 Log.d("WifiDirectBroadcastReceiver", "WIFI_P2P_THIS_DEVICE_CHANGED_ACTION")
+                connectToDevices()
             }
         }
     }

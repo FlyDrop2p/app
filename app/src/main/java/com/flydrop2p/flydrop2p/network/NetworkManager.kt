@@ -178,8 +178,8 @@ class NetworkManager(
         startFileMessageConnection()
         startProfileRequestConnection()
         startProfileResponseConnection()
-        startMessageReceivedAck()
-        startMessageReadAck()
+        startMessageReceivedAckConnection()
+        startMessageReadAckConnection()
     }
 
     private fun startKeepaliveConnection() {
@@ -244,7 +244,7 @@ class NetworkManager(
         }
     }
 
-    private fun startMessageReceivedAck() {
+    private fun startMessageReceivedAckConnection() {
         coroutineScope.launch {
             while(true) {
                 val networkMessageAck = serverService.listenMessageReceivedAck()
@@ -256,7 +256,7 @@ class NetworkManager(
         }
     }
 
-    private fun startMessageReadAck() {
+    private fun startMessageReadAckConnection() {
         coroutineScope.launch {
             while(true) {
                 val networkMessageAck = serverService.listenMessageReadAck()
