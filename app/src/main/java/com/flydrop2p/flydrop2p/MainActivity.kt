@@ -90,7 +90,7 @@ class MainActivity : ComponentActivity() {
         val runnable = object : Runnable {
             override fun run() {
                 networkManager.sendKeepalive()
-                handler.postDelayed(this, 5000)
+                handler.postDelayed(this, 2000)
             }
         }
 
