@@ -2,6 +2,7 @@ package com.flydrop2p.flydrop2p.network.service
 
 import android.util.Log
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
+import com.flydrop2p.flydrop2p.network.model.message.NetworkAudioMessage
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
 import com.flydrop2p.flydrop2p.network.model.message.NetworkMessageAck
 import com.flydrop2p.flydrop2p.network.model.message.NetworkTextMessage
@@ -19,8 +20,9 @@ class ServerService {
         const val PORT_PROFILE_RESPONSE: Int = 8802
         const val PORT_TEXT_MESSAGE: Int = 8803
         const val PORT_FILE_MESSAGE: Int = 8804
-        const val PORT_MESSAGE_RECEIVED_ACK = 8805
-        const val PORT_MESSAGE_READ_ACK = 8806
+        const val PORT_AUDIO_MESSAGE: Int = 8805
+        const val PORT_MESSAGE_RECEIVED_ACK = 8806
+        const val PORT_MESSAGE_READ_ACK = 8807
     }
 
     suspend fun listenKeepalive(): NetworkKeepalive {
@@ -116,6 +118,25 @@ class ServerService {
         }
 
         return networkFileMessage
+    }
+
+    suspend fun listenAudioMessage(): NetworkAudioMessage {
+        val networkAudioMessage: NetworkAudioMessage
+
+        withContext(Dispatchers.IO) {
+            val socket = ServerSocket(PORT_FILE_MESSAGE)
+            val client = socket.accept()
+
+            val inputStream = client.getInputStream()
+            val buffer = inputStream.readBytes()
+            networkAudioMessage = Json.decodeFromString(buffer.decodeToString())
+
+            socket.close()
+
+            Log.d("AUDIO MESSAGE", networkAudioMessage.toString())
+        }
+
+        return networkAudioMessage
     }
 
     suspend fun listenMessageReceivedAck(): NetworkMessageAck {

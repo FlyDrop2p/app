@@ -6,6 +6,7 @@ import com.flydrop2p.flydrop2p.media.FileManager
 import com.flydrop2p.flydrop2p.domain.model.contact.Account
 import com.flydrop2p.flydrop2p.domain.model.contact.Profile
 import com.flydrop2p.flydrop2p.domain.model.contact.toAccount
+import com.flydrop2p.flydrop2p.domain.model.message.AudioMessage
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.MessageState
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
@@ -17,6 +18,7 @@ import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
 import com.flydrop2p.flydrop2p.network.model.contact.NetworkProfile
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkDevice
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
+import com.flydrop2p.flydrop2p.network.model.message.NetworkAudioMessage
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
 import com.flydrop2p.flydrop2p.network.model.message.NetworkMessageAck
 import com.flydrop2p.flydrop2p.network.model.message.NetworkTextMessage
@@ -157,6 +159,22 @@ class NetworkManager(
         }
     }
 
+    fun sendAudioMessage(accountId: Long, fileName: String) {
+        val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
+
+        connectedDevice?.let { device ->
+            device.ipAddress?.let { ipAddress ->
+                coroutineScope.launch {
+                    var audioMessage = AudioMessage(0, ownDevice.account.accountId, accountId, System.currentTimeMillis(), MessageState.MESSAGE_SENT, fileName)
+                    audioMessage = audioMessage.copy(messageId = chatRepository.addMessage(audioMessage))
+
+                    fileManager.getFileBase64(fileName)?.let { audioBase64 ->
+                        clientService.sendAudioMessage(ipAddress, ownDevice, NetworkAudioMessage(audioMessage, audioBase64))
+                    }
+                }
+            }
+        }
+    }
 
     fun sendMessageReceivedAck(accountId: Long, messageId: Long) {
         val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
@@ -190,6 +208,7 @@ class NetworkManager(
         startFileMessageConnection()
         startProfileRequestConnection()
         startProfileResponseConnection()
+        startAudioMessageConnection()
         startMessageReceivedAckConnection()
         startMessageReadAckConnection()
     }
@@ -251,6 +270,18 @@ class NetworkManager(
 
                 if(networkFileMessage.receiverId == ownDevice.account.accountId) {
                     handleFileMessage(networkFileMessage)
+                }
+            }
+        }
+    }
+
+    private fun startAudioMessageConnection() {
+        coroutineScope.launch {
+            while(true) {
+                val networkAudioMessage = serverService.listenAudioMessage()
+
+                if(networkAudioMessage.receiverId == ownDevice.account.accountId) {
+                    handleAudioMessage(networkAudioMessage)
                 }
             }
         }
@@ -325,6 +356,15 @@ class NetworkManager(
             fileManager.saveFile(networkFileMessage.fileName, networkFileMessage.fileBase64)?.let {
                 chatRepository.addMessage(FileMessage(networkFileMessage, MessageState.MESSAGE_RECEIVED))
                 sendMessageReceivedAck(networkFileMessage.senderId, networkFileMessage.messageId)
+            }
+        }
+    }
+
+    private fun handleAudioMessage(networkAudioMessage: NetworkAudioMessage) {
+        coroutineScope.launch {
+            fileManager.saveAudio(networkAudioMessage)?.let { fileName ->
+                chatRepository.addMessage(AudioMessage(networkAudioMessage, MessageState.MESSAGE_RECEIVED, fileName))
+                sendMessageReceivedAck(networkAudioMessage.senderId, networkAudioMessage.messageId)
             }
         }
     }

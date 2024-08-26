@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import com.flydrop2p.flydrop2p.network.model.message.NetworkAudioMessage
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -118,4 +119,9 @@ class FileManager(private val context: Context) {
         }
     }
 
+    fun saveAudio(networkAudioMessage: NetworkAudioMessage): String? {
+        networkAudioMessage.apply {
+            return saveFile("audio_${senderId}_${timestamp}.3gp", audioBase64)
+        }
+    }
 }

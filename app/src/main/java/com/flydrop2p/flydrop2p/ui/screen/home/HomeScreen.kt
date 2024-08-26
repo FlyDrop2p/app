@@ -42,6 +42,7 @@ import com.flydrop2p.flydrop2p.domain.model.chat.ChatPreview
 import com.flydrop2p.flydrop2p.domain.model.contact.Account
 import com.flydrop2p.flydrop2p.domain.model.contact.Contact
 import com.flydrop2p.flydrop2p.domain.model.contact.Profile
+import com.flydrop2p.flydrop2p.domain.model.message.AudioMessage
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.MessageState
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
@@ -186,6 +187,10 @@ fun ChatItem(
                             text = it, fontSize = 14.sp, color = Color.Gray
                         )
                     }
+                }
+
+                is AudioMessage -> {
+                    // TODO
                 }
 
                 null -> {}

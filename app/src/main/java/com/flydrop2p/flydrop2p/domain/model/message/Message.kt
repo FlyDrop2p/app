@@ -3,7 +3,7 @@ package com.flydrop2p.flydrop2p.domain.model.message
 import com.flydrop2p.flydrop2p.data.local.message.MessageEntity
 
 enum class MessageType {
-    TEXT_MESSAGE, FILE_MESSAGE
+    TEXT_MESSAGE, FILE_MESSAGE, AUDIO_MESSAGE
 }
 
 enum class MessageState {
@@ -27,11 +27,15 @@ sealed class Message : Comparable<Message> {
 fun MessageEntity.toMessage(): Message {
     return when(messageType) {
         MessageType.TEXT_MESSAGE -> {
-            this.toTextMessage()
+            toTextMessage()
         }
 
         MessageType.FILE_MESSAGE -> {
-            this.toFileMessage()
+            toFileMessage()
+        }
+
+        MessageType.AUDIO_MESSAGE -> {
+            toAudioMessage()
         }
     }
 }

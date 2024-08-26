@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.flydrop2p.flydrop2p.ChatTopAppBar
 import com.flydrop2p.flydrop2p.R
+import com.flydrop2p.flydrop2p.domain.model.message.AudioMessage
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.Message
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
@@ -150,6 +151,10 @@ fun MessageItem(message: Message, accountId: Long, chatViewModel: ChatViewModel)
 
             is FileMessage -> {
                 FileMessageComponent(message, currentAccountId = accountId)
+            }
+
+            is AudioMessage -> {
+                // TODO
             }
         }
     }
