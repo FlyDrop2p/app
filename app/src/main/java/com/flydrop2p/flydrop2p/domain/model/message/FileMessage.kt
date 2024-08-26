@@ -11,13 +11,13 @@ data class FileMessage(
     override val messageState: MessageState,
     val fileName: String
 ) : Message() {
-    constructor(networkFileMessage: NetworkFileMessage, messageState: MessageState, fileName: String) : this(
+    constructor(networkFileMessage: NetworkFileMessage, messageState: MessageState) : this(
         messageId = networkFileMessage.messageId,
         senderId = networkFileMessage.senderId,
         receiverId = networkFileMessage.receiverId,
         timestamp = networkFileMessage.timestamp,
         messageState = messageState,
-        fileName = fileName
+        fileName = networkFileMessage.fileName
     )
 
     override fun toMessageEntity(): MessageEntity {

@@ -9,8 +9,9 @@ class NetworkFileMessage(
     val senderId: Long,
     val receiverId: Long,
     val timestamp: Long,
+    val fileName: String,
     val fileBase64: String
 ) {
     constructor(fileMessage: FileMessage, fileBase64: String)
-        : this(fileMessage.messageId, fileMessage.senderId, fileMessage.receiverId, fileMessage.timestamp, fileBase64)
+        : this(fileMessage.messageId, fileMessage.senderId, fileMessage.receiverId, fileMessage.timestamp, fileMessage.fileName, fileBase64)
 }

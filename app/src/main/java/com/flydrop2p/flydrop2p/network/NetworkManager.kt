@@ -1,7 +1,6 @@
 package com.flydrop2p.flydrop2p.network
 
 import android.net.Uri
-import android.util.Log
 import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.data.local.FileManager
 import com.flydrop2p.flydrop2p.domain.model.contact.Account
@@ -101,7 +100,7 @@ class NetworkManager(
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
                     val image = ownDevice.profile.imageFileName?.let { fileName ->
-                        fileManager.loadFile(fileName)
+                        fileManager.getFileBase64(fileName)
                     }
 
                     val networkProfile = NetworkProfile(ownDevice.profile, image)
@@ -132,23 +131,13 @@ class NetworkManager(
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
-                    val fileName = fileManager.saveCustomFile(fileUri, ownDevice.account.accountId)
-
-                    if (fileName != null) {
-                        var fileMessage = FileMessage(
-                            0,
-                            ownDevice.account.accountId,
-                            accountId,
-                            System.currentTimeMillis(),
-                            MessageState.MESSAGE_SENT,
-                            fileName
-                        )
-
+                    fileManager.saveFile(fileUri)?.let { fileName ->
+                        var fileMessage = FileMessage(0, ownDevice.account.accountId, accountId, System.currentTimeMillis(), MessageState.MESSAGE_SENT, fileName)
                         fileMessage = fileMessage.copy(messageId = chatRepository.addMessage(fileMessage))
-                        val fileContent = fileManager.loadFile(fileName)
 
-                        if (fileContent != null) {
-                            clientService.sendFileMessage(ipAddress, ownDevice, NetworkFileMessage(fileMessage, fileContent))
+                        fileManager.getFileBase64(fileName)?.let { fileBase64 ->
+                            clientService.sendFileMessage(ipAddress, ownDevice, NetworkFileMessage(fileMessage, fileBase64))
+
                         }
                     }
                 }
@@ -319,8 +308,8 @@ class NetworkManager(
     
     private fun handleFileMessage(networkFileMessage: NetworkFileMessage) {
         coroutineScope.launch {
-            fileManager.saveFile(networkFileMessage.fileBase64, networkFileMessage.senderId)?.let { fileName ->
-                chatRepository.addMessage(FileMessage(networkFileMessage, MessageState.MESSAGE_RECEIVED, fileName))
+            fileManager.saveFile(networkFileMessage.fileName, networkFileMessage.fileBase64)?.let {
+                chatRepository.addMessage(FileMessage(networkFileMessage, MessageState.MESSAGE_RECEIVED))
                 sendMessageReceivedAck(networkFileMessage.senderId, networkFileMessage.messageId)
             }
         }

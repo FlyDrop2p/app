@@ -13,7 +13,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 class FileManager(private val context: Context) {
     @OptIn(ExperimentalEncodingApi::class)
-    fun loadFile(fileName: String): String? {
+    fun getFileBase64(fileName: String): String? {
         val file = File(context.filesDir, fileName)
 
         return try {
@@ -30,7 +30,7 @@ class FileManager(private val context: Context) {
 
     @OptIn(ExperimentalEncodingApi::class)
     fun saveProfileImage(imageBase64: String, accountId: Long): String? {
-        val tempFile = File.createTempFile("temp_profile_image_${accountId}_${System.currentTimeMillis()}", null, context.cacheDir).apply {
+        val tempFile = File.createTempFile("img", null, context.cacheDir).apply {
             deleteOnExit()
         }
 
@@ -51,7 +51,7 @@ class FileManager(private val context: Context) {
     fun saveProfileImage(imageUri: Uri, accountId: Long): String? {
         val contentResolver: ContentResolver = context.contentResolver
         val inputStream: InputStream? = contentResolver.openInputStream(imageUri)
-        val file = File(context.filesDir, "profile_image_${accountId}_${System.currentTimeMillis()}")
+        val file = File(context.filesDir, "profile_image_${accountId}_${System.currentTimeMillis()}.jpg")
 
         return try {
             FileOutputStream(file).use { outputStream ->
@@ -67,9 +67,40 @@ class FileManager(private val context: Context) {
         }
     }
 
+    fun saveFile(fileName: String, fileUri: Uri): String? {
+        val contentResolver: ContentResolver = context.contentResolver
+        val inputStream: InputStream? = contentResolver.openInputStream(fileUri)
+        val file = File(context.filesDir, fileName)
+
+        return try {
+            FileOutputStream(file).use { outputStream ->
+                inputStream?.copyTo(outputStream)
+            }
+
+            file.name
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            inputStream?.close()
+        }
+    }
+
+    fun saveFile(fileUri: Uri): String? {
+        val contentResolver: ContentResolver = context.contentResolver
+
+        val fileName: String? = contentResolver.query(fileUri, null, null, null, null)?.use { cursor ->
+            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            cursor.moveToFirst()
+            cursor.getString(nameIndex)
+        }
+
+        return fileName?.let { saveFile(it, fileUri) }
+    }
+
     @OptIn(ExperimentalEncodingApi::class)
-    fun saveFile(fileBase64: String, accountId: Long): String? {
-        val tempFile = File.createTempFile("temp_file_${accountId}_${System.currentTimeMillis()}", null, context.cacheDir).apply {
+    fun saveFile(fileName: String, fileBase64: String): String? {
+        val tempFile = File.createTempFile("file", null, context.cacheDir).apply {
             deleteOnExit()
         }
 
@@ -78,7 +109,7 @@ class FileManager(private val context: Context) {
                 outputStream.write(Base64.decode(fileBase64))
             }
 
-            saveFile(Uri.fromFile(tempFile), accountId)
+            saveFile(fileName, Uri.fromFile(tempFile))
         } catch (e: Exception) {
             e.printStackTrace()
             null
@@ -87,50 +118,4 @@ class FileManager(private val context: Context) {
         }
     }
 
-    fun saveFile(fileUri: Uri, accountId: Long): String? {
-        val contentResolver: ContentResolver = context.contentResolver
-        val inputStream: InputStream? = contentResolver.openInputStream(fileUri)
-        val file = File(context.filesDir, "file_${accountId}_${System.currentTimeMillis()}")
-
-        return try {
-            FileOutputStream(file).use { outputStream ->
-                inputStream?.copyTo(outputStream)
-            }
-
-            file.name
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        } finally {
-            inputStream?.close()
-        }
-    }
-
-    fun saveCustomFile(fileUri: Uri, accountId: Long): String? {
-        val contentResolver: ContentResolver = context.contentResolver
-
-        val originalFileName: String? = contentResolver.query(fileUri, null, null, null, null)?.use { cursor ->
-            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            cursor.moveToFirst()
-            cursor.getString(nameIndex)
-        }
-        val fileExtension = originalFileName?.substringAfterLast(".", "")
-
-        val newFileName = "file_${accountId}_${System.currentTimeMillis()}${if (fileExtension.isNullOrEmpty()) "" else ".$fileExtension"}"
-        val file = File(context.filesDir, newFileName)
-        val inputStream: InputStream? = contentResolver.openInputStream(fileUri)
-
-        return try {
-            FileOutputStream(file).use { outputStream ->
-                inputStream?.copyTo(outputStream)
-            }
-
-            file.name
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        } finally {
-            inputStream?.close()
-        }
-    }
 }
