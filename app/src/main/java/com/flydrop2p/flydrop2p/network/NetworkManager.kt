@@ -31,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 
 class NetworkManager(
@@ -50,6 +51,8 @@ class NetworkManager(
     val connectedDevices: StateFlow<List<NetworkDevice>>
         get() = _connectedDevices
 
+    private val lastKeepalives: MutableMap<Long, Long> = mutableMapOf()
+
     private val serverService = ServerService()
     private val clientService = ClientService()
 
@@ -67,10 +70,19 @@ class NetworkManager(
         }
     }
 
+    fun updateConnectedDevices() {
+        val currentTimestamp = System.currentTimeMillis()
+        val disconnectedDevicesIds = lastKeepalives.asSequence().filter { abs(currentTimestamp - it.value) > 10000 }.map { it.key }.toSet()
+        _connectedDevices.value = _connectedDevices.value.filter { disconnectedDevicesIds.contains(it.account.accountId) }
+    }
+
     fun sendKeepalive() {
         coroutineScope.launch {
             val networkKeepalive = NetworkKeepalive(connectedDevices.value + ownDevice.toNetworkDevice())
-            clientService.sendKeepalive(IP_GROUP_OWNER, ownDevice, networkKeepalive)
+
+            if(ownDevice.ipAddress != IP_GROUP_OWNER) {
+                clientService.sendKeepalive(IP_GROUP_OWNER, ownDevice, networkKeepalive)
+            }
 
             connectedDevices.value.forEach { device ->
                 device.ipAddress?.let {
@@ -280,6 +292,8 @@ class NetworkManager(
             }
 
             _connectedDevices.value = _connectedDevices.value.filter { it.account.accountId != networkDevice.account.accountId } + networkDevice
+
+            lastKeepalives[networkDevice.account.accountId] = System.currentTimeMillis()
         }
     }
 
