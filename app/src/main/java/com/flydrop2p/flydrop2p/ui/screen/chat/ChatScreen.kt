@@ -28,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,7 +36,6 @@ import com.flydrop2p.flydrop2p.ChatTopAppBar
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.Message
-import com.flydrop2p.flydrop2p.domain.model.message.MessageState
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 import com.flydrop2p.flydrop2p.ui.components.FileMessageComponent
 import com.flydrop2p.flydrop2p.ui.components.FilePreview
@@ -65,13 +63,7 @@ fun ChatScreen(
 
     var attachedFileUri by remember { mutableStateOf<Uri?>(null) }
 
-    currentAccount?.accountId?.let { ownAccountId ->
-        chatState.messages.forEach { message ->
-            if(message.messageState < MessageState.MESSAGE_READ && message.senderId != ownAccountId) {
-                chatViewModel.updateMessageStateToRead(message)
-            }
-        }
-    }
+    chatViewModel.updateMessagesState(chatState.messages)
 
     Scaffold(
         topBar = {

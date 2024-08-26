@@ -72,7 +72,7 @@ class NetworkManager(
             val networkKeepalive = NetworkKeepalive(connectedDevices.value + ownDevice.toNetworkDevice())
             clientService.sendKeepalive(IP_GROUP_OWNER, ownDevice, networkKeepalive)
 
-            for (device in connectedDevices.value) {
+            connectedDevices.value.forEach { device ->
                 device.ipAddress?.let {
                     clientService.sendKeepalive(it, ownDevice, networkKeepalive)
                 }
@@ -187,7 +187,7 @@ class NetworkManager(
             while(true) {
                 val networkKeepalive = serverService.listenKeepalive()
 
-                for(networkDevice in networkKeepalive.networkDevices) {
+                networkKeepalive.networkDevices.forEach { networkDevice ->
                     if(networkDevice.account.accountId != ownDevice.account.accountId) {
                         handleDeviceKeepalive(networkDevice)
                     }

@@ -56,11 +56,17 @@ class ChatViewModel(
         }
     }
 
-    fun updateMessageStateToRead(message: Message) {
+    fun updateMessagesState(messages: List<Message>) {
         viewModelScope.launch {
-            chatRepository.updateMessageState(message.messageId, MessageState.MESSAGE_READ)
-            networkManager.sendMessageReadAck(message.senderId, message.messageId)
-        }
+            val ownAccountId = ownAccountRepository.getAccount().accountId
+
+            messages.forEach { message ->
+                if(message.messageState < MessageState.MESSAGE_READ && message.senderId != ownAccountId) {
+                        chatRepository.updateMessageState(message.messageId, MessageState.MESSAGE_READ)
+                        networkManager.sendMessageReadAck(message.senderId, message.messageId)
+                    }
+                }
+            }
     }
 
     fun resetChat() {
