@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -39,6 +42,9 @@ import com.flydrop2p.flydrop2p.ui.components.FileMessageInput
 import com.flydrop2p.flydrop2p.ui.components.TextMessageComponent
 import com.flydrop2p.flydrop2p.ui.components.TextMessageInput
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 object ChatDestination : NavigationDestination {
     override val route = "chat"
@@ -112,7 +118,6 @@ fun ChatScreen(
     }
 }
 
-
 @Composable
 fun MessagesList(
     messages: List<Message>, chatViewModel: ChatViewModel, accountId: Long, modifier: Modifier
@@ -120,9 +125,12 @@ fun MessagesList(
 
     val listState = rememberLazyListState()
 
-    LaunchedEffect(messages) {
-        if (messages.isNotEmpty()) {
-            listState.animateScrollToItem(messages.size - 1)
+    // Gruppi di messaggi e date
+    val groupedMessages = remember(messages) { groupMessagesByDate(messages) }
+
+    LaunchedEffect(groupedMessages) {
+        if (groupedMessages.isNotEmpty()) {
+            listState.animateScrollToItem(groupedMessages.size - 1)
         }
     }
 
@@ -130,8 +138,11 @@ fun MessagesList(
         state = listState,
         modifier = modifier.padding(horizontal = 16.dp),
     ) {
-        items(messages) { message ->
-            MessageItem(message = message, accountId = accountId, chatViewModel = chatViewModel)
+        items(groupedMessages) { item ->
+            when (item) {
+                is String -> DateSeparator(date = item) // Se è una data
+                is Message -> MessageItem(message = item, accountId = accountId, chatViewModel = chatViewModel)
+            }
         }
     }
 }
@@ -139,7 +150,7 @@ fun MessagesList(
 @Composable
 fun MessageItem(message: Message, accountId: Long, chatViewModel: ChatViewModel) {
     Column(
-        modifier = Modifier.padding(vertical = 8.dp)
+        modifier = Modifier.padding(vertical = 4.dp)
     ) {
         when (message) {
             is TextMessage -> {
@@ -188,64 +199,91 @@ fun SendMessageInput(
         }
     }
 
-    Column {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp)
-        ) {
-            if (!isTyping && !isRecording) {
-                FileMessageInput(
-                    fileUri = attachedFileUri,
-                    onSendFile = { uri ->
-                        onSendFileMessage(uri)
-                        attachedFileUri = null
-                    },
-                    onClick = {
-                        filePickerLauncher.launch("*/*")
-                    },
-                    onDeleteFile = {
-                        attachedFileUri = null
-                    }
-                )
-            }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 5.dp, bottom = 10.dp)
+    ) {
+        if (!isTyping && !isRecording) {
+            FileMessageInput(
+                fileUri = attachedFileUri,
+                onSendFile = { uri ->
+                    onSendFileMessage(uri)
+                    attachedFileUri = null
+                },
+                onClick = {
+                    filePickerLauncher.launch("*/*")
+                },
+                onDeleteFile = {
+                    attachedFileUri = null
+                }
+            )
+        }
 
-            if (attachedFileUri == null && !isRecording) {
-                TextMessageInput(
-                    isTyping = isTyping,
-                    textFieldValue = textFieldValue,
-                    onValueChange = {
-                        textFieldValue = it
-                        isTyping = it.text.isNotEmpty()
-                    },
-                    onSendTextMessage = onSendTextMessage
-                )
-            }
+        if (attachedFileUri == null && !isRecording) {
+            TextMessageInput(
+                isTyping = isTyping,
+                textFieldValue = textFieldValue,
+                onValueChange = {
+                    textFieldValue = it
+                    isTyping = it.text.isNotEmpty()
+                },
+                onSendTextMessage = onSendTextMessage
+            )
+        }
 
-            if ((!isTyping && attachedFileUri == null) || isRecording) {
-                AudioRecordingControls(
-                    isRecording = isRecording,
-                    onStartRecording = {
-                        onStartRecording()
-                        isRecording = true
-                    },
-                    onStopRecording = {
-                        onStopRecording()
-                        isRecording = false
-                    },
-                    onCancelRecording = {
-                        onCancelRecording()
-                        isRecording = false
-                    },
-                    onSendAudioMessage = onSendAudioMessage
-                )
-            }
+        if ((!isTyping && attachedFileUri == null) || isRecording) {
+            AudioRecordingControls(
+                isRecording = isRecording,
+                onStartRecording = {
+                    onStartRecording()
+                    isRecording = true
+                },
+                onStopRecording = {
+                    onStopRecording()
+                    isRecording = false
+                },
+                onCancelRecording = {
+                    onCancelRecording()
+                    isRecording = false
+                },
+                onSendAudioMessage = onSendAudioMessage
+            )
         }
     }
 }
 
+@Composable
+fun DateSeparator(date: String) {
+    Text(
+        text = date,
+        color = MaterialTheme.colorScheme.onSurface,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        textAlign = TextAlign.Center
+    )
+}
+
+fun groupMessagesByDate(messages: List<Message>): List<Any> {
+    val groupedMessages = mutableListOf<Any>()
+    var lastDate: String? = null
+    val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+
+    for (message in messages) {
+        val messageDate = dateFormat.format(Date(message.timestamp))
+
+        if (messageDate != lastDate) {
+            lastDate = messageDate
+            groupedMessages.add(messageDate)
+        }
+        groupedMessages.add(message)
+    }
+
+    return groupedMessages
+}
 
 @Preview(showBackground = true)
 @Composable
