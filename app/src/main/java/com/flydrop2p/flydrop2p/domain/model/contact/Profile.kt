@@ -2,9 +2,7 @@ package com.flydrop2p.flydrop2p.domain.model.contact
 
 import com.flydrop2p.flydrop2p.data.local.profile.ProfileEntity
 import com.flydrop2p.flydrop2p.network.model.contact.NetworkProfile
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class Profile(
     val accountId: Long,
     val username: String,

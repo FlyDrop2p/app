@@ -1,18 +1,21 @@
 package com.flydrop2p.flydrop2p.data.repository
 
 import androidx.datastore.core.DataStore
+import com.flydrop2p.flydrop2p.data.local.account.AccountEntity
 import com.flydrop2p.flydrop2p.domain.model.contact.Account
+import com.flydrop2p.flydrop2p.domain.model.contact.toAccount
 import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
-class OwnAccountLocalRepository(private val ownAccountDataStore: DataStore<Account>) : OwnAccountRepository {
+class OwnAccountLocalRepository(private val ownAccountDataStore: DataStore<AccountEntity>) : OwnAccountRepository {
     override fun getAccountAsFlow(): Flow<Account> {
-        return ownAccountDataStore.data
+        return ownAccountDataStore.data.map { it.toAccount() }
     }
 
     override suspend fun getAccount(): Account {
-        return ownAccountDataStore.data.first()
+        return ownAccountDataStore.data.first().toAccount()
     }
 
     override suspend fun setAccountId(accountId: Long) {

@@ -1,18 +1,21 @@
 package com.flydrop2p.flydrop2p.data.repository
 
 import androidx.datastore.core.DataStore
+import com.flydrop2p.flydrop2p.data.local.profile.ProfileEntity
 import com.flydrop2p.flydrop2p.domain.model.contact.Profile
+import com.flydrop2p.flydrop2p.domain.model.contact.toProfile
 import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
-class OwnProfileLocalRepository(private val ownProfileDataStore: DataStore<Profile>) : OwnProfileRepository {
+class OwnProfileLocalRepository(private val ownProfileDataStore: DataStore<ProfileEntity>) : OwnProfileRepository {
     override fun getProfileAsFlow(): Flow<Profile> {
-        return ownProfileDataStore.data
+        return ownProfileDataStore.data.map { it.toProfile() }
     }
 
     override suspend fun getProfile(): Profile {
-        return ownProfileDataStore.data.first()
+        return ownProfileDataStore.data.first().toProfile()
     }
 
     override suspend fun setUsername(username: String) {
