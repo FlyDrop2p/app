@@ -76,6 +76,7 @@ fun AudioRecordingControls(
     onStartRecording: () -> Unit,
     onStopRecording: () -> Unit,
     onCancelRecording: () -> Unit,
+    onSendAudioMessage: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (isRecording) {
@@ -113,7 +114,7 @@ fun AudioRecordingControls(
 
             IconButton(
                 onClick = {
-                    onStopRecording()
+                    onSendAudioMessage()
                 },
                 modifier = Modifier.padding(start = 8.dp)
             ) {

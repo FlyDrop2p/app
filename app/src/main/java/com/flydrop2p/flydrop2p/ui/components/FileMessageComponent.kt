@@ -125,7 +125,7 @@ fun SentFileMessageComponent(
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -133,6 +133,7 @@ fun SentFileMessageComponent(
                         fontSize = 12.sp,
                         color = Color(0xFF083249)
                     )
+                    Spacer(modifier = Modifier.width(4.dp))
 
                     when (message.messageState) {
                         MessageState.MESSAGE_READ -> Image(

@@ -200,7 +200,28 @@ fun ChatItem(
                 }
 
                 is AudioMessage -> {
-                    // TODO
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.mic_24px),
+                            contentDescription = "Audio",
+                            colorFilter = ColorFilter.tint(Color.Gray),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Audio",
+                            fontSize = 14.sp,
+                            color = Color.Gray
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "(${chatPreview.lastMessage.formatDuration(LocalContext.current)})",
+                            fontSize = 14.sp,
+                            color = Color.Gray
+                        )
+                    }
                 }
 
                 null -> {}
