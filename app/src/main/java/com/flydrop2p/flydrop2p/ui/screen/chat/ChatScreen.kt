@@ -60,15 +60,14 @@ fun ChatScreen(
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     val currentAccount by chatViewModel.ownAccount.collectAsState(initial = null)
     val chatState by chatViewModel.uiState.collectAsState()
 
     var attachedFileUri by remember { mutableStateOf<Uri?>(null) }
 
     chatState.messages.forEach { message ->
-        if (message.messageState < MessageState.MESSAGE_READ) {
-            chatViewModel.updateMessageToRead(message)
+        if(message.messageState < MessageState.MESSAGE_READ && message.senderId != accountId) {
+            chatViewModel.updateMessageStateToRead(message)
         }
     }
 

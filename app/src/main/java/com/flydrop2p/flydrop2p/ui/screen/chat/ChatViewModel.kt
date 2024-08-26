@@ -56,12 +56,10 @@ class ChatViewModel(
         }
     }
 
-    fun updateMessageToRead(message: Message) {
+    fun updateMessageStateToRead(message: Message) {
         viewModelScope.launch {
-            if(message.senderId != ownAccountRepository.getAccount().accountId) {
-                chatRepository.updateMessageState(message.messageId, MessageState.MESSAGE_READ)
-                networkManager.sendMessageReadAck(message.senderId, message.messageId)
-            }
+            chatRepository.updateMessageState(message.messageId, MessageState.MESSAGE_READ)
+            networkManager.sendMessageReadAck(message.senderId, message.messageId)
         }
     }
 
