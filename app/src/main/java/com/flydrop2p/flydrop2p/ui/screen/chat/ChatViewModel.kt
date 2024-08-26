@@ -47,16 +47,26 @@ class ChatViewModel(
     }
 
     fun sendTextMessage(accountId: Long, text: String) {
-        viewModelScope.launch {
-            networkManager.sendTextMessage(accountId, text)
-        }
+        networkManager.sendTextMessage(accountId, text)
     }
 
     fun sendFileMessage(accountId: Long, fileUri: Uri) {
-        viewModelScope.launch {
-            networkManager.sendFileMessage(accountId, fileUri)
+        networkManager.sendFileMessage(accountId, fileUri)
+    }
+
+    fun sendAudioMessage(accountId: Long) {
+        audioManager.apply {
+            if(isRecording) {
+                stopRecording()
+                networkManager.sendAudioMessage(accountId, recordingFileUri)
+            }
         }
     }
+
+    fun startRecordingAudio() = audioManager.startRecording()
+    fun stopRecordingAudio() = audioManager.stopRecording()
+    fun startPlayingAudio(fileName: String) = audioManager.startPlaying(fileName)
+    fun stopPlayingAudio() = audioManager.stopPlaying()
 
     fun updateMessagesState(messages: List<Message>) {
         viewModelScope.launch {

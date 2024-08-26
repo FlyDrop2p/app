@@ -34,16 +34,20 @@ class SettingsViewModel(
 
     fun updateUsername(username: String) {
         viewModelScope.launch {
+            val currentTimestamp = System.currentTimeMillis()
             ownProfileRepository.setUsername(username)
-            ownAccountRepository.setProfileUpdate(System.currentTimeMillis())
+            ownProfileRepository.setUpdateTimestamp(currentTimestamp)
+            ownAccountRepository.setProfileUpdateTimestamp(currentTimestamp)
         }
     }
 
     fun updateProfileImage(profileImageUri: Uri) {
         viewModelScope.launch {
             fileManager.saveProfileImage(profileImageUri, ownAccountRepository.getAccount().accountId)?.let { profileImageName ->
+                val currentTimestamp = System.currentTimeMillis()
                 ownProfileRepository.setImageFileName(profileImageName)
-                ownAccountRepository.setProfileUpdate(System.currentTimeMillis())
+                ownProfileRepository.setUpdateTimestamp(currentTimestamp)
+                ownAccountRepository.setProfileUpdateTimestamp(currentTimestamp)
             }
         }
     }

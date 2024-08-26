@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 data class ProfileEntity(
     @PrimaryKey
     val accountId: Long,
+    val updateTimestamp: Long,
     val username: String,
     val imageFileName: String?
 )

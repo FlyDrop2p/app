@@ -5,16 +5,18 @@ import com.flydrop2p.flydrop2p.network.model.contact.NetworkProfile
 
 data class Profile(
     val accountId: Long,
+    val updateTimestamp: Long,
     val username: String,
     val imageFileName: String?
 ) {
     constructor(networkProfile: NetworkProfile, imageFileName: String?)
-        : this(networkProfile.accountId, networkProfile.username, imageFileName)
+        : this(networkProfile.accountId, networkProfile.updateTimestamp, networkProfile.username, imageFileName)
 }
 
 fun Profile.toProfileEntity(): ProfileEntity {
     return ProfileEntity(
         accountId = accountId,
+        updateTimestamp = updateTimestamp,
         username = username,
         imageFileName = imageFileName
     )
@@ -23,6 +25,7 @@ fun Profile.toProfileEntity(): ProfileEntity {
 fun ProfileEntity.toProfile(): Profile {
     return Profile(
         accountId = accountId,
+        updateTimestamp = updateTimestamp,
         username = username,
         imageFileName = imageFileName
     )

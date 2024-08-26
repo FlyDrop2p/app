@@ -9,5 +9,5 @@ import kotlinx.serialization.Serializable
 data class AccountEntity(
     @PrimaryKey
     val accountId: Long,
-    val profileUpdate: Long
+    val profileUpdateTimestamp: Long
 )

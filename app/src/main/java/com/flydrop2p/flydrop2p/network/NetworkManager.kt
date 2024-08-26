@@ -1,11 +1,12 @@
 package com.flydrop2p.flydrop2p.network
 
+import android.media.MediaPlayer
 import android.net.Uri
 import com.flydrop2p.flydrop2p.MainActivity
-import com.flydrop2p.flydrop2p.media.FileManager
 import com.flydrop2p.flydrop2p.domain.model.contact.Account
 import com.flydrop2p.flydrop2p.domain.model.contact.Profile
 import com.flydrop2p.flydrop2p.domain.model.contact.toAccount
+import com.flydrop2p.flydrop2p.domain.model.message.AudioMessage
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.MessageState
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
@@ -14,9 +15,11 @@ import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
+import com.flydrop2p.flydrop2p.media.FileManager
 import com.flydrop2p.flydrop2p.network.model.contact.NetworkProfile
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkDevice
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
+import com.flydrop2p.flydrop2p.network.model.message.NetworkAudioMessage
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
 import com.flydrop2p.flydrop2p.network.model.message.NetworkMessageAck
 import com.flydrop2p.flydrop2p.network.model.message.NetworkTextMessage
@@ -31,6 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.io.File
 import kotlin.math.abs
 
 
@@ -45,7 +49,7 @@ class NetworkManager(
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     val receiver: WiFiDirectBroadcastReceiver = WiFiDirectBroadcastReceiver(activity)
 
-    private var ownDevice = Device(null, Account(0, 0), Profile(0, "", null))
+    private var ownDevice = Device(null, Account(0, 0), Profile(0, 0, "", null))
 
     private val _connectedDevices: MutableStateFlow<List<NetworkDevice>> = MutableStateFlow(listOf())
     val connectedDevices: StateFlow<List<NetworkDevice>>
@@ -111,11 +115,11 @@ class NetworkManager(
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
-                    val image = ownDevice.profile.imageFileName?.let { fileName ->
+                    val imageBase64 = ownDevice.profile.imageFileName?.let { fileName ->
                         fileManager.getFileBase64(fileName)
                     }
 
-                    val networkProfile = NetworkProfile(ownDevice.profile, image)
+                    val networkProfile = NetworkProfile(ownDevice.profile, imageBase64)
                     val networkProfileResponse = NetworkProfileResponse(ownDevice.account.accountId, accountId, networkProfile)
                     clientService.sendProfileResponse(ipAddress, ownDevice, networkProfileResponse)
                 }
@@ -143,7 +147,7 @@ class NetworkManager(
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
-                    fileManager.saveFile(fileUri)?.let { fileName ->
+                    fileManager.saveMessageFile(fileUri)?.let { fileName ->
                         var fileMessage = FileMessage(0, ownDevice.account.accountId, accountId, System.currentTimeMillis(), MessageState.MESSAGE_SENT, fileName)
                         fileMessage = fileMessage.copy(messageId = chatRepository.addMessage(fileMessage))
 
@@ -157,6 +161,26 @@ class NetworkManager(
         }
     }
 
+    fun sendAudioMessage(accountId: Long, fileUri: Uri) {
+        val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
+
+        connectedDevice?.let { device ->
+            device.ipAddress?.let { ipAddress ->
+                coroutineScope.launch {
+                    val currentTimestamp = System.currentTimeMillis()
+
+                    fileManager.saveMessageAudio(fileUri, accountId, currentTimestamp)?.let { fileName ->
+                        var audioMessage = AudioMessage(0, ownDevice.account.accountId, accountId, currentTimestamp, MessageState.MESSAGE_SENT, fileName)
+                        audioMessage = audioMessage.copy(messageId = chatRepository.addMessage(audioMessage))
+
+                        fileManager.getFileBase64(fileName)?.let { audioBase64 ->
+                            clientService.sendAudioMessage(ipAddress, ownDevice, NetworkAudioMessage(audioMessage, audioBase64))
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     fun sendMessageReceivedAck(accountId: Long, messageId: Long) {
         val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
@@ -190,6 +214,7 @@ class NetworkManager(
         startFileMessageConnection()
         startProfileRequestConnection()
         startProfileResponseConnection()
+        startAudioMessageConnection()
         startMessageReceivedAckConnection()
         startMessageReadAckConnection()
     }
@@ -256,6 +281,18 @@ class NetworkManager(
         }
     }
 
+    private fun startAudioMessageConnection() {
+        coroutineScope.launch {
+            while(true) {
+                val networkAudioMessage = serverService.listenAudioMessage()
+
+                if(networkAudioMessage.receiverId == ownDevice.account.accountId) {
+                    handleAudioMessage(networkAudioMessage)
+                }
+            }
+        }
+    }
+
     private fun startMessageReceivedAckConnection() {
         coroutineScope.launch {
             while(true) {
@@ -287,7 +324,7 @@ class NetworkManager(
 
             val profile = contactRepository.getProfileByAccountId(networkDevice.account.accountId)
 
-            if(profile == null || (lastAccount != null && lastAccount.profileUpdate < networkDevice.account.profileUpdate)) {
+            if(profile == null || (lastAccount != null && lastAccount.profileUpdateTimestamp < networkDevice.account.profileUpdateTimestamp)) {
                 sendProfileRequest(networkDevice.account.accountId)
             }
 
@@ -306,7 +343,7 @@ class NetworkManager(
     private fun handleProfileResponse(networkProfileResponse: NetworkProfileResponse) {
         coroutineScope.launch {
             val imageFileName = networkProfileResponse.profile.imageBase64?.let {
-                fileManager.saveProfileImage(it, networkProfileResponse.profile.accountId)
+                fileManager.saveNetworkProfileImage(networkProfileResponse.profile)
             }
 
             contactRepository.addOrUpdateProfile(Profile(networkProfileResponse.profile, imageFileName))
@@ -322,9 +359,18 @@ class NetworkManager(
     
     private fun handleFileMessage(networkFileMessage: NetworkFileMessage) {
         coroutineScope.launch {
-            fileManager.saveFile(networkFileMessage.fileName, networkFileMessage.fileBase64)?.let {
+            fileManager.saveNetworkFile(networkFileMessage)?.let {
                 chatRepository.addMessage(FileMessage(networkFileMessage, MessageState.MESSAGE_RECEIVED))
                 sendMessageReceivedAck(networkFileMessage.senderId, networkFileMessage.messageId)
+            }
+        }
+    }
+
+    private fun handleAudioMessage(networkAudioMessage: NetworkAudioMessage) {
+        coroutineScope.launch {
+            fileManager.saveNetworkAudio(networkAudioMessage)?.let { fileName ->
+                chatRepository.addMessage(AudioMessage(networkAudioMessage, MessageState.MESSAGE_RECEIVED, fileName))
+                sendMessageReceivedAck(networkAudioMessage.senderId, networkAudioMessage.messageId)
             }
         }
     }

@@ -6,7 +6,7 @@ import android.media.MediaRecorder
 import android.net.Uri
 import java.io.File
 
-class AudioManager(private val context: Context) : MediaManager {
+class VideoManager(private val context: Context) : MediaManager {
     private var recorder: MediaRecorder? = null
     private var player: MediaPlayer? = null
 
@@ -19,12 +19,14 @@ class AudioManager(private val context: Context) : MediaManager {
     var recordingFileUri: Uri = Uri.EMPTY
 
     override fun startRecording() {
-        recordingFileUri = Uri.fromFile(File(context.filesDir, "audio_${System.currentTimeMillis()}.3gp"))
+        recordingFileUri = Uri.fromFile(File(context.filesDir, "audio_${System.currentTimeMillis()}.mp4"))
 
         recorder = MediaRecorder().apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
-            setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+            setVideoSource(MediaRecorder.VideoSource.CAMERA)
+            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+            setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP)
             setOutputFile(recordingFileUri.path)
         }
 
