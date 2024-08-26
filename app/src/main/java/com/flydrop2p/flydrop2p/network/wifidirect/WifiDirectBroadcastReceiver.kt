@@ -19,6 +19,7 @@ class WiFiDirectBroadcastReceiver(activity: MainActivity) : BroadcastReceiver() 
         manager.discoverPeers(object : WifiP2pManager.ActionListener {
             override fun onSuccess() {
                 Log.d("WifiDirectBroadcastReceiver", "discoverPeers() onSuccess()")
+                connectToDevices()
             }
 
             override fun onFailure(reasonCode: Int) {
@@ -30,7 +31,6 @@ class WiFiDirectBroadcastReceiver(activity: MainActivity) : BroadcastReceiver() 
     private fun connectToDevices() {
         manager.requestPeers { devices ->
             for(device in devices.deviceList) {
-                Log.d("WifiDirectBroadcastReceiver", device.toString())
                 connectToDevice(device)
             }
         }
@@ -55,22 +55,18 @@ class WiFiDirectBroadcastReceiver(activity: MainActivity) : BroadcastReceiver() 
         when (action) {
             WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION -> {
                 Log.d("WifiDirectBroadcastReceiver", "WIFI_P2P_STATE_CHANGED_ACTION")
-                connectToDevices()
             }
 
             WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION -> {
                 Log.d("WifiDirectBroadcastReceiver", "WIFI_P2P_PEERS_CHANGED_ACTION")
-                connectToDevices()
             }
 
             WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION -> {
                 Log.d("WifiDirectBroadcastReceiver", "WIFI_P2P_CONNECTION_CHANGED_ACTION")
-                connectToDevices()
             }
 
             WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION -> {
                 Log.d("WifiDirectBroadcastReceiver", "WIFI_P2P_THIS_DEVICE_CHANGED_ACTION")
-                connectToDevices()
             }
         }
     }

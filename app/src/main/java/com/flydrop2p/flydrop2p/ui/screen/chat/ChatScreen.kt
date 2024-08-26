@@ -65,9 +65,11 @@ fun ChatScreen(
 
     var attachedFileUri by remember { mutableStateOf<Uri?>(null) }
 
-    chatState.messages.forEach { message ->
-        if(message.messageState < MessageState.MESSAGE_READ && message.senderId != accountId) {
-            chatViewModel.updateMessageStateToRead(message)
+    currentAccount?.accountId?.let { ownAccountId ->
+        chatState.messages.forEach { message ->
+            if(message.messageState < MessageState.MESSAGE_READ && message.senderId != ownAccountId) {
+                chatViewModel.updateMessageStateToRead(message)
+            }
         }
     }
 
