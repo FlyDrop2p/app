@@ -3,6 +3,7 @@ package com.flydrop2p.flydrop2p.data.local
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
+import android.provider.OpenableColumns
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -90,6 +91,34 @@ class FileManager(private val context: Context) {
         val contentResolver: ContentResolver = context.contentResolver
         val inputStream: InputStream? = contentResolver.openInputStream(fileUri)
         val file = File(context.filesDir, "file_${accountId}_${System.currentTimeMillis()}")
+
+        return try {
+            FileOutputStream(file).use { outputStream ->
+                inputStream?.copyTo(outputStream)
+            }
+
+            file.name
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            inputStream?.close()
+        }
+    }
+
+    fun saveCustomFile(fileUri: Uri, accountId: Long): String? {
+        val contentResolver: ContentResolver = context.contentResolver
+
+        val originalFileName: String? = contentResolver.query(fileUri, null, null, null, null)?.use { cursor ->
+            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            cursor.moveToFirst()
+            cursor.getString(nameIndex)
+        }
+        val fileExtension = originalFileName?.substringAfterLast(".", "")
+
+        val newFileName = "file_${accountId}_${System.currentTimeMillis()}${if (fileExtension.isNullOrEmpty()) "" else ".$fileExtension"}"
+        val file = File(context.filesDir, newFileName)
+        val inputStream: InputStream? = contentResolver.openInputStream(fileUri)
 
         return try {
             FileOutputStream(file).use { outputStream ->

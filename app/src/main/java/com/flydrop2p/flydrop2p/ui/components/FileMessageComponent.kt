@@ -1,8 +1,11 @@
 package com.flydrop2p.flydrop2p.ui.components
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -54,8 +58,25 @@ fun SentFileMessageComponent(
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     val timeString = timeFormat.format(Date(message.timestamp))
 
-    val fileExtension = message.fileName.substringAfterLast(".") // TODO: check if this is correct
-    val isImageOrVideo = fileExtension in listOf("jpg", "jpeg", "png", "gif", "mp4", "mov", "avi")
+    val fileUri = Uri.fromFile(File(context.filesDir, message.fileName))
+    val mimeType = getMimeType(fileUri, context)
+    val isImageOrVideo = mimeType.startsWith("image/") || mimeType.startsWith("video/")
+
+    Log.d(
+        "SentFileMessageComponent",
+        "MIME type: $mimeType, isImageOrVideo: $isImageOrVideo, fileUri: $fileUri"
+    )
+
+    @Composable
+    fun getPreviewPainter(): Painter {
+        return rememberImagePainter(
+            data = fileUri,
+            builder = {
+                crossfade(true)
+                error(R.drawable.error_24px)
+            }
+        )
+    }
 
     Row(
         modifier = Modifier
@@ -66,42 +87,42 @@ fun SentFileMessageComponent(
         Surface(
             shape = RoundedCornerShape(16.dp),
             color = MaterialTheme.colorScheme.primaryContainer,
-            modifier = Modifier.widthIn(min = 150.dp, max = 300.dp)
+            modifier = Modifier
+                .widthIn(min = 150.dp, max = 300.dp)
+                .clickable {
+                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                        setDataAndType(fileUri, mimeType)
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                    context.startActivity(intent)
+                }
         ) {
             Column(
                 modifier = Modifier
                     .padding(12.dp)
-                    .clickable {
-                        val file = File(context.filesDir, message.fileName)
-                        val uri = Uri.fromFile(file)
-                        val intent = Intent(Intent.ACTION_VIEW).apply {
-                            setDataAndType(uri, "*/*")
-                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        }
-                        context.startActivity(intent)
-                    }
             ) {
                 if (isImageOrVideo) {
                     Image(
-                        painter = rememberImagePainter(data = message.fileName), // TODO: check if this is correct
+                        painter = getPreviewPainter(),
                         contentDescription = "Media Preview",
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(200.dp)
-                            .clip(RoundedCornerShape(16.dp))
+                            .height(150.dp)
+                            .clip(RoundedCornerShape(5.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column {
-                        Text(
-                            text = message.fileName,
-                            fontSize = 16.sp,
-                            color = Color(0xFF075985),
-                            fontWeight = FontWeight.Medium
-                        )
-                        Text(
-                            text = message.fileName.length.toString(),
-                            fontSize = 14.sp,
-                            color = Color(0xFF075985)
+                } else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.description_24px),
+                            contentDescription = "File Icon",
+                            modifier = Modifier
+                                .size(30.dp)
+                                .align(Alignment.CenterVertically)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Column {
@@ -111,14 +132,10 @@ fun SentFileMessageComponent(
                                 color = Color(0xFF075985),
                                 fontWeight = FontWeight.Medium
                             )
-                            Text(
-                                text = message.fileName.length.toString(),
-                                fontSize = 14.sp,
-                                color = Color(0xFF075985)
-                            )
                         }
                     }
                 }
+
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -131,7 +148,7 @@ fun SentFileMessageComponent(
                         color = Color(0xFF083249)
                     )
 
-                    when (message.messageState){
+                    when (message.messageState) {
                         MessageState.MESSAGE_READ -> Image(
                             painter = painterResource(id = R.drawable.done_all_24px),
                             colorFilter = ColorFilter.tint(Color(0xFF037971)),
@@ -141,23 +158,21 @@ fun SentFileMessageComponent(
                         MessageState.MESSAGE_RECEIVED -> Image(
                             painter = painterResource(id = R.drawable.done_all_24px),
                             colorFilter = ColorFilter.tint(Color(0xFFADADAD)),
-                            contentDescription = "Visualizzato",
+                            contentDescription = "Ricevuto",
                             modifier = Modifier.size(16.dp)
                         )
                         MessageState.MESSAGE_SENT -> Image(
                             painter = painterResource(id = R.drawable.check_24px),
                             colorFilter = ColorFilter.tint(Color(0xFFADADAD)),
-                            contentDescription = "Visualizzato",
+                            contentDescription = "Inviato",
                             modifier = Modifier.size(16.dp)
                         )
                     }
-
                 }
             }
         }
     }
 }
-
 
 @Composable
 fun ReceivedFileMessageComponent(
@@ -167,8 +182,15 @@ fun ReceivedFileMessageComponent(
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     val timeString = timeFormat.format(Date(message.timestamp))
 
-    val fileExtension = message.fileName.substringAfterLast(".").lowercase() // TODO: check if this is correct
-    val isImageOrVideo = fileExtension in listOf("jpg", "jpeg", "png", "gif", "mp4", "mov", "avi")
+    val fileUri = Uri.fromFile(File(context.filesDir, message.fileName))
+    val mimeType = context.contentResolver.getType(fileUri)
+    val isImageOrVideo =
+        mimeType?.startsWith("image/") == true || mimeType?.startsWith("video/") == true
+
+    Log.d(
+        "ReceivedFileMessageComponent",
+        "MIME type: $mimeType, isImageOrVideo: $isImageOrVideo, fileUri: $fileUri"
+    )
 
     Row(
         modifier = Modifier
@@ -185,36 +207,34 @@ fun ReceivedFileMessageComponent(
                 modifier = Modifier
                     .padding(12.dp)
                     .clickable {
-                        val file = File(context.filesDir, message.fileName)
-                        val uri = Uri.fromFile(file)
                         val intent = Intent(Intent.ACTION_VIEW).apply {
-                            setDataAndType(uri, "*/*")
+                            setDataAndType(fileUri, "*/*")
                             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                         }
                         context.startActivity(intent)
                     }
             ) {
-                if (isImageOrVideo) {
-                    Image(
-                        painter = rememberImagePainter(data = message.fileName),
-                        contentDescription = "Media Preview",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column {
-                        Text(
-                            text = message.fileName,
-                            fontSize = 16.sp,
-                            color = Color(0xFF075985),
-                            fontWeight = FontWeight.Medium
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (isImageOrVideo) {
+                        Image(
+                            painter = rememberImagePainter(data = fileUri),
+                            contentDescription = "Media Preview",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(150.dp) // Adjust the height as needed
+                                .clip(RoundedCornerShape(16.dp))
                         )
-                        Text(
-                            text = message.fileName.length.toString(),
-                            fontSize = 14.sp,
-                            color = Color(0xFF075985)
+                    } else {
+                        Icon(
+                            painter = painterResource(id = R.drawable.description_24px),
+                            contentDescription = "File Icon",
+                            modifier = Modifier
+                                .size(30.dp)
+                                .align(Alignment.CenterVertically)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Column {
@@ -224,14 +244,10 @@ fun ReceivedFileMessageComponent(
                                 color = Color(0xFF075985),
                                 fontWeight = FontWeight.Medium
                             )
-                            Text(
-                                text = message.fileName.length.toString(),
-                                fontSize = 14.sp,
-                                color = Color(0xFF075985)
-                            )
                         }
                     }
                 }
+
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -248,7 +264,6 @@ fun ReceivedFileMessageComponent(
         }
     }
 }
-
 
 @Composable
 fun FileMessageComponent(
@@ -267,10 +282,10 @@ fun FileMessageComponent(
 }
 
 @Composable
-fun FilePreview(file: File, onSendFile: (File) -> Unit, onDeleteFile: (File) -> Unit) {
+fun FilePreview(fileUri: Uri, onSendFile: (Uri) -> Unit, onDeleteFile: (Uri) -> Unit) {
     val context = LocalContext.current
-    val fileUri = Uri.fromFile(file)
     val mimeType = context.contentResolver.getType(fileUri) ?: "application/octet-stream"
+    Log.d("FilePreview", "MIME type: $mimeType")
 
     @Composable
     fun getPreviewPainter(): Painter {
@@ -278,6 +293,7 @@ fun FilePreview(file: File, onSendFile: (File) -> Unit, onDeleteFile: (File) -> 
             data = fileUri,
             builder = {
                 crossfade(true)
+                error(R.drawable.error_24px)
             }
         )
     }
@@ -306,7 +322,7 @@ fun FilePreview(file: File, onSendFile: (File) -> Unit, onDeleteFile: (File) -> 
                     .padding(end = 16.dp)
             )
             Text(
-                text = file.name,
+                text = fileUri.lastPathSegment ?: "Unknown File",
                 color = Color.Black,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -314,34 +330,36 @@ fun FilePreview(file: File, onSendFile: (File) -> Unit, onDeleteFile: (File) -> 
             )
         }
 
-        IconButton(
-            onClick = {
-                onDeleteFile(file)
-            },
-            modifier = Modifier.padding(end = 8.dp)
+        Row(
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Filled.Delete,
-                contentDescription = "Delete",
-                tint = Color.Red
-            )
-        }
-
-        IconButton(
-            onClick = {
-                onSendFile(file)
+            IconButton(
+                onClick = {
+                    onDeleteFile(fileUri)
+                },
+                modifier = Modifier.padding(end = 8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = "Delete",
+                    tint = Color.Red
+                )
             }
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Send,
-                contentDescription = "Send",
-                tint = Color.Black
-            )
+
+            IconButton(
+                onClick = {
+                    onSendFile(fileUri)
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Send,
+                    contentDescription = "Send",
+                    tint = Color.Black
+                )
+            }
         }
     }
 }
-
-
 
 @Preview(showBackground = true)
 @Composable
@@ -353,8 +371,24 @@ fun FileMessageComponentPreview() {
             receiverId = 1,
             timestamp = System.currentTimeMillis(),
             messageState = MessageState.MESSAGE_RECEIVED,
-            fileName = ""
+            fileName = "example.jpg"
         ),
         currentAccountId = 0
     )
+}
+
+fun getMimeType(fileUri: Uri, context: Context): String {
+    val mimeType = context.contentResolver.getType(fileUri)
+    if (mimeType != null) return mimeType
+
+    val fileExtension = fileUri.lastPathSegment?.substringAfterLast(".", "")
+    return when (fileExtension?.toLowerCase()) {
+        "jpg", "jpeg" -> "image/jpeg"
+        "png" -> "image/png"
+        "gif" -> "image/gif"
+        "mp4" -> "video/mp4"
+        "avi" -> "video/x-msvideo"
+        "pdf" -> "application/pdf"
+        else -> "application/octet-stream" // Tipo generico
+    }
 }

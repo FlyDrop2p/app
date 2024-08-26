@@ -1,6 +1,7 @@
 package com.flydrop2p.flydrop2p.network
 
 import android.net.Uri
+import android.util.Log
 import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.data.local.FileManager
 import com.flydrop2p.flydrop2p.domain.model.contact.Account
@@ -131,19 +132,30 @@ class NetworkManager(
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
-                    val fileName = fileManager.saveFile(fileUri, ownDevice.account.accountId)?.let {
-                        fileManager.loadFile(it)
-                    }
+                    val fileName = fileManager.saveCustomFile(fileUri, ownDevice.account.accountId)
 
-                    if(fileName != null) {
-                        var fileMessage = FileMessage(0, ownDevice.account.accountId, accountId, System.currentTimeMillis(), MessageState.MESSAGE_SENT, fileName)
+                    if (fileName != null) {
+                        var fileMessage = FileMessage(
+                            0,
+                            ownDevice.account.accountId,
+                            accountId,
+                            System.currentTimeMillis(),
+                            MessageState.MESSAGE_SENT,
+                            fileName
+                        )
+
                         fileMessage = fileMessage.copy(messageId = chatRepository.addMessage(fileMessage))
-                        clientService.sendFileMessage(ipAddress, ownDevice, NetworkFileMessage(fileMessage, fileName))
+                        val fileContent = fileManager.loadFile(fileName)
+
+                        if (fileContent != null) {
+                            clientService.sendFileMessage(ipAddress, ownDevice, NetworkFileMessage(fileMessage, fileContent))
+                        }
                     }
                 }
             }
         }
     }
+
 
     fun sendMessageReceivedAck(accountId: Long, messageId: Long) {
         val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }

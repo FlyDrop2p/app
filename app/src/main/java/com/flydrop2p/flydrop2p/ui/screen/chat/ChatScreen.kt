@@ -1,7 +1,6 @@
 package com.flydrop2p.flydrop2p.ui.screen.chat
 
 import android.net.Uri
-import android.provider.OpenableColumns
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -44,8 +43,6 @@ import com.flydrop2p.flydrop2p.ui.components.FileMessageComponent
 import com.flydrop2p.flydrop2p.ui.components.FilePreview
 import com.flydrop2p.flydrop2p.ui.components.TextMessageComponent
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
-import java.io.File
-import java.io.FileOutputStream
 
 object ChatDestination : NavigationDestination {
     override val route = "chat"
@@ -67,10 +64,10 @@ fun ChatScreen(
     val currentAccount by chatViewModel.ownAccount.collectAsState(initial = null)
     val chatState by chatViewModel.uiState.collectAsState()
 
-    var attachedFile by remember { mutableStateOf<File?>(null) }
+    var attachedFileUri by remember { mutableStateOf<Uri?>(null) }
 
     chatState.messages.forEach { message ->
-        if(message.messageState < MessageState.MESSAGE_READ) {
+        if (message.messageState < MessageState.MESSAGE_READ) {
             chatViewModel.updateMessageToRead(message)
         }
     }
@@ -101,15 +98,15 @@ fun ChatScreen(
                     modifier = Modifier.weight(1f)
                 )
 
-                if (attachedFile != null) {
+                if (attachedFileUri != null) {
                     FilePreview(
-                        file = attachedFile!!,
+                        fileUri = attachedFileUri!!,
                         onSendFile = {
-                            chatViewModel.sendFileMessage(accountId, Uri.fromFile(it))
-                            attachedFile = null
+                            chatViewModel.sendFileMessage(accountId, attachedFileUri!!)
+                            attachedFileUri = null
                         },
                         onDeleteFile = {
-                            attachedFile = null
+                            attachedFileUri = null
                         }
                     )
                 } else {
@@ -118,37 +115,9 @@ fun ChatScreen(
                             chatViewModel.sendTextMessage(accountId, messageText)
                         },
                         onAttachFile = { uri ->
-                            uri?.let {
-                                Log.d("ChatScreen", "File attached: $uri")
-
-                                val fileName =
-                                    context.contentResolver.query(uri, null, null, null, null)
-                                        ?.use { cursor ->
-                                            val nameIndex =
-                                                cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                                            if (cursor.moveToFirst()) {
-                                                cursor.getString(nameIndex)
-                                            } else {
-                                                null
-                                            }
-                                        }
-
-                                Log.d("ChatScreen", "File name: $fileName")
-
-                                val file = File(
-                                    context.filesDir,
-                                    fileName ?: "${System.currentTimeMillis()}_file"
-                                )
-
-                                val inputStream = context.contentResolver.openInputStream(uri)
-                                inputStream?.use { input ->
-                                    val outputStream = FileOutputStream(file)
-                                    outputStream.use { output ->
-                                        input.copyTo(output)
-                                    }
-                                }
-
-                                attachedFile = file
+                            uri?.let { fileUri ->
+                                Log.d("ChatScreen", "File attached: $fileUri")
+                                attachedFileUri = fileUri
                             }
                         }
                     )
