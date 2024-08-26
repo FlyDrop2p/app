@@ -83,4 +83,10 @@ dependencies {
     implementation("androidx.datastore:datastore:1.1.1")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    // Retrofit with Scalar Converter
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 }

@@ -1,5 +1,6 @@
 package com.flydrop2p.flydrop2p.ui.screen.settings
 
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -150,6 +151,26 @@ fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Save", color = MaterialTheme.colorScheme.onPrimaryContainer)
+                }
+
+                Button(
+                    onClick = {
+                        settingsViewModel.backupMessages()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Make Backup", color = MaterialTheme.colorScheme.onPrimaryContainer)
+                }
+
+                Button(
+                    onClick = {
+                        settingsViewModel.retrieveBackup()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Retrieve Backup", color = MaterialTheme.colorScheme.onTertiaryContainer)
                 }
             }
         }

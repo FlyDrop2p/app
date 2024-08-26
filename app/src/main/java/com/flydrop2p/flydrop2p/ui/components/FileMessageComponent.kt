@@ -180,14 +180,19 @@ fun ReceivedFileMessageComponent(
     val timeString = timeFormat.format(Date(message.timestamp))
 
     val fileUri = Uri.fromFile(File(context.filesDir, message.fileName))
-    val mimeType = context.contentResolver.getType(fileUri)
-    val isImageOrVideo =
-        mimeType?.startsWith("image/") == true || mimeType?.startsWith("video/") == true
+    val mimeType = getMimeType(fileUri, context)
+    val isImageOrVideo = mimeType.startsWith("image/") || mimeType.startsWith("video/")
 
-    Log.d(
-        "ReceivedFileMessageComponent",
-        "MIME type: $mimeType, isImageOrVideo: $isImageOrVideo, fileUri: $fileUri"
-    )
+    @Composable
+    fun getPreviewPainter(): Painter {
+        return rememberImagePainter(
+            data = fileUri,
+            builder = {
+                crossfade(true)
+                error(R.drawable.error_24px)
+            }
+        )
+    }
 
     Row(
         modifier = Modifier
@@ -213,13 +218,14 @@ fun ReceivedFileMessageComponent(
                 ) {
                     if (isImageOrVideo) {
                         Image(
-                            painter = rememberImagePainter(data = fileUri),
+                            painter = getPreviewPainter(),
                             contentDescription = "Media Preview",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(150.dp) // Adjust the height as needed
-                                .clip(RoundedCornerShape(16.dp))
+                                .height(150.dp)
+                                .clip(RoundedCornerShape(5.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
                         )
                     } else {
                         Icon(
