@@ -4,7 +4,7 @@ import android.content.Context
 import com.flydrop2p.flydrop2p.MainActivity
 import com.flydrop2p.flydrop2p.data.local.AppDataStore
 import com.flydrop2p.flydrop2p.data.local.AppDatabase
-import com.flydrop2p.flydrop2p.data.local.FileManager
+import com.flydrop2p.flydrop2p.media.FileManager
 import com.flydrop2p.flydrop2p.data.repository.ChatLocalRepository
 import com.flydrop2p.flydrop2p.data.repository.ContactLocalRepository
 import com.flydrop2p.flydrop2p.data.repository.OwnAccountLocalRepository
@@ -13,6 +13,7 @@ import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
+import com.flydrop2p.flydrop2p.media.AudioManager
 import com.flydrop2p.flydrop2p.network.NetworkManager
 
 /**
@@ -23,6 +24,7 @@ interface AppContainer {
     val contactRepository: ContactRepository
     val ownAccountRepository: OwnAccountRepository
     val ownProfileRepository: OwnProfileRepository
+    val audioManager: AudioManager
     val fileManager: FileManager
     val networkManager: NetworkManager
 }
@@ -60,6 +62,11 @@ class AppDataContainer(private val context: Context, activity: MainActivity) : A
     override val ownProfileRepository: OwnProfileRepository by lazy {
         OwnProfileLocalRepository(AppDataStore.getProfileRepository(context))
     }
+
+    /**
+     * Implementation for [AudioManager]
+     */
+    override val audioManager: AudioManager = AudioManager(activity)
 
     /**
      * Implementation for [FileManager]

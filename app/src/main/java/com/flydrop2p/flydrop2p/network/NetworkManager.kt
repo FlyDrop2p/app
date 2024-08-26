@@ -2,7 +2,7 @@ package com.flydrop2p.flydrop2p.network
 
 import android.net.Uri
 import com.flydrop2p.flydrop2p.MainActivity
-import com.flydrop2p.flydrop2p.data.local.FileManager
+import com.flydrop2p.flydrop2p.media.FileManager
 import com.flydrop2p.flydrop2p.domain.model.contact.Account
 import com.flydrop2p.flydrop2p.domain.model.contact.Profile
 import com.flydrop2p.flydrop2p.domain.model.contact.toAccount

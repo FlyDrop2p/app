@@ -24,6 +24,7 @@ object AppViewModelProvider {
                 application().container.chatRepository,
                 application().container.contactRepository,
                 application().container.ownAccountRepository,
+                application().container.audioManager,
                 application().container.networkManager,
             )
         }

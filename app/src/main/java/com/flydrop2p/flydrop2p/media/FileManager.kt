@@ -1,4 +1,4 @@
-package com.flydrop2p.flydrop2p.data.local
+package com.flydrop2p.flydrop2p.media
 
 import android.content.ContentResolver
 import android.content.Context

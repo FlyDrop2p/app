@@ -118,6 +118,14 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED) {
+            if (shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO)) {
+
+            }
+
+            permissions.add(Manifest.permission.RECORD_AUDIO)
+        }
+
         if (permissions.isNotEmpty()) {
             val permissionsResultLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
 

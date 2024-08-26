@@ -3,7 +3,7 @@ package com.flydrop2p.flydrop2p.ui.screen.settings
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.flydrop2p.flydrop2p.data.local.FileManager
+import com.flydrop2p.flydrop2p.media.FileManager
 import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
 import com.flydrop2p.flydrop2p.network.BackupInstance
