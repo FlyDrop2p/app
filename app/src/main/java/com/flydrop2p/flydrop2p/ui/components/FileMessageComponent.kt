@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -60,24 +61,12 @@ fun SentFileMessageComponent(
     val timeString = timeFormat.format(Date(message.timestamp))
 
     val fileUri = Uri.fromFile(File(context.filesDir, message.fileName))
-    val mimeType = getMimeType(fileUri, context)
+
+    // fileUri.lastPathSegment == message.fileName
+    val mimeType = getMimeType(message.fileName.substringAfterLast(".", ""))
     val isImageOrVideo = mimeType.startsWith("image/") || mimeType.startsWith("video/")
 
-    Log.d(
-        "SentFileMessageComponent",
-        "MIME type: $mimeType, isImageOrVideo: $isImageOrVideo, fileUri: $fileUri"
-    )
 
-    @Composable
-    fun getPreviewPainter(): Painter {
-        return rememberImagePainter(
-            data = fileUri,
-            builder = {
-                crossfade(true)
-                error(R.drawable.error_24px)
-            }
-        )
-    }
 
     Row(
         modifier = Modifier
@@ -100,7 +89,7 @@ fun SentFileMessageComponent(
             ) {
                 if (isImageOrVideo) {
                     Image(
-                        painter = getPreviewPainter(),
+                        painter = getPreviewPainter(fileUri),
                         contentDescription = "Media Preview",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -179,20 +168,10 @@ fun ReceivedFileMessageComponent(
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     val timeString = timeFormat.format(Date(message.timestamp))
 
+    // fileUri.lastPathSegment == message.fileName
     val fileUri = Uri.fromFile(File(context.filesDir, message.fileName))
-    val mimeType = getMimeType(fileUri, context)
+    val mimeType = getMimeType(message.fileName.substringAfterLast(".", ""))
     val isImageOrVideo = mimeType.startsWith("image/") || mimeType.startsWith("video/")
-
-    @Composable
-    fun getPreviewPainter(): Painter {
-        return rememberImagePainter(
-            data = fileUri,
-            builder = {
-                crossfade(true)
-                error(R.drawable.error_24px)
-            }
-        )
-    }
 
     Row(
         modifier = Modifier
@@ -218,7 +197,7 @@ fun ReceivedFileMessageComponent(
                 ) {
                     if (isImageOrVideo) {
                         Image(
-                            painter = getPreviewPainter(),
+                            painter = getPreviewPainter(fileUri),
                             contentDescription = "Media Preview",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -281,107 +260,19 @@ fun FileMessageComponent(
 }
 
 @Composable
-fun FilePreview(fileUri: Uri, onSendFile: (Uri) -> Unit, onDeleteFile: (Uri) -> Unit) {
-    val context = LocalContext.current
-    val mimeType = context.contentResolver.getType(fileUri) ?: "application/octet-stream"
-    Log.d("FilePreview", "MIME type: $mimeType")
-
-    @Composable
-    fun getPreviewPainter(): Painter {
-        return rememberImagePainter(
-            data = fileUri,
-            builder = {
-                crossfade(true)
-                error(R.drawable.error_24px)
-            }
-        )
-    }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        if (mimeType.startsWith("image/")) {
-            Image(
-                painter = getPreviewPainter(),
-                contentDescription = "Image Preview",
-                modifier = Modifier
-                    .size(70.dp)
-                    .padding(end = 16.dp)
-            )
-        } else {
-            Image(
-                painter = getPreviewPainter(),
-                contentDescription = "File Preview",
-                modifier = Modifier
-                    .size(70.dp)
-                    .padding(end = 16.dp)
-            )
-            Text(
-                text = fileUri.lastPathSegment ?: "Unknown File",
-                color = Color.Black,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f)
-            )
+fun getPreviewPainter(fileUri: Uri): Painter {
+    return rememberImagePainter(
+        data = fileUri,
+        builder = {
+            crossfade(true)
+            error(R.drawable.error_24px)
         }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
-                onClick = {
-                    onDeleteFile(fileUri)
-                },
-                modifier = Modifier.padding(end = 8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = "Delete",
-                    tint = Color.Red
-                )
-            }
-
-            IconButton(
-                onClick = {
-                    onSendFile(fileUri)
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Send,
-                    contentDescription = "Send",
-                    tint = Color.Black
-                )
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun FileMessageComponentPreview() {
-    FileMessageComponent(
-        message = FileMessage(
-            messageId = 0,
-            senderId = 0,
-            receiverId = 1,
-            timestamp = System.currentTimeMillis(),
-            messageState = MessageState.MESSAGE_RECEIVED,
-            fileName = "example.jpg"
-        ),
-        currentAccountId = 0
     )
 }
 
-fun getMimeType(fileUri: Uri, context: Context): String {
-    val mimeType = context.contentResolver.getType(fileUri)
-    if (mimeType != null) return mimeType
 
-    val fileExtension = fileUri.lastPathSegment?.substringAfterLast(".", "")
-    return when (fileExtension?.toLowerCase()) {
+fun getMimeType(extension: String): String {
+    return when (extension) {
         "jpg", "jpeg" -> "image/jpeg"
         "png" -> "image/png"
         "gif" -> "image/gif"
@@ -404,4 +295,20 @@ fun shareFile(context: Context, fileName: String) {
     }
 
     context.startActivity(intent)
+}
+
+@Preview(showBackground = true)
+@Composable
+fun FileMessageComponentPreview() {
+    FileMessageComponent(
+        message = FileMessage(
+            messageId = 0,
+            senderId = 0,
+            receiverId = 1,
+            timestamp = System.currentTimeMillis(),
+            messageState = MessageState.MESSAGE_RECEIVED,
+            fileName = "example.jpg"
+        ),
+        currentAccountId = 0
+    )
 }

@@ -4,14 +4,21 @@ import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
@@ -27,19 +34,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import coil.compose.rememberImagePainter
 import com.flydrop2p.flydrop2p.ChatTopAppBar
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.Message
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
+import com.flydrop2p.flydrop2p.ui.components.AudioRecordingControls
 import com.flydrop2p.flydrop2p.ui.components.FileMessageComponent
-import com.flydrop2p.flydrop2p.ui.components.FilePreview
+import com.flydrop2p.flydrop2p.ui.components.FileMessageInput
 import com.flydrop2p.flydrop2p.ui.components.TextMessageComponent
+import com.flydrop2p.flydrop2p.ui.components.TextMessageInput
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 
 object ChatDestination : NavigationDestination {
@@ -60,8 +75,6 @@ fun ChatScreen(
 ) {
     val currentAccount by chatViewModel.ownAccount.collectAsState(initial = null)
     val chatState by chatViewModel.uiState.collectAsState()
-
-    var attachedFileUri by remember { mutableStateOf<Uri?>(null) }
 
     chatViewModel.updateMessagesState(chatState.messages)
 
@@ -91,45 +104,29 @@ fun ChatScreen(
                     modifier = Modifier.weight(1f)
                 )
 
-                if (attachedFileUri != null) {
-                    FilePreview(
-                        fileUri = attachedFileUri!!,
-                        onSendFile = {
-                            chatViewModel.sendFileMessage(accountId, attachedFileUri!!)
-                            attachedFileUri = null
-                        },
-                        onDeleteFile = {
-                            attachedFileUri = null
-                        }
-                    )
-                } else {
-                    SendMessageInput(
-                        onSendMessage = { messageText ->
-                            chatViewModel.sendTextMessage(accountId, messageText)
-                        },
-                        onAttachFile = { uri ->
-                            uri?.let { fileUri ->
-                                Log.d("ChatScreen", "File attached: $fileUri")
-                                attachedFileUri = fileUri
-                            }
-                        }
-                    )
-                }
+                SendMessageInput(
+                    onSendTextMessage = { messageText ->
+                        chatViewModel.sendTextMessage(accountId, messageText)
+                    },
+                    onStartRecording = {},
+                    onStopRecording = {},
+                    onCancelRecording = {},
+                    onSendFile = { fileUri ->
+                        chatViewModel.sendFileMessage(accountId, fileUri)
+                    },
+                )
             }
         }
     }
 }
 
+
 @Composable
 fun MessagesList(
-    messages: List<Message>,
-    chatViewModel: ChatViewModel,
-    accountId: Long,
-    modifier: Modifier
+    messages: List<Message>, chatViewModel: ChatViewModel, accountId: Long, modifier: Modifier
 ) {
     LazyColumn(
-        modifier = modifier
-            .padding(horizontal = 16.dp)
+        modifier = modifier.padding(horizontal = 16.dp)
     ) {
         items(messages) { message ->
             MessageItem(message = message, accountId = accountId, chatViewModel = chatViewModel)
@@ -140,8 +137,7 @@ fun MessagesList(
 @Composable
 fun MessageItem(message: Message, accountId: Long, chatViewModel: ChatViewModel) {
     Column(
-        modifier = Modifier
-            .padding(vertical = 8.dp)
+        modifier = Modifier.padding(vertical = 8.dp)
     ) {
         when (message) {
             is TextMessage -> {
@@ -157,59 +153,92 @@ fun MessageItem(message: Message, accountId: Long, chatViewModel: ChatViewModel)
 
 @Composable
 fun SendMessageInput(
-    onSendMessage: (String) -> Unit,
-    onAttachFile: (Uri?) -> Unit
+    onSendTextMessage: (String) -> Unit,
+    onStartRecording: () -> Unit,
+    onStopRecording: () -> Unit,
+    onCancelRecording: () -> Unit,
+    onSendFile: (Uri) -> Unit
 ) {
     var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+    var isRecording by remember { mutableStateOf(false) }
+    var isTyping by remember { mutableStateOf(false) }
+
+    var attachedFileUri by remember { mutableStateOf<Uri?>(null) }
 
     val filePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        onAttachFile(uri)
+        uri?.let {
+            attachedFileUri = it
+        }
     }
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        IconButton(
-            onClick = { filePickerLauncher.launch("*/*") },
-            modifier = Modifier.padding(end = 8.dp)
+    Column {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp)
         ) {
-            Icon(
-                imageVector = Icons.Filled.Share,
-                contentDescription = "Attach file",
-                tint = Color.Black
-            )
-        }
+            if (!isTyping && !isRecording) {
+                FileMessageInput(
+                    fileUri = attachedFileUri,
+                    onSendFile = { uri ->
+                        onSendFile(uri)
+                        attachedFileUri = null
+                    },
+                    onClick = {
+                        filePickerLauncher.launch("*/*")
+                    },
+                    onDeleteFile = {
+                        attachedFileUri = null
+                    }
+                )
+            }
 
-        TextField(
-            value = textFieldValue,
-            onValueChange = { textFieldValue = it },
-            placeholder = { Text("Scrivi un messaggio...") },
-            modifier = Modifier.weight(1f)
-        )
+            if (attachedFileUri == null && !isRecording) {
+                TextMessageInput(
+                    isTyping = isTyping,
+                    textFieldValue = textFieldValue,
+                    onValueChange = {
+                        textFieldValue = it
+                        isTyping = it.text.isNotEmpty()
+                    },
+                    onSendTextMessage = onSendTextMessage
+                )
+            }
 
-        IconButton(
-            onClick = {
-                onSendMessage(textFieldValue.text)
-                textFieldValue = TextFieldValue()
-            },
-            modifier = Modifier.padding(start = 8.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Send,
-                contentDescription = "Send",
-                tint = Color.Black
-            )
+            if ((!isTyping && attachedFileUri == null) || isRecording) {
+                AudioRecordingControls(
+                    isRecording = isRecording,
+                    onStartRecording = {
+                        onStartRecording()
+                        isRecording = true
+                    },
+                    onStopRecording = {
+                        onStopRecording()
+                        isRecording = false
+                    },
+                    onCancelRecording = {
+                        onCancelRecording()
+                        isRecording = false
+                    }
+                )
+            }
         }
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
 fun ChatScreenPreview() {
-
+    SendMessageInput(
+        onSendTextMessage = {},
+        onStartRecording = {},
+        onStopRecording = {},
+        onCancelRecording = {},
+        onSendFile = {},
+    )
 }

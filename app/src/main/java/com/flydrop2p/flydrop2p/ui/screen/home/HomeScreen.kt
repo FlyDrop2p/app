@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -160,7 +161,9 @@ fun ChatItem(
                 Text(
                     text = chatPreview.contact.username ?: "Connecting...",
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 if (online) {
                     Spacer(modifier = Modifier.width(8.dp))
@@ -176,14 +179,22 @@ fun ChatItem(
             when (chatPreview.lastMessage) {
                 is TextMessage -> {
                     Text(
-                        text = chatPreview.lastMessage.text, fontSize = 14.sp, color = Color.Gray
+                        text = chatPreview.lastMessage.text,
+                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
 
                 is FileMessage -> {
                     chatPreview.lastMessage.fileName.let {
                         Text(
-                            text = it, fontSize = 14.sp, color = Color.Gray
+                            text = it,
+                            fontSize = 14.sp,
+                            color = Color.Gray,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
