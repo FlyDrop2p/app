@@ -47,8 +47,8 @@ class ChatLocalRepository(private val accountDAO: AccountDAO, private val messag
         return messageDAO.getMessagesByReceiverAccountId(accountId).map { it.toMessage() }
     }
 
-    override fun getAllMessagesForBackup(): List<MessageEntity> {
-        return messageDAO.getAllMessagesForBackup()
+    override suspend fun getAllMessages(): List<Message> {
+        return messageDAO.getAllMessages().map { it.toMessage() }
     }
 
     override suspend fun getMessageByMessageId(messageId: Long): Message? {

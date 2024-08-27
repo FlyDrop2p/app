@@ -13,7 +13,7 @@ interface ChatRepository {
 
     fun getAllMessagesByReceiverAccountId(accountId: Long): List<Message>
 
-    fun getAllMessagesForBackup(): List<MessageEntity>
+    suspend fun getAllMessages(): List<Message>
 
     suspend fun getMessageByMessageId(messageId: Long): Message?
 

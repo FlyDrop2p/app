@@ -58,10 +58,11 @@ class SettingsViewModel(
         viewModelScope.launch {
             try {
                 Log.d("Backup", "Backup started")
-                val messages = chatRepository.getAllMessagesForBackup()
+                val messages = chatRepository.getAllMessages().map { it.toMessageEntity() }
 
-                val body = BackupRequestBody(uiState.value.profile.accountId,
-                    messages)
+                val temp = 5
+
+                val body = BackupRequestBody(uiState.value.profile.accountId, messages)
 
                 Log.d("Backup", body.toString())
 
