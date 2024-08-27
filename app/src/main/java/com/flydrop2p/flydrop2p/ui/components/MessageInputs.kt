@@ -1,5 +1,6 @@
 package com.flydrop2p.flydrop2p.ui.components
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
@@ -31,8 +33,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toFile
 import coil.compose.rememberImagePainter
 import com.flydrop2p.flydrop2p.R
+import java.io.File
+import java.io.FileOutputStream
 
 @Composable
 fun TextMessageInput(
@@ -163,17 +168,6 @@ fun FileMessageInput(
         val mimeType = context.contentResolver.getType(fileUri) ?: "application/octet-stream"
         Log.d("FilePreview", "MIME type: $mimeType")
 
-        @Composable
-        fun getPreviewPainter(): Painter {
-            return rememberImagePainter(
-                data = fileUri,
-                builder = {
-                    crossfade(true)
-                    error(R.drawable.error_24px)
-                }
-            )
-        }
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -181,29 +175,12 @@ fun FileMessageInput(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            if (mimeType.startsWith("image/")) {
-                Image(
-                    painter = getPreviewPainter(),
-                    contentDescription = "Image Preview",
-                    modifier = Modifier
-                        .size(70.dp)
-                        .padding(end = 16.dp)
-                )
-            } else {
-                Image(
-                    painter = getPreviewPainter(),
-                    contentDescription = "File Preview",
-                    modifier = Modifier
-                        .size(70.dp)
-                        .padding(end = 16.dp)
-                )
-                Text(
-                    text = fileUri.lastPathSegment ?: "Unknown File",
-                    color = Color.Black,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
-                )
+
+            when {
+                mimeType.startsWith("image/") -> ImagePreview(fileUri)
+                mimeType.startsWith("video/") -> VideoPreview(fileUri)
+                mimeType.startsWith("application/pdf") -> PdfPreview(context, fileUri)
+                else -> GenericFilePreview(fileUri)
             }
 
             Row(
@@ -236,4 +213,89 @@ fun FileMessageInput(
             }
         }
     }
+}
+
+@Composable
+fun getPreviewPainter(fileUri: Uri): Painter {
+    return rememberImagePainter(
+        data = fileUri,
+        builder = {
+            crossfade(true)
+            error(R.drawable.error_24px)
+        }
+    )
+}
+
+@Composable
+fun ImagePreview(fileUri: Uri) {
+    val painter = rememberImagePainter(
+        data = fileUri,
+        builder = {
+            crossfade(true)
+            error(R.drawable.error_24px)
+        }
+    )
+    Image(
+        painter = painter,
+        contentDescription = "Image Preview",
+        modifier = Modifier
+            .size(70.dp)
+            .padding(end = 16.dp)
+    )
+}
+
+@Composable
+fun VideoPreview(videoUri: Uri) {
+    VideoThumbnail(
+        videoUri = videoUri,
+        modifier = Modifier.size(70.dp),
+        thumbnailHeight = 70.dp
+    )
+}
+
+@Composable
+fun GenericFilePreview(fileUri: Uri) {
+    Image(
+        painter = painterResource(id = R.drawable.description_24px),
+        contentDescription = "File Preview",
+        modifier = Modifier
+            .size(70.dp)
+            .padding(end = 16.dp)
+    )
+    Text(
+        text = fileUri.lastPathSegment ?: "Unknown File",
+        color = Color.Black,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
+}
+
+@Composable
+fun PdfPreview(context: Context, fileUri: Uri) {
+    val tempFile = getFileFromContentUri(context, fileUri)
+    val fileUriNewUri = Uri.fromFile(tempFile)
+
+    PdfFirstPageViewer(
+        uri = fileUriNewUri,
+        imageWidth = 50.dp,
+        imageHeight = 50.dp
+    )
+    Spacer(modifier = Modifier.size(16.dp))
+    Text(
+        text = fileUri.lastPathSegment ?: "Unknown File",
+        color = Color.Black,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
+}
+
+fun getFileFromContentUri(context: Context, uri: Uri): File {
+    val inputStream = context.contentResolver.openInputStream(uri)
+    val tempFile = File(context.cacheDir, "tempfile.pdf")
+    inputStream?.use { input ->
+        FileOutputStream(tempFile).use { output ->
+            input.copyTo(output)
+        }
+    }
+    return tempFile
 }

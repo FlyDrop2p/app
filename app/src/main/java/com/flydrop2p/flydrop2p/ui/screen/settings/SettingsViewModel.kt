@@ -1,9 +1,11 @@
 package com.flydrop2p.flydrop2p.ui.screen.settings
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flydrop2p.flydrop2p.data.local.FileManager
+import com.flydrop2p.flydrop2p.domain.model.message.toMessage
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
@@ -55,10 +57,17 @@ class SettingsViewModel(
     fun backupMessages() {
         viewModelScope.launch {
             try {
-                val messages = chatRepository.getAllMessagesByReceiverAccountId(uiState.value.profile.accountId)
+                Log.d("Backup", "Backup started")
+                val messages = chatRepository.getAllMessagesForBackup()
 
-                val response = BackupInstance.api.backupMessages(BackupRequestBody(uiState.value.profile.accountId, messages))
+                val body = BackupRequestBody(uiState.value.profile.accountId,
+                    messages)
 
+                Log.d("Backup", body.toString())
+
+                val response = BackupInstance.api.backupMessages(body)
+
+                Log.d("Backup", "Backup completed with message: ${response.message}")
             } catch (e: Exception) {
                 // Gestisci gli errori
             }
@@ -70,11 +79,13 @@ class SettingsViewModel(
         viewModelScope.launch {
             try {
                 val messages = BackupInstance.api.getBackup(uiState.value.profile.accountId)
+                Log.d("Backup", "Backup retrieved")
+
                 messages.forEach { message ->
                     val existingMessage = chatRepository.getMessageByMessageId(message.messageId)
 
                     if (existingMessage == null) {
-                        chatRepository.addMessage(message)
+                        chatRepository.addMessage(message.toMessage())
                     }
                 }
 

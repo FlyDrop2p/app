@@ -1,5 +1,7 @@
 package com.flydrop2p.flydrop2p.ui.screen.home
 
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import coil.compose.rememberAsyncImagePainter
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.chat.ChatPreview
@@ -46,6 +49,7 @@ import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.MessageState
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 import com.flydrop2p.flydrop2p.ui.FlyDropTopAppBar
+import com.flydrop2p.flydrop2p.ui.components.getMimeType
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import com.flydrop2p.flydrop2p.ui.screen.chat.ChatViewModel
 import java.io.File
@@ -188,14 +192,37 @@ fun ChatItem(
                 }
 
                 is FileMessage -> {
-                    chatPreview.lastMessage.fileName.let {
-                        Text(
-                            text = it,
-                            fontSize = 14.sp,
-                            color = Color.Gray,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+
+                    val mimeType =
+                        getMimeType(chatPreview.lastMessage.fileName.substringAfterLast(".", ""))
+
+                    if (mimeType.startsWith("video/")) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.play_arrow_24px),
+                                contentDescription = "Audio",
+                                colorFilter = ColorFilter.tint(Color.Gray),
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Video",
+                                fontSize = 14.sp,
+                                color = Color.Gray,
+                            )
+                        }
+                    } else {
+                        chatPreview.lastMessage.fileName.let {
+                            Text(
+                                text = it,
+                                fontSize = 14.sp,
+                                color = Color.Gray,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 }
 

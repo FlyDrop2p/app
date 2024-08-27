@@ -57,9 +57,6 @@ fun SentFileMessageComponent(
 
     // fileUri.lastPathSegment == message.fileName
     val mimeType = getMimeType(message.fileName.substringAfterLast(".", ""))
-    val isImageOrVideo = mimeType.startsWith("image/") || mimeType.startsWith("video/")
-
-
 
     Row(
         modifier = Modifier
@@ -80,7 +77,7 @@ fun SentFileMessageComponent(
                 modifier = Modifier
                     .padding(12.dp)
             ) {
-                if (isImageOrVideo) {
+                if (mimeType.startsWith("image/")) {
                     Image(
                         painter = getPreviewPainter(fileUri),
                         contentDescription = "Media Preview",
@@ -91,26 +88,37 @@ fun SentFileMessageComponent(
                             .clip(RoundedCornerShape(5.dp))
                             .background(MaterialTheme.colorScheme.surfaceVariant)
                     )
+                } else if (mimeType.startsWith("video/")) {
+                    VideoThumbnail(
+                        videoUri = fileUri,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        thumbnailHeight = 150.dp
+                    )
                 } else {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.description_24px),
-                            contentDescription = "File Icon",
-                            modifier = Modifier
-                                .size(30.dp)
-                                .align(Alignment.CenterVertically)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text(
-                                text = message.fileName,
-                                fontSize = 16.sp,
-                                color = Color(0xFF075985),
-                                fontWeight = FontWeight.Medium
+                        if (mimeType.startsWith("application/pdf")) {
+                            PdfPreview(context, fileUri)
+                        } else {
+                            Icon(
+                                painter = painterResource(id = R.drawable.description_24px),
+                                contentDescription = "File Icon",
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .align(Alignment.CenterVertically)
                             )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column {
+                                Text(
+                                    text = message.fileName,
+                                    fontSize = 16.sp,
+                                    color = Color(0xFF075985),
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
                         }
                     }
                 }
@@ -189,7 +197,7 @@ fun ReceivedFileMessageComponent(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (isImageOrVideo) {
+                    if (mimeType.startsWith("image/")) {
                         Image(
                             painter = getPreviewPainter(fileUri),
                             contentDescription = "Media Preview",
@@ -200,22 +208,33 @@ fun ReceivedFileMessageComponent(
                                 .clip(RoundedCornerShape(5.dp))
                                 .background(MaterialTheme.colorScheme.surfaceVariant)
                         )
-                    } else {
-                        Icon(
-                            painter = painterResource(id = R.drawable.description_24px),
-                            contentDescription = "File Icon",
+                    } else if (mimeType.startsWith("video/")) {
+                        VideoThumbnail(
+                            videoUri = fileUri,
                             modifier = Modifier
-                                .size(30.dp)
-                                .align(Alignment.CenterVertically)
+                                .fillMaxWidth(),
+                            thumbnailHeight = 150.dp
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text(
-                                text = message.fileName,
-                                fontSize = 16.sp,
-                                color = Color(0xFF075985),
-                                fontWeight = FontWeight.Medium
+                    } else {
+                        if (mimeType.startsWith("application/pdf")) {
+                            PdfPreview(context, fileUri)
+                        } else {
+                            Icon(
+                                painter = painterResource(id = R.drawable.description_24px),
+                                contentDescription = "File Icon",
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .align(Alignment.CenterVertically)
                             )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column {
+                                Text(
+                                    text = message.fileName,
+                                    fontSize = 16.sp,
+                                    color = Color(0xFF075985),
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
                         }
                     }
                 }
@@ -237,6 +256,8 @@ fun ReceivedFileMessageComponent(
     }
 }
 
+
+
 @Composable
 fun FileMessageComponent(
     message: FileMessage,
@@ -251,17 +272,6 @@ fun FileMessageComponent(
             message = message,
         )
     }
-}
-
-@Composable
-fun getPreviewPainter(fileUri: Uri): Painter {
-    return rememberImagePainter(
-        data = fileUri,
-        builder = {
-            crossfade(true)
-            error(R.drawable.error_24px)
-        }
-    )
 }
 
 
