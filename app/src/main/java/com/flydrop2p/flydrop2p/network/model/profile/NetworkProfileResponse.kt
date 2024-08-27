@@ -1,6 +1,6 @@
 package com.flydrop2p.flydrop2p.network.model.profile
 
-import com.flydrop2p.flydrop2p.network.model.contact.NetworkProfile
+import com.flydrop2p.flydrop2p.network.model.device.NetworkProfile
 import kotlinx.serialization.Serializable
 
 @Serializable

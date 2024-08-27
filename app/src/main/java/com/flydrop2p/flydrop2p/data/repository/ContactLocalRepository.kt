@@ -2,13 +2,13 @@ package com.flydrop2p.flydrop2p.data.repository
 
 import com.flydrop2p.flydrop2p.data.local.account.AccountDAO
 import com.flydrop2p.flydrop2p.data.local.profile.ProfileDAO
-import com.flydrop2p.flydrop2p.domain.model.contact.Account
-import com.flydrop2p.flydrop2p.domain.model.contact.Contact
-import com.flydrop2p.flydrop2p.domain.model.contact.Profile
-import com.flydrop2p.flydrop2p.domain.model.contact.toAccount
-import com.flydrop2p.flydrop2p.domain.model.contact.toAccountEntity
-import com.flydrop2p.flydrop2p.domain.model.contact.toProfile
-import com.flydrop2p.flydrop2p.domain.model.contact.toProfileEntity
+import com.flydrop2p.flydrop2p.domain.model.device.Account
+import com.flydrop2p.flydrop2p.domain.model.device.Contact
+import com.flydrop2p.flydrop2p.domain.model.device.Profile
+import com.flydrop2p.flydrop2p.domain.model.device.toAccount
+import com.flydrop2p.flydrop2p.domain.model.device.toAccountEntity
+import com.flydrop2p.flydrop2p.domain.model.device.toProfile
+import com.flydrop2p.flydrop2p.domain.model.device.toProfileEntity
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

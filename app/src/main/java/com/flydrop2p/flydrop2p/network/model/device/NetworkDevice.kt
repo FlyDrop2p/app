@@ -1,6 +1,5 @@
-package com.flydrop2p.flydrop2p.network.model.keepalive
+package com.flydrop2p.flydrop2p.network.model.device
 
-import com.flydrop2p.flydrop2p.network.model.contact.NetworkAccount
 import kotlinx.serialization.Serializable
 
 @Serializable

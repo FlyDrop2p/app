@@ -1,6 +1,6 @@
 package com.flydrop2p.flydrop2p.domain.repository
 
-import com.flydrop2p.flydrop2p.domain.model.contact.Profile
+import com.flydrop2p.flydrop2p.domain.model.device.Profile
 import kotlinx.coroutines.flow.Flow
 
 interface OwnProfileRepository {

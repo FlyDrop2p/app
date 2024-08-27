@@ -2,11 +2,10 @@ package com.flydrop2p.flydrop2p.media
 
 import android.content.ContentResolver
 import android.content.Context
-import android.media.MediaPlayer
 import android.net.Uri
 import android.provider.OpenableColumns
-import androidx.core.net.toFile
-import com.flydrop2p.flydrop2p.network.model.contact.NetworkProfile
+import com.flydrop2p.flydrop2p.network.model.call.NetworkCall
+import com.flydrop2p.flydrop2p.network.model.device.NetworkProfile
 import com.flydrop2p.flydrop2p.network.model.message.NetworkAudioMessage
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
 import java.io.File
@@ -109,6 +108,12 @@ class FileManager(private val context: Context) {
     fun saveNetworkAudio(networkAudioMessage: NetworkAudioMessage): String? {
         networkAudioMessage.apply {
             return saveFile(audioBase64, "audio_${senderId}_${timestamp}.3gp")
+        }
+    }
+
+    fun saveNetworkCall(networkCall: NetworkCall): String? {
+        networkCall.apply {
+            return saveFile(audioBase64, "call_audio_${System.currentTimeMillis()}.3gp")
         }
     }
 }

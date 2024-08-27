@@ -1,7 +1,7 @@
-package com.flydrop2p.flydrop2p.domain.model.contact
+package com.flydrop2p.flydrop2p.domain.model.device
 
 import com.flydrop2p.flydrop2p.data.local.account.AccountEntity
-import com.flydrop2p.flydrop2p.network.model.contact.NetworkAccount
+import com.flydrop2p.flydrop2p.network.model.device.NetworkAccount
 
 data class Account(
     val accountId: Long,

@@ -1,10 +1,6 @@
-package com.flydrop2p.flydrop2p.network
+package com.flydrop2p.flydrop2p.domain.model.device
 
-import com.flydrop2p.flydrop2p.domain.model.contact.Account
-import com.flydrop2p.flydrop2p.domain.model.contact.Profile
-import com.flydrop2p.flydrop2p.domain.model.contact.toAccount
-import com.flydrop2p.flydrop2p.domain.model.contact.toNetworkAccount
-import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkDevice
+import com.flydrop2p.flydrop2p.network.model.device.NetworkDevice
 
 data class Device(
     var ipAddress: String?,

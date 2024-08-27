@@ -1,4 +1,4 @@
-package com.flydrop2p.flydrop2p.domain.model.contact
+package com.flydrop2p.flydrop2p.domain.model.device
 
 data class Contact(
     val account: Account,

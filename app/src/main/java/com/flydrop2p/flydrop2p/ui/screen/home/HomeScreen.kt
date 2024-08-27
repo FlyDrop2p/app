@@ -39,9 +39,9 @@ import coil.compose.rememberAsyncImagePainter
 import com.flydrop2p.flydrop2p.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.chat.ChatPreview
-import com.flydrop2p.flydrop2p.domain.model.contact.Account
-import com.flydrop2p.flydrop2p.domain.model.contact.Contact
-import com.flydrop2p.flydrop2p.domain.model.contact.Profile
+import com.flydrop2p.flydrop2p.domain.model.device.Account
+import com.flydrop2p.flydrop2p.domain.model.device.Contact
+import com.flydrop2p.flydrop2p.domain.model.device.Profile
 import com.flydrop2p.flydrop2p.domain.model.message.AudioMessage
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.MessageState

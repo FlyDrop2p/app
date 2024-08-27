@@ -1,8 +1,8 @@
 package com.flydrop2p.flydrop2p.ui.screen.chat
 
-import com.flydrop2p.flydrop2p.domain.model.contact.Account
-import com.flydrop2p.flydrop2p.domain.model.contact.Contact
-import com.flydrop2p.flydrop2p.domain.model.contact.Profile
+import com.flydrop2p.flydrop2p.domain.model.device.Account
+import com.flydrop2p.flydrop2p.domain.model.device.Contact
+import com.flydrop2p.flydrop2p.domain.model.device.Profile
 import com.flydrop2p.flydrop2p.domain.model.message.Message
 
 

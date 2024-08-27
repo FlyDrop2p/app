@@ -1,4 +1,4 @@
-package com.flydrop2p.flydrop2p.network.model.contact
+package com.flydrop2p.flydrop2p.network.model.device
 
 import kotlinx.serialization.Serializable
 

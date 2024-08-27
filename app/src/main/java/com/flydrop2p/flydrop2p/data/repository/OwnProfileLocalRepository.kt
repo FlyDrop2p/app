@@ -2,8 +2,8 @@ package com.flydrop2p.flydrop2p.data.repository
 
 import androidx.datastore.core.DataStore
 import com.flydrop2p.flydrop2p.data.local.profile.ProfileEntity
-import com.flydrop2p.flydrop2p.domain.model.contact.Profile
-import com.flydrop2p.flydrop2p.domain.model.contact.toProfile
+import com.flydrop2p.flydrop2p.domain.model.device.Profile
+import com.flydrop2p.flydrop2p.domain.model.device.toProfile
 import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first

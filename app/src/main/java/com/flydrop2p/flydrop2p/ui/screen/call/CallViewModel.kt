@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
+import com.flydrop2p.flydrop2p.media.CallManager
 import com.flydrop2p.flydrop2p.network.NetworkManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +14,8 @@ import kotlinx.coroutines.launch
 class CallViewModel(
     private val contactRepository: ContactRepository,
     private val ownAccountRepository: OwnAccountRepository,
-    private val networkManager: NetworkManager
+    private val networkManager: NetworkManager,
+    private val callManager: CallManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CallViewState())
     val uiState: StateFlow<CallViewState> = _uiState.asStateFlow()
@@ -35,4 +37,7 @@ class CallViewModel(
         _uiState.value = _uiState.value.copy(isSpeakerOn = isSpeakerOn)
     }
 
+    fun streamCall() {
+
+    }
 }

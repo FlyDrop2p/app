@@ -1,6 +1,7 @@
 package com.flydrop2p.flydrop2p.network.service
 
 import android.util.Log
+import com.flydrop2p.flydrop2p.network.model.call.NetworkCall
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
 import com.flydrop2p.flydrop2p.network.model.message.NetworkAudioMessage
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
@@ -23,6 +24,7 @@ class ServerService {
         const val PORT_AUDIO_MESSAGE: Int = 8805
         const val PORT_MESSAGE_RECEIVED_ACK = 8806
         const val PORT_MESSAGE_READ_ACK = 8807
+        const val PORT_CALL = 8808
     }
 
     suspend fun listenKeepalive(): NetworkKeepalive {
@@ -175,5 +177,24 @@ class ServerService {
         }
 
         return networkMessageAck
+    }
+
+    suspend fun listenCall(): NetworkCall {
+        val networkCall: NetworkCall
+
+        withContext(Dispatchers.IO) {
+            val socket = ServerSocket(PORT_CALL)
+            val client = socket.accept()
+
+            val inputStream = client.getInputStream()
+            val buffer = inputStream.readBytes()
+            networkCall = Json.decodeFromString(buffer.decodeToString())
+
+            socket.close()
+
+            Log.d("CALL", networkCall.toString())
+        }
+
+        return networkCall
     }
 }

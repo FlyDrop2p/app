@@ -33,9 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.flydrop2p.flydrop2p.R
-import com.flydrop2p.flydrop2p.domain.model.contact.Account
-import com.flydrop2p.flydrop2p.domain.model.contact.Contact
-import com.flydrop2p.flydrop2p.domain.model.contact.Profile
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import java.io.File
 
