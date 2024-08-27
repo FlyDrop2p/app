@@ -1,7 +1,7 @@
 package com.flydrop2p.flydrop2p.network.service
 
 import android.util.Log
-import com.flydrop2p.flydrop2p.network.model.call.NetworkCall
+import com.flydrop2p.flydrop2p.network.model.call.NetworkCallFragment
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
 import com.flydrop2p.flydrop2p.network.model.message.NetworkAudioMessage
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
@@ -179,8 +179,8 @@ class ServerService {
         return networkMessageAck
     }
 
-    suspend fun listenCall(): NetworkCall {
-        val networkCall: NetworkCall
+    suspend fun listenCallFragment(): NetworkCallFragment {
+        val networkCallFragment: NetworkCallFragment
 
         withContext(Dispatchers.IO) {
             val socket = ServerSocket(PORT_CALL)
@@ -188,13 +188,13 @@ class ServerService {
 
             val inputStream = client.getInputStream()
             val buffer = inputStream.readBytes()
-            networkCall = Json.decodeFromString(buffer.decodeToString())
+            networkCallFragment = Json.decodeFromString(buffer.decodeToString())
 
             socket.close()
 
-            Log.d("CALL", networkCall.toString())
+            Log.d("CALL FRAGMENT", networkCallFragment.toString())
         }
 
-        return networkCall
+        return networkCallFragment
     }
 }

@@ -10,8 +10,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private val chatRepository: ChatRepository, private val contactRepository: ContactRepository, private val networkManager: NetworkManager) : ViewModel() {
-
+class HomeViewModel(
+    private val chatRepository: ChatRepository,
+    private val contactRepository: ContactRepository,
+    private val networkManager: NetworkManager
+) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeViewState())
     val uiState: StateFlow<HomeViewState> = _uiState.asStateFlow()
 

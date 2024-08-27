@@ -1,6 +1,5 @@
 package com.flydrop2p.flydrop2p.ui.screen.settings
 
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -39,8 +38,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.flydrop2p.flydrop2p.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.R
+import com.flydrop2p.flydrop2p.ui.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import java.io.File
 import kotlin.random.Random

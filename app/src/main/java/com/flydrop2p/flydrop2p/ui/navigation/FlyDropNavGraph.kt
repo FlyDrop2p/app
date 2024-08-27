@@ -85,6 +85,7 @@ fun FlyDropNavHost(
             val accountId = backStackEntry.arguments?.getLong(CallDestination.itemIdArg)
             accountId?.let {
                 callViewModel.collectContact(accountId)
+                callViewModel.startCall(accountId)
 
                 CallScreen(
                     callViewModel = callViewModel,

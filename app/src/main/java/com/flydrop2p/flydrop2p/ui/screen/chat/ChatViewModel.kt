@@ -3,27 +3,31 @@ package com.flydrop2p.flydrop2p.ui.screen.chat
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.flydrop2p.flydrop2p.data.local.FileManager
 import com.flydrop2p.flydrop2p.domain.model.message.Message
 import com.flydrop2p.flydrop2p.domain.model.message.MessageState
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
-import com.flydrop2p.flydrop2p.media.AudioManager
+import com.flydrop2p.flydrop2p.media.AudioReplayer
 import com.flydrop2p.flydrop2p.network.NetworkManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.io.File
 
 class ChatViewModel(
     private val chatRepository: ChatRepository,
     private val contactRepository: ContactRepository,
     private val ownAccountRepository: OwnAccountRepository,
-    private val audioManager: AudioManager,
+    private val fileManager: FileManager,
     private val networkManager: NetworkManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ChatViewState())
     val uiState: StateFlow<ChatViewState> = _uiState.asStateFlow()
+
+    private val audioReplayer = AudioReplayer()
 
     val ownAccount
         get() = ownAccountRepository.getAccountAsFlow()
@@ -55,18 +59,18 @@ class ChatViewModel(
     }
 
     fun sendAudioMessage(accountId: Long) {
-        audioManager.apply {
+        audioReplayer.apply {
             if(isRecording) {
                 stopRecording()
-                networkManager.sendAudioMessage(accountId, recordingFileUri)
+                recordingFile?.let { networkManager.sendAudioMessage(accountId, it) }
             }
         }
     }
 
-    fun startRecordingAudio() = audioManager.startRecording()
-    fun stopRecordingAudio() = audioManager.stopRecording()
-    fun startPlayingAudio(fileName: String) = audioManager.startPlaying(fileName)
-    fun stopPlayingAudio() = audioManager.stopPlaying()
+    fun startRecordingAudio() = audioReplayer.startRecording(fileManager.getAudioTempFile())
+    fun stopRecordingAudio() = audioReplayer.stopRecording()
+    fun startPlayingAudio(file: File) = audioReplayer.startPlaying(file)
+    fun stopPlayingAudio() = audioReplayer.stopPlaying()
 
     fun updateMessagesState(messages: List<Message>) {
         viewModelScope.launch {

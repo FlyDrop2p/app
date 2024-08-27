@@ -8,13 +8,13 @@ import android.location.LocationManager
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import com.flydrop2p.flydrop2p.network.NetworkManager
+import com.flydrop2p.flydrop2p.ui.FlyDropApp
 import com.flydrop2p.flydrop2p.ui.theme.FlyDrop2pTheme
 
 class MainActivity : ComponentActivity() {
@@ -38,12 +38,11 @@ class MainActivity : ComponentActivity() {
             Toast.makeText(this, "Please activate location", Toast.LENGTH_LONG).show()
         }
 
-        (application as App).initializeContainer(this, this)
+        (application as App).initializeContainer(this)
         networkManager = (application as App).container.networkManager
 
         networkManager.startConnections()
-
-        startKeepaliveHandler()
+        networkManager.startKeepaliveHandler()
 
         setContent {
             FlyDrop2pTheme {
@@ -83,18 +82,6 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d("MainActivity", "onDestroy")
-    }
-
-    private fun startKeepaliveHandler() {
-        val handler = Handler(mainLooper)
-        val runnable = object : Runnable {
-            override fun run() {
-                networkManager.sendKeepalive()
-                handler.postDelayed(this, 2000)
-            }
-        }
-
-        handler.post(runnable)
     }
 
     private fun requestPermissions() {

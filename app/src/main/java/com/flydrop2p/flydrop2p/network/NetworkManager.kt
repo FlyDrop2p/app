@@ -1,7 +1,8 @@
 package com.flydrop2p.flydrop2p.network
 
 import android.net.Uri
-import com.flydrop2p.flydrop2p.MainActivity
+import com.flydrop2p.flydrop2p.HandlerFactory
+import com.flydrop2p.flydrop2p.data.local.FileManager
 import com.flydrop2p.flydrop2p.domain.model.device.Account
 import com.flydrop2p.flydrop2p.domain.model.device.Device
 import com.flydrop2p.flydrop2p.domain.model.device.Profile
@@ -16,11 +17,9 @@ import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
-import com.flydrop2p.flydrop2p.media.CallManager
-import com.flydrop2p.flydrop2p.media.FileManager
-import com.flydrop2p.flydrop2p.network.model.call.NetworkCall
-import com.flydrop2p.flydrop2p.network.model.device.NetworkProfile
+import com.flydrop2p.flydrop2p.network.model.call.NetworkCallFragment
 import com.flydrop2p.flydrop2p.network.model.device.NetworkDevice
+import com.flydrop2p.flydrop2p.network.model.device.NetworkProfile
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
 import com.flydrop2p.flydrop2p.network.model.message.NetworkAudioMessage
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
@@ -42,22 +41,25 @@ import kotlin.math.abs
 
 
 class NetworkManager(
-    activity: MainActivity,
     ownAccountRepository: OwnAccountRepository,
     ownProfileRepository: OwnProfileRepository,
+    private val handlerFactory: HandlerFactory,
+    val receiver: WiFiDirectBroadcastReceiver,
     private val chatRepository: ChatRepository,
     private val contactRepository: ContactRepository,
-    private val fileManager: FileManager,
-    private val callManager: CallManager
+    private val fileManager: FileManager
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    val receiver: WiFiDirectBroadcastReceiver = WiFiDirectBroadcastReceiver(activity)
 
     private var ownDevice = Device(null, Account(0, 0), Profile(0, 0, "", null))
 
     private val _connectedDevices: MutableStateFlow<List<NetworkDevice>> = MutableStateFlow(listOf())
     val connectedDevices: StateFlow<List<NetworkDevice>>
         get() = _connectedDevices
+
+    private val _callFragmentFile: MutableStateFlow<File?> = MutableStateFlow(null)
+    val callFragmentFile: StateFlow<File?>
+        get() = _callFragmentFile
 
     private val lastKeepalives: MutableMap<Long, Long> = mutableMapOf()
 
@@ -76,6 +78,19 @@ class NetworkManager(
                 ownDevice = ownDevice.copy(profile = it)
             }
         }
+    }
+
+    fun startKeepaliveHandler() {
+        val handler = handlerFactory.buildHandler()
+
+        val runnable = object : Runnable {
+            override fun run() {
+                sendKeepalive()
+                handler.postDelayed(this, 2000)
+            }
+        }
+
+        handler.post(runnable)
     }
 
     fun updateConnectedDevices() {
@@ -165,7 +180,7 @@ class NetworkManager(
         }
     }
 
-    fun sendAudioMessage(accountId: Long, fileUri: Uri) {
+    fun sendAudioMessage(accountId: Long, file: File) {
         val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
 
         connectedDevice?.let { device ->
@@ -173,7 +188,7 @@ class NetworkManager(
                 coroutineScope.launch {
                     val currentTimestamp = System.currentTimeMillis()
 
-                    fileManager.saveMessageAudio(fileUri, accountId, currentTimestamp)?.let { fileName ->
+                    fileManager.saveMessageAudio(Uri.fromFile(file), accountId, currentTimestamp)?.let { fileName ->
                         var audioMessage = AudioMessage(0, ownDevice.account.accountId, accountId, currentTimestamp, MessageState.MESSAGE_SENT, fileName)
                         audioMessage = audioMessage.copy(messageId = chatRepository.addMessage(audioMessage))
 
@@ -212,15 +227,15 @@ class NetworkManager(
         }
     }
 
-    fun sendCall(accountId: Long, fileName: String) {
+    fun sendCallFragment(accountId: Long, file: File) {
         val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
 
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
-                    fileManager.getFileBase64(fileName)?.let { audioBase64 ->
-                        val networkCall = NetworkCall(audioBase64)
-                        clientService.sendCall(ipAddress, ownDevice, networkCall)
+                    fileManager.getFileBase64(file)?.let { audioBase64 ->
+                        val networkCallFragment = NetworkCallFragment(audioBase64)
+                        clientService.sendCallFragment(ipAddress, ownDevice, networkCallFragment)
                     }
                 }
             }
@@ -236,7 +251,7 @@ class NetworkManager(
         startAudioMessageConnection()
         startMessageReceivedAckConnection()
         startMessageReadAckConnection()
-        startCallConnection()
+        startCallFragmentConnection()
     }
 
     private fun startKeepaliveConnection() {
@@ -337,11 +352,11 @@ class NetworkManager(
         }
     }
 
-    private fun startCallConnection() {
+    private fun startCallFragmentConnection() {
         coroutineScope.launch {
             while(true) {
-                val networkCall = serverService.listenCall()
-                handleCall(networkCall)
+                val networkCall = serverService.listenCallFragment()
+                handleCallFragment(networkCall)
             }
         }
     }
@@ -407,10 +422,10 @@ class NetworkManager(
     private fun handleMessageReceivedAck(networkMessageAck: NetworkMessageAck) {
         coroutineScope.launch {
             chatRepository.getMessageByMessageId(networkMessageAck.messageId)?.let { message ->
-                    if(message.messageState < MessageState.MESSAGE_RECEIVED) {
-                        chatRepository.updateMessageState(message.messageId, MessageState.MESSAGE_RECEIVED)
-                    }
+                if(message.messageState < MessageState.MESSAGE_RECEIVED) {
+                    chatRepository.updateMessageState(message.messageId, MessageState.MESSAGE_RECEIVED)
                 }
+            }
         }
     }
 
@@ -424,7 +439,9 @@ class NetworkManager(
         }
     }
 
-    private fun handleCall(networkCall: NetworkCall) {
-        callManager.handleCall(networkCall)
+    private fun handleCallFragment(networkCallFragment: NetworkCallFragment) {
+        fileManager.saveNetworkCallFragment(networkCallFragment)?.let { file ->
+            _callFragmentFile.value = file
+        }
     }
 }

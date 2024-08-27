@@ -6,10 +6,9 @@ import android.content.Intent
 import android.net.wifi.p2p.WifiP2pDevice
 import android.net.wifi.p2p.WifiP2pManager
 import android.util.Log
-import com.flydrop2p.flydrop2p.MainActivity
 
-class WiFiDirectBroadcastReceiver(activity: MainActivity) : BroadcastReceiver() {
-    private val manager = WiFiDirectManager(activity)
+class WiFiDirectBroadcastReceiver(context: Context) : BroadcastReceiver() {
+    private val manager = WiFiDirectManager(context)
 
     companion object {
         const val IP_GROUP_OWNER: String = "192.168.49.1"

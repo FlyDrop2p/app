@@ -1,10 +1,10 @@
-package com.flydrop2p.flydrop2p.media
+package com.flydrop2p.flydrop2p.data.local
 
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import com.flydrop2p.flydrop2p.network.model.call.NetworkCall
+import com.flydrop2p.flydrop2p.network.model.call.NetworkCallFragment
 import com.flydrop2p.flydrop2p.network.model.device.NetworkProfile
 import com.flydrop2p.flydrop2p.network.model.message.NetworkAudioMessage
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
@@ -16,10 +16,11 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 class FileManager(private val context: Context) {
-    @OptIn(ExperimentalEncodingApi::class)
-    fun getFileBase64(fileName: String): String? {
-        val file = File(context.filesDir, fileName)
+    fun getAudioTempFile(): File = File(context.filesDir, "audio_${System.currentTimeMillis()}.3gp")
+    fun getVideoTempFile(): File = File(context.filesDir, "video_${System.currentTimeMillis()}.mp4")
 
+    @OptIn(ExperimentalEncodingApi::class)
+    fun getFileBase64(file: File): String? {
         return try {
             val byteArray = FileInputStream(file).use { inputStream ->
                 inputStream.readBytes()
@@ -30,6 +31,10 @@ class FileManager(private val context: Context) {
             e.printStackTrace()
             null
         }
+    }
+
+    fun getFileBase64(fileName: String): String? {
+        return getFileBase64(File(context.filesDir, fileName))
     }
 
     private fun saveFile(inputFileUri: Uri, outputFileName: String): String? {
@@ -53,7 +58,7 @@ class FileManager(private val context: Context) {
 
     @OptIn(ExperimentalEncodingApi::class)
     private fun saveFile(inputFileBase64: String, outputFileName: String): String? {
-        val tempFile = File.createTempFile("file", null, context.cacheDir).apply {
+        val tempFile = File.createTempFile("tmp", null, context.cacheDir).apply {
             deleteOnExit()
         }
 
@@ -111,9 +116,11 @@ class FileManager(private val context: Context) {
         }
     }
 
-    fun saveNetworkCall(networkCall: NetworkCall): String? {
-        networkCall.apply {
-            return saveFile(audioBase64, "call_audio_${System.currentTimeMillis()}.3gp")
+    fun saveNetworkCallFragment(networkCallFragment: NetworkCallFragment): File? {
+        networkCallFragment.apply {
+            return saveFile(audioBase64, "call_audio_${System.currentTimeMillis()}.3gp")?.let {
+                File(context.filesDir, it)
+            }
         }
     }
 }

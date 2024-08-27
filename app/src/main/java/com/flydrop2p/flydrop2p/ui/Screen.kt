@@ -1,4 +1,4 @@
-package com.flydrop2p.flydrop2p
+package com.flydrop2p.flydrop2p.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
@@ -40,7 +40,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
-import com.flydrop2p.flydrop2p.ui.AppViewModelProvider
+import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.ui.navigation.FlyDropNavHost
 import com.flydrop2p.flydrop2p.ui.screen.call.CallViewModel
 import com.flydrop2p.flydrop2p.ui.screen.chat.ChatViewModel

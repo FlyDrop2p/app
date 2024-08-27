@@ -24,17 +24,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.flydrop2p.flydrop2p.ChatTopAppBar
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.message.AudioMessage
 import com.flydrop2p.flydrop2p.domain.model.message.FileMessage
 import com.flydrop2p.flydrop2p.domain.model.message.Message
 import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
+import com.flydrop2p.flydrop2p.ui.ChatTopAppBar
 import com.flydrop2p.flydrop2p.ui.components.AudioMessageComponent
 import com.flydrop2p.flydrop2p.ui.components.AudioRecordingControls
 import com.flydrop2p.flydrop2p.ui.components.FileMessageComponent
@@ -42,6 +43,7 @@ import com.flydrop2p.flydrop2p.ui.components.FileMessageInput
 import com.flydrop2p.flydrop2p.ui.components.TextMessageComponent
 import com.flydrop2p.flydrop2p.ui.components.TextMessageInput
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -153,6 +155,8 @@ fun MessagesList(
 
 @Composable
 fun MessageItem(message: Message, accountId: Long, chatViewModel: ChatViewModel) {
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier.padding(vertical = 4.dp)
     ) {
@@ -168,8 +172,8 @@ fun MessageItem(message: Message, accountId: Long, chatViewModel: ChatViewModel)
             is AudioMessage -> {
                 AudioMessageComponent(message,
                     currentAccountId = accountId,
-                    startPlayingAudio = {
-                        chatViewModel.startPlayingAudio(it)
+                    startPlayingAudio = { fileName ->
+                        chatViewModel.startPlayingAudio(File(context.filesDir, fileName))
                     },
                     stopPlayingAudio = {
                         chatViewModel.stopPlayingAudio()

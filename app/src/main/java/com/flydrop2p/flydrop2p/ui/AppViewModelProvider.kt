@@ -1,6 +1,5 @@
 package com.flydrop2p.flydrop2p.ui
 
-import android.app.Application
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
@@ -25,16 +24,18 @@ object AppViewModelProvider {
                 application().container.chatRepository,
                 application().container.contactRepository,
                 application().container.ownAccountRepository,
-                application().container.audioManager,
+                application().container.fileManager,
                 application().container.networkManager,
             )
         }
 
         initializer {
             CallViewModel(
+                application().container.handlerFactory,
                 application().container.contactRepository,
                 application().container.ownAccountRepository,
-                application().container.networkManager
+                application().container.networkManager,
+                application().container.callManager
             )
         }
 
@@ -49,9 +50,5 @@ object AppViewModelProvider {
     }
 }
 
-/**
- * Extension function to queries for [Application] object and returns an instance of
- * [Application].
- */
 fun CreationExtras.application(): com.flydrop2p.flydrop2p.App =
     (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as com.flydrop2p.flydrop2p.App)
