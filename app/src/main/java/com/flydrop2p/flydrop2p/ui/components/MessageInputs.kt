@@ -178,6 +178,7 @@ fun FileMessageInput(
 
             when {
                 mimeType.startsWith("image/") -> ImagePreview(fileUri)
+                mimeType.startsWith("video/") -> VideoPreview(fileUri)
                 mimeType.startsWith("application/pdf") -> PdfPreview(context, fileUri)
                 else -> GenericFilePreview(fileUri)
             }
@@ -240,6 +241,15 @@ fun ImagePreview(fileUri: Uri) {
         modifier = Modifier
             .size(70.dp)
             .padding(end = 16.dp)
+    )
+}
+
+@Composable
+fun VideoPreview(videoUri: Uri) {
+    VideoThumbnail(
+        videoUri = videoUri,
+        modifier = Modifier.size(70.dp),
+        thumbnailHeight = 70.dp
     )
 }
 

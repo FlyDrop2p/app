@@ -64,9 +64,6 @@ fun SentFileMessageComponent(
 
     // fileUri.lastPathSegment == message.fileName
     val mimeType = getMimeType(message.fileName.substringAfterLast(".", ""))
-    val isImageOrVideo = mimeType.startsWith("image/") || mimeType.startsWith("video/")
-
-
 
     Row(
         modifier = Modifier
@@ -87,7 +84,7 @@ fun SentFileMessageComponent(
                 modifier = Modifier
                     .padding(12.dp)
             ) {
-                if (isImageOrVideo) {
+                if (mimeType.startsWith("image/")) {
                     Image(
                         painter = getPreviewPainter(fileUri),
                         contentDescription = "Media Preview",
@@ -97,6 +94,13 @@ fun SentFileMessageComponent(
                             .height(150.dp)
                             .clip(RoundedCornerShape(5.dp))
                             .background(MaterialTheme.colorScheme.surfaceVariant)
+                    )
+                } else if (mimeType.startsWith("video/")) {
+                    VideoThumbnail(
+                        videoUri = fileUri,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        thumbnailHeight = 150.dp
                     )
                 } else {
                     Row(
@@ -200,7 +204,7 @@ fun ReceivedFileMessageComponent(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (isImageOrVideo) {
+                    if (mimeType.startsWith("image/")) {
                         Image(
                             painter = getPreviewPainter(fileUri),
                             contentDescription = "Media Preview",
@@ -210,6 +214,13 @@ fun ReceivedFileMessageComponent(
                                 .height(150.dp)
                                 .clip(RoundedCornerShape(5.dp))
                                 .background(MaterialTheme.colorScheme.surfaceVariant)
+                        )
+                    } else if (mimeType.startsWith("video/")) {
+                        VideoThumbnail(
+                            videoUri = fileUri,
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            thumbnailHeight = 150.dp
                         )
                     } else {
                         if (mimeType.startsWith("application/pdf")) {

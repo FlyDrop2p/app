@@ -72,9 +72,6 @@ fun SentAudioMessageComponent(
             color = MaterialTheme.colorScheme.primaryContainer,
             modifier = Modifier
                 .widthIn(min = 150.dp, max = 300.dp)
-                .clickable {
-                    shareFile(context, message.fileName)
-                }
         ) {
             Row(
                 modifier = Modifier
