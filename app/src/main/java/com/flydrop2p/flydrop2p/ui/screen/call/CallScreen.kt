@@ -123,8 +123,8 @@ fun CallScreen(
                 iconResId = R.drawable.call_end_24px,
                 contentDescription = "Metti giù",
                 onClick = {
+                    callViewModel.endCall()
                     onHangUpClick()
-                    // navController.navigate("${CallDestination.route}/${callState.contact.accountId}")
                 },
                 buttonColor = Color.Red,
                 iconTintColor = Color.White

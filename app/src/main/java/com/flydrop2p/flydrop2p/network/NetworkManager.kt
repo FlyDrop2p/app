@@ -17,7 +17,6 @@ import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
-import com.flydrop2p.flydrop2p.network.model.call.NetworkCallFragment
 import com.flydrop2p.flydrop2p.network.model.device.NetworkDevice
 import com.flydrop2p.flydrop2p.network.model.device.NetworkProfile
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
@@ -57,9 +56,9 @@ class NetworkManager(
     val connectedDevices: StateFlow<List<NetworkDevice>>
         get() = _connectedDevices
 
-    private val _callFragmentFile: MutableStateFlow<File?> = MutableStateFlow(null)
-    val callFragmentFile: StateFlow<File?>
-        get() = _callFragmentFile
+    private val _callFragment: MutableStateFlow<ByteArray?> = MutableStateFlow(null)
+    val callFragment: StateFlow<ByteArray?>
+        get() = _callFragment
 
     private val lastKeepalives: MutableMap<Long, Long> = mutableMapOf()
 
@@ -227,16 +226,13 @@ class NetworkManager(
         }
     }
 
-    fun sendCallFragment(accountId: Long, file: File) {
+    fun sendCallFragment(accountId: Long, callFragment: ByteArray) {
         val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
 
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
-                    fileManager.getFileBase64(file)?.let { audioBase64 ->
-                        val networkCallFragment = NetworkCallFragment(audioBase64)
-                        clientService.sendCallFragment(ipAddress, ownDevice, networkCallFragment)
-                    }
+                    clientService.sendCallFragment(ipAddress, ownDevice, callFragment)
                 }
             }
         }
@@ -355,8 +351,8 @@ class NetworkManager(
     private fun startCallFragmentConnection() {
         coroutineScope.launch {
             while(true) {
-                val networkCall = serverService.listenCallFragment()
-                handleCallFragment(networkCall)
+                val callFragment = serverService.listenCallFragment()
+                handleCallFragment(callFragment)
             }
         }
     }
@@ -439,9 +435,7 @@ class NetworkManager(
         }
     }
 
-    private fun handleCallFragment(networkCallFragment: NetworkCallFragment) {
-        fileManager.saveNetworkCallFragment(networkCallFragment)?.let { file ->
-            _callFragmentFile.value = file
-        }
+    private fun handleCallFragment(callFragment: ByteArray) {
+        _callFragment.value = callFragment
     }
 }

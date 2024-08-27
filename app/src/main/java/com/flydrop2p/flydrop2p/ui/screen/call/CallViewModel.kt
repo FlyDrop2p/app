@@ -2,7 +2,6 @@ package com.flydrop2p.flydrop2p.ui.screen.call
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.flydrop2p.flydrop2p.HandlerFactory
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
 import com.flydrop2p.flydrop2p.network.CallManager
@@ -13,7 +12,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CallViewModel(
-    private val handlerFactory: HandlerFactory,
     private val contactRepository: ContactRepository,
     private val ownAccountRepository: OwnAccountRepository,
     private val networkManager: NetworkManager,
@@ -27,9 +25,9 @@ class CallViewModel(
 
     init {
         viewModelScope.launch {
-            networkManager.callFragmentFile.collect { file ->
-                file?.let {
-                    callManager.playAudio(it)
+            networkManager.callFragment.collect { audioBytes ->
+                audioBytes?.let {
+                    callManager.playAudio(audioBytes)
                 }
             }
         }
@@ -46,29 +44,15 @@ class CallViewModel(
     }
 
     fun startCall(accountId: Long) {
-        callManager.startRecording()
-        startCallFragmentHandler(accountId)
+        callManager.startPlaying()
+        callManager.startRecording { audioBytes ->
+            networkManager.sendCallFragment(accountId, audioBytes)
+        }
     }
 
     fun endCall() {
+        callManager.stopPlaying()
         callManager.stopRecording()
-        callManager.deleteRecordingFiles()
-    }
-
-    private fun startCallFragmentHandler(accountId: Long) {
-        val handler = handlerFactory.buildHandler()
-
-        val runnable = object : Runnable {
-            override fun run() {
-                callManager.sampleAudioRecording()?.let { file ->
-                    networkManager.sendCallFragment(accountId, file)
-                    file.delete()
-                }
-                handler.postDelayed(this, 1000)
-            }
-        }
-
-        handler.post(runnable)
     }
 
     fun setSpeakerOn(isSpeakerOn: Boolean) {

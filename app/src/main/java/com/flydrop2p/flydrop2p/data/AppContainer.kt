@@ -63,6 +63,6 @@ class AppDataContainer(activity: MainActivity) : AppContainer {
     }
 
     override val callManager: CallManager by lazy {
-        CallManager(fileManager)
+        CallManager(context)
     }
 }

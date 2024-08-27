@@ -4,7 +4,6 @@ import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import com.flydrop2p.flydrop2p.network.model.call.NetworkCallFragment
 import com.flydrop2p.flydrop2p.network.model.device.NetworkProfile
 import com.flydrop2p.flydrop2p.network.model.message.NetworkAudioMessage
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
@@ -113,14 +112,6 @@ class FileManager(private val context: Context) {
     fun saveNetworkAudio(networkAudioMessage: NetworkAudioMessage): String? {
         networkAudioMessage.apply {
             return saveFile(audioBase64, "audio_${senderId}_${timestamp}.3gp")
-        }
-    }
-
-    fun saveNetworkCallFragment(networkCallFragment: NetworkCallFragment): File? {
-        networkCallFragment.apply {
-            return saveFile(audioBase64, "call_audio_${System.currentTimeMillis()}.3gp")?.let {
-                File(context.filesDir, it)
-            }
         }
     }
 }

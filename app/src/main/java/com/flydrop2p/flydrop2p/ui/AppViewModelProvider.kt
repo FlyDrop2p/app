@@ -31,7 +31,6 @@ object AppViewModelProvider {
 
         initializer {
             CallViewModel(
-                application().container.handlerFactory,
                 application().container.contactRepository,
                 application().container.ownAccountRepository,
                 application().container.networkManager,

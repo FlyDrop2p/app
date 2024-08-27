@@ -28,14 +28,6 @@ sealed class MediaReplayer {
         recorder = null
     }
 
-    fun pauseRecording() {
-        recorder?.pause()
-    }
-
-    fun resumeRecording() {
-        recorder?.resume()
-    }
-
     fun startPlaying(file: File) {
         player = MediaPlayer().apply {
             setDataSource(file.path)
