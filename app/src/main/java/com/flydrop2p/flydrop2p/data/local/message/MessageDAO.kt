@@ -15,6 +15,9 @@ interface MessageDAO {
     @Query("SELECT * FROM MessageEntity WHERE receiverId = :accountId ORDER BY timestamp ASC")
     fun getMessagesByReceiverAccountId(accountId: Long): List<MessageEntity>
 
+    @Query("SELECT * FROM MessageEntity")
+    fun getAllMessagesForBackup(): List<MessageEntity>
+
     @Query("SELECT COUNT(*) FROM MessageEntity WHERE senderId = :accountId AND messageState = 'MESSAGE_RECEIVED'")
     suspend fun getCountOfUnreadMessagesByAccountId(accountId: Long): Long
 

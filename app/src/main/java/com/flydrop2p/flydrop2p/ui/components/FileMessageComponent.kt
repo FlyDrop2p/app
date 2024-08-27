@@ -103,21 +103,25 @@ fun SentFileMessageComponent(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.description_24px),
-                            contentDescription = "File Icon",
-                            modifier = Modifier
-                                .size(30.dp)
-                                .align(Alignment.CenterVertically)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text(
-                                text = message.fileName,
-                                fontSize = 16.sp,
-                                color = Color(0xFF075985),
-                                fontWeight = FontWeight.Medium
+                        if (mimeType.startsWith("application/pdf")) {
+                            PdfPreview(context, fileUri)
+                        } else {
+                            Icon(
+                                painter = painterResource(id = R.drawable.description_24px),
+                                contentDescription = "File Icon",
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .align(Alignment.CenterVertically)
                             )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column {
+                                Text(
+                                    text = message.fileName,
+                                    fontSize = 16.sp,
+                                    color = Color(0xFF075985),
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
                         }
                     }
                 }
@@ -208,21 +212,25 @@ fun ReceivedFileMessageComponent(
                                 .background(MaterialTheme.colorScheme.surfaceVariant)
                         )
                     } else {
-                        Icon(
-                            painter = painterResource(id = R.drawable.description_24px),
-                            contentDescription = "File Icon",
-                            modifier = Modifier
-                                .size(30.dp)
-                                .align(Alignment.CenterVertically)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text(
-                                text = message.fileName,
-                                fontSize = 16.sp,
-                                color = Color(0xFF075985),
-                                fontWeight = FontWeight.Medium
+                        if (mimeType.startsWith("application/pdf")) {
+                            PdfPreview(context, fileUri)
+                        } else {
+                            Icon(
+                                painter = painterResource(id = R.drawable.description_24px),
+                                contentDescription = "File Icon",
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .align(Alignment.CenterVertically)
                             )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column {
+                                Text(
+                                    text = message.fileName,
+                                    fontSize = 16.sp,
+                                    color = Color(0xFF075985),
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
                         }
                     }
                 }
@@ -244,6 +252,8 @@ fun ReceivedFileMessageComponent(
     }
 }
 
+
+
 @Composable
 fun FileMessageComponent(
     message: FileMessage,
@@ -258,17 +268,6 @@ fun FileMessageComponent(
             message = message,
         )
     }
-}
-
-@Composable
-fun getPreviewPainter(fileUri: Uri): Painter {
-    return rememberImagePainter(
-        data = fileUri,
-        builder = {
-            crossfade(true)
-            error(R.drawable.error_24px)
-        }
-    )
 }
 
 

@@ -125,7 +125,6 @@ fun MessagesList(
 
     val listState = rememberLazyListState()
 
-    // Gruppi di messaggi e date
     val groupedMessages = remember(messages) { groupMessagesByDate(messages) }
 
     LaunchedEffect(groupedMessages) {

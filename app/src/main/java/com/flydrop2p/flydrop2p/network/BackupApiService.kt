@@ -1,6 +1,7 @@
 package com.flydrop2p.flydrop2p.network
 
-import com.flydrop2p.flydrop2p.domain.model.message.Message
+import com.flydrop2p.flydrop2p.data.local.message.MessageEntity
+import kotlinx.serialization.Serializable
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
@@ -9,7 +10,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 // Base URL del backend
-private const val BASE_URL = "https://your-backend-url.com/"
+private const val BASE_URL = "https://flydrop.riccardobenevelli.com/api/"
 
 
 private val retrofit = Retrofit.Builder()
@@ -17,10 +18,9 @@ private val retrofit = Retrofit.Builder()
     .addConverterFactory(GsonConverterFactory.create())
     .build()
 
-
 data class BackupRequestBody(
     val userId: Long,
-    val messages: List<Message>
+    val messages: List<MessageEntity>
 )
 
 data class BackupResponse(
@@ -34,7 +34,7 @@ interface BackupApiService {
     suspend fun backupMessages(@Body request: BackupRequestBody): BackupResponse
 
     @GET("backup/{userId}")
-    suspend fun getBackup(@Path("userId") userId: Long): List<Message>
+    suspend fun getBackup(@Path("userId") userId: Long): List<MessageEntity>
 }
 
 
