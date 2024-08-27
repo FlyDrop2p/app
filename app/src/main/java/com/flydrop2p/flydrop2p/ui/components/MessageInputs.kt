@@ -271,7 +271,11 @@ fun GenericFilePreview(fileUri: Uri) {
 }
 
 @Composable
-fun PdfPreview(context: Context, fileUri: Uri) {
+fun PdfPreview(
+    context: Context,
+    fileUri: Uri,
+    modifier: Modifier = Modifier
+) {
     val tempFile = getFileFromContentUri(context, fileUri)
     val fileUriNewUri = Uri.fromFile(tempFile)
 
@@ -280,7 +284,7 @@ fun PdfPreview(context: Context, fileUri: Uri) {
         imageWidth = 50.dp,
         imageHeight = 50.dp
     )
-    Spacer(modifier = Modifier.size(16.dp))
+    Spacer(modifier = Modifier.size(8.dp))
     Text(
         text = fileUri.lastPathSegment ?: "Unknown File",
         color = Color.Black,
