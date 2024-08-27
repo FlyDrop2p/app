@@ -21,7 +21,7 @@ class CallManager(private val context: Context) {
         private const val SAMPLE_RATE_IN_HZ = 44100
         private const val CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_STEREO
         private const val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_8BIT
-        private const val BUFFER_SIZE_FACTOR = 10
+        private const val BUFFER_SIZE_FACTOR = 5
         private val BUFFER_SIZE = AudioRecord.getMinBufferSize(SAMPLE_RATE_IN_HZ, CHANNEL_CONFIG, AUDIO_FORMAT) * BUFFER_SIZE_FACTOR
     }
 
