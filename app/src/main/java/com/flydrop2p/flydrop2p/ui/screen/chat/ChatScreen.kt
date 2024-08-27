@@ -253,7 +253,10 @@ fun SendMessageInput(
                     onCancelRecording()
                     isRecording = false
                 },
-                onSendAudioMessage = onSendAudioMessage
+                onSendAudioMessage = {
+                    onSendAudioMessage()
+                    isRecording = false
+                }
             )
         }
     }
