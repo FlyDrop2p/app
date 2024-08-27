@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.flydrop2p.flydrop2p.ui.screen.call.CallViewModel
 import com.flydrop2p.flydrop2p.ui.screen.chat.ChatViewModel
 import com.flydrop2p.flydrop2p.ui.screen.home.HomeViewModel
 import com.flydrop2p.flydrop2p.ui.screen.settings.SettingsViewModel
@@ -26,6 +27,14 @@ object AppViewModelProvider {
                 application().container.ownAccountRepository,
                 application().container.audioManager,
                 application().container.networkManager,
+            )
+        }
+
+        initializer {
+            CallViewModel(
+                application().container.contactRepository,
+                application().container.ownAccountRepository,
+                application().container.networkManager
             )
         }
 

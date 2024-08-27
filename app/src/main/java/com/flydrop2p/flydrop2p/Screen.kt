@@ -42,6 +42,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.flydrop2p.flydrop2p.ui.AppViewModelProvider
 import com.flydrop2p.flydrop2p.ui.navigation.FlyDropNavHost
+import com.flydrop2p.flydrop2p.ui.screen.call.CallViewModel
 import com.flydrop2p.flydrop2p.ui.screen.chat.ChatViewModel
 import com.flydrop2p.flydrop2p.ui.screen.home.HomeViewModel
 import com.flydrop2p.flydrop2p.ui.screen.settings.SettingsViewModel
@@ -53,6 +54,7 @@ fun FlyDropApp(
     onConnectionButtonClick: () -> Unit,
     homeViewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     chatViewModel: ChatViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    callViewModel: CallViewModel = viewModel(factory = AppViewModelProvider.Factory),
     settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController = rememberNavController()
 ) {
@@ -66,6 +68,7 @@ fun FlyDropApp(
             navController = navController,
             homeViewModel = homeViewModel,
             chatViewModel = chatViewModel,
+            callViewModel = callViewModel,
             settingsViewModel = settingsViewModel,
             modifier = Modifier.padding(innerPadding)
         )
@@ -146,7 +149,7 @@ fun FlyDropTopAppBar(
 fun ChatTopAppBar(
     title: String,
     canNavigateBack: Boolean,
-    onConnectionButtonClick: () -> Unit,
+    onCallButtonClick: () -> Unit,
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
     navigateUp: () -> Unit = {},
@@ -204,7 +207,7 @@ fun ChatTopAppBar(
         actions = {
 
             IconButton(
-                onClick = onSettingsButtonClick
+                onClick = onCallButtonClick
             ) {
                 Icon(
                     imageVector = Icons.Filled.Call,

@@ -59,7 +59,7 @@ fun ChatScreen(
     chatViewModel: ChatViewModel,
     navController: NavHostController,
     onConnectionButtonClick: () -> Unit,
-    onSettingsButtonClick: () -> Unit,
+    onCallButtonClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val currentAccount by chatViewModel.ownAccount.collectAsState(initial = null)
@@ -72,8 +72,8 @@ fun ChatScreen(
             ChatTopAppBar(
                 title = chatState.contact.username ?: "Connecting...",
                 canNavigateBack = true,
-                onConnectionButtonClick = onConnectionButtonClick,
-                onSettingsButtonClick = onSettingsButtonClick,
+                onCallButtonClick = { onCallButtonClick(chatState.contact.accountId) },
+                onSettingsButtonClick = { },
                 modifier = modifier,
                 navigateUp = { navController.navigateUp() },
                 contactImageFileName = chatState.contact.imageFileName
@@ -141,7 +141,11 @@ fun MessagesList(
         items(groupedMessages) { item ->
             when (item) {
                 is String -> DateSeparator(date = item) // Se è una data
-                is Message -> MessageItem(message = item, accountId = accountId, chatViewModel = chatViewModel)
+                is Message -> MessageItem(
+                    message = item,
+                    accountId = accountId,
+                    chatViewModel = chatViewModel
+                )
             }
         }
     }

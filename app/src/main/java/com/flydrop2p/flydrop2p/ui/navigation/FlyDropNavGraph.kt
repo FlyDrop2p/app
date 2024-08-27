@@ -9,6 +9,9 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.flydrop2p.flydrop2p.ui.screen.call.CallDestination
+import com.flydrop2p.flydrop2p.ui.screen.call.CallScreen
+import com.flydrop2p.flydrop2p.ui.screen.call.CallViewModel
 import com.flydrop2p.flydrop2p.ui.screen.chat.ChatDestination
 import com.flydrop2p.flydrop2p.ui.screen.chat.ChatScreen
 import com.flydrop2p.flydrop2p.ui.screen.chat.ChatViewModel
@@ -25,6 +28,7 @@ fun FlyDropNavHost(
     navController: NavHostController,
     homeViewModel: HomeViewModel,
     chatViewModel: ChatViewModel,
+    callViewModel: CallViewModel,
     settingsViewModel: SettingsViewModel,
     modifier: Modifier = Modifier,
 ) {
@@ -67,7 +71,26 @@ fun FlyDropNavHost(
                     chatViewModel = chatViewModel,
                     navController = navController,
                     onConnectionButtonClick = onConnectionButtonClick,
-                    onSettingsButtonClick = { navController.navigate(SettingsDestination.route) },
+                    onCallButtonClick = { navController.navigate("${CallDestination.route}/${it}") },
+                )
+            }
+        }
+
+        composable(
+            route = CallDestination.routeWithArgs,
+            arguments = listOf(navArgument(CallDestination.itemIdArg) {
+                type = NavType.LongType
+            })
+        ){ backStackEntry ->
+            val accountId = backStackEntry.arguments?.getLong(CallDestination.itemIdArg)
+            accountId?.let {
+                callViewModel.collectContact(accountId)
+
+                CallScreen(
+                    callViewModel = callViewModel,
+                    navController = navController,
+                    onHangUpClick = { navController.popBackStack() },
+                    onSpeakerClick = { /*TODO*/ },
                 )
             }
         }
