@@ -81,7 +81,7 @@ fun FlyDropNavHost(
             arguments = listOf(navArgument(CallDestination.itemIdArg) {
                 type = NavType.LongType
             })
-        ){ backStackEntry ->
+        ) { backStackEntry ->
             val accountId = backStackEntry.arguments?.getLong(CallDestination.itemIdArg)
             accountId?.let {
                 callViewModel.collectContact(accountId)
