@@ -53,6 +53,7 @@ import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import com.flydrop2p.flydrop2p.ui.screen.call.CallDestination
 import java.io.File
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -128,9 +129,36 @@ fun ChatItem(
     onChatClick: (Contact) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-    val timeString =
-        chatPreview.lastMessage?.let { Date(it.timestamp) }?.let { timeFormat.format(it) }
+    val currentTime = System.currentTimeMillis()
+    val messageTime = chatPreview.lastMessage?.timestamp ?: currentTime
+    val calendar = Calendar.getInstance()
+
+    calendar.timeInMillis = currentTime
+    val today = calendar.get(Calendar.DAY_OF_YEAR)
+
+    calendar.timeInMillis = messageTime
+    val messageDay = calendar.get(Calendar.DAY_OF_YEAR)
+    val messageYear = calendar.get(Calendar.YEAR)
+    val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+
+    val timeString = when {
+        // Se il messaggio è stato inviato oggi, mostra solo l'ora
+        today == messageDay && currentYear == messageYear -> {
+            SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(messageTime))
+        }
+        // Se il messaggio è stato inviato ieri
+        today - 1 == messageDay && currentYear == messageYear -> {
+            "ieri"
+        }
+        // Se il messaggio è stato inviato questa settimana
+        today - messageDay in 1..6 && currentYear == messageYear -> {
+            SimpleDateFormat("EEE", Locale.getDefault()).format(Date(messageTime)) // Mostra le prime tre lettere del giorno della settimana
+        }
+        // Se il messaggio è stato inviato in un giorno qualsiasi dell'anno
+        else -> {
+            SimpleDateFormat("dd/MM", Locale.getDefault()).format(Date(messageTime))
+        }
+    }
 
     Row(
         modifier = modifier

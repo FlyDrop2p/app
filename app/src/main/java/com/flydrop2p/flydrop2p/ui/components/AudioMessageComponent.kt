@@ -40,7 +40,7 @@ fun AudioMessageComponent(
     startPlayingAudio: (String) -> Unit,
     stopPlayingAudio: () -> Unit,
     getCurrentPlaybackPosition: () -> Int,
-    isPlaybackComplete: Boolean,
+    isPlaybackComplete: () -> Boolean,
 ) {
     val context = LocalContext.current
 
@@ -51,11 +51,11 @@ fun AudioMessageComponent(
     val formattedDuration = remember { message.formatDuration(context) }
 
     LaunchedEffect(isPlaying.value) {
-        while (isPlaying.value && !isPlaybackComplete) {
+        while (isPlaying.value && !isPlaybackComplete()) {
             playbackPosition.intValue = getCurrentPlaybackPosition()
             delay(500)
         }
-        if (isPlaybackComplete || (getCurrentPlaybackPosition().toLong() == duration)) {
+        if (isPlaybackComplete() || (getCurrentPlaybackPosition().toLong() == duration)) {
             playbackPosition.intValue = 0
             isPlaying.value = false
         }
