@@ -9,21 +9,18 @@ import com.flydrop2p.flydrop2p.network.NetworkManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
 class CallViewModel(
-    private val ownAccountRepository: OwnAccountRepository,
     private val contactRepository: ContactRepository,
-    private val networkManager: NetworkManager,
     private val callManager: CallManager,
+    val networkManager: NetworkManager,
     private val accountId: Long
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CallViewState())
     val uiState: StateFlow<CallViewState> = _uiState.asStateFlow()
-
-    val ownAccount
-        get() = ownAccountRepository.getAccountAsFlow()
 
     private val isCalling = AtomicBoolean(false)
 
@@ -45,6 +42,10 @@ class CallViewModel(
         }
 
         startCall(accountId)
+    }
+
+    fun sendCallEnd(accountId: Long) {
+        networkManager.sendCallEnd(accountId, false)
     }
 
     private fun startCall(accountId: Long) {

@@ -18,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -48,11 +49,18 @@ object CallDestination : NavigationDestination {
 fun CallScreen(
     callViewModel: CallViewModel,
     navController: NavHostController,
-    popBackStack: () -> Unit,
     onSpeakerClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val currentAccount by callViewModel.ownAccount.collectAsState(initial = null)
+    val callEnd by callViewModel.networkManager.callEnd.collectAsState()
+
+    LaunchedEffect(callEnd) {
+        callEnd?.let {
+            callViewModel.endCall()
+            navController.popBackStack()
+        }
+    }
+
     val callState by callViewModel.uiState.collectAsState()
 
     Column(
@@ -123,7 +131,8 @@ fun CallScreen(
                 iconResId = R.drawable.call_end_24px,
                 contentDescription = "Metti giù",
                 onClick = {
-                    popBackStack()
+                    callViewModel.sendCallEnd(callState.contact.accountId)
+                    navController.popBackStack()
                 },
                 buttonColor = Color.Red,
                 iconTintColor = Color.White

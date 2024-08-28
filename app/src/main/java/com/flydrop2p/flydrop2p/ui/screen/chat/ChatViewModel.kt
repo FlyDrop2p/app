@@ -22,7 +22,7 @@ class ChatViewModel(
     private val contactRepository: ContactRepository,
     private val ownAccountRepository: OwnAccountRepository,
     private val fileManager: FileManager,
-    private val networkManager: NetworkManager,
+    val networkManager: NetworkManager,
     private val accountId: Long
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ChatViewState())
@@ -67,7 +67,7 @@ class ChatViewModel(
     }
 
     fun sendCallRequest(accountId: Long) {
-        networkManager.sendCallRequest(accountId)
+        networkManager.sendCallRequest(accountId, false)
     }
 
     fun startRecordingAudio() = audioReplayer.startRecording(fileManager.getAudioTempFile())

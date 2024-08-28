@@ -46,6 +46,7 @@ import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import java.io.File
 import kotlin.random.Random
 import androidx.compose.material3.SnackbarHostState
+import com.flydrop2p.flydrop2p.ui.screen.call.CallDestination
 
 object SettingsDestination : NavigationDestination {
     override val route = "settings"
@@ -60,6 +61,14 @@ fun SettingsScreen(
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val callRequest by settingsViewModel.networkManager.callRequest.collectAsState()
+
+    LaunchedEffect(callRequest) {
+        callRequest?.let {
+            navController.navigate("${CallDestination.route}/${it.senderId}")
+        }
+    }
+
     val context = LocalContext.current
     val settingsState by settingsViewModel.uiState.collectAsState()
     var usernameText by remember { mutableStateOf(settingsState.profile.username) }

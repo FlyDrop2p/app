@@ -10,7 +10,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.flydrop2p.flydrop2p.network.NetworkManager
 import com.flydrop2p.flydrop2p.ui.screen.call.CallDestination
 import com.flydrop2p.flydrop2p.ui.screen.call.CallScreen
 import com.flydrop2p.flydrop2p.ui.screen.call.CallViewModel
@@ -50,6 +49,7 @@ fun FlyDropNavHost(
 
             HomeScreen(
                 homeViewModel = homeViewModel,
+                navController = navController,
                 onChatClick = { navController.navigate("${ChatDestination.route}/${it.accountId}") },
                 onConnectionButtonClick = { homeViewModel.connect() },
                 onSettingsButtonClick = { navController.navigate(SettingsDestination.route) },
@@ -90,9 +90,6 @@ fun FlyDropNavHost(
                 CallScreen(
                     callViewModel = callViewModel,
                     navController = navController,
-                    popBackStack = {
-                        navController.popBackStack()
-                    },
                     onSpeakerClick = { /*TODO*/ },
                 )
             }

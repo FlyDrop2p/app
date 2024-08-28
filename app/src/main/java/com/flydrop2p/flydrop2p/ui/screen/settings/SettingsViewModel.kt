@@ -22,7 +22,7 @@ class SettingsViewModel(
     private val ownProfileRepository: OwnProfileRepository,
     private val chatRepository: ChatRepository,
     private val fileManager: FileManager,
-    private val networkManager: NetworkManager
+    val networkManager: NetworkManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsViewState())

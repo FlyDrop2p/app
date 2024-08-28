@@ -10,10 +10,9 @@ class CallViewModelFactory(private val accountId: Long) : ViewModelProvider.Fact
             val application = (extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as com.flydrop2p.flydrop2p.App)
 
             return CallViewModel(
-                application.container.ownAccountRepository,
                 application.container.contactRepository,
-                application.container.networkManager,
                 application.container.callManager,
+                application.container.networkManager,
                 accountId
             ) as T
         }
