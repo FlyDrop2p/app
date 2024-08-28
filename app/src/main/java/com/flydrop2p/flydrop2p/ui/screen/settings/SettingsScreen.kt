@@ -56,6 +56,7 @@ object SettingsDestination : NavigationDestination {
 fun SettingsScreen(
     settingsViewModel: SettingsViewModel,
     navController: NavHostController,
+    onConnectionButtonClick: () -> Unit,
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -98,7 +99,7 @@ fun SettingsScreen(
             FlyDropTopAppBar(
                 title = "Settings",
                 canNavigateBack = true,
-                onConnectionButtonClick = {}, // TODO
+                onConnectionButtonClick = onConnectionButtonClick,
                 onSettingsButtonClick = onSettingsButtonClick,
                 modifier = modifier,
                 navigateUp = {

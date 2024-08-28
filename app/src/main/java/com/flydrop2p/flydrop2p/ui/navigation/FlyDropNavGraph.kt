@@ -50,7 +50,7 @@ fun FlyDropNavHost(
             HomeScreen(
                 homeViewModel = homeViewModel,
                 onChatClick = { navController.navigate("${ChatDestination.route}/${it.accountId}") },
-                onConnectionButtonClick = {}, // TODO
+                onConnectionButtonClick = { homeViewModel.connect() },
                 onSettingsButtonClick = { navController.navigate(SettingsDestination.route) },
             )
         }
@@ -106,6 +106,7 @@ fun FlyDropNavHost(
             SettingsScreen(
                 settingsViewModel = settingsViewModel,
                 navController = navController,
+                onConnectionButtonClick = { settingsViewModel.connect() },
                 onSettingsButtonClick = { navController.navigate(SettingsDestination.route) },
             )
         }

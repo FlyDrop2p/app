@@ -13,7 +13,8 @@ class SettingsViewModelFactory() : ViewModelProvider.Factory {
                 application.container.ownAccountRepository,
                 application.container.ownProfileRepository,
                 application.container.chatRepository,
-                application.container.fileManager
+                application.container.fileManager,
+                application.container.networkManager
             ) as T
         }
 

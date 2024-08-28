@@ -29,4 +29,8 @@ class HomeViewModel(
             }
         }
     }
+
+    fun connect() {
+        networkManager.receiver.discoverPeers()
+    }
 }
