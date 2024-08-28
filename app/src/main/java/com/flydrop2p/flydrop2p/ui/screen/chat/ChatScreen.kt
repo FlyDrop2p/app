@@ -193,7 +193,7 @@ fun MessageItem(message: Message, accountId: Long, chatViewModel: ChatViewModel)
                     getCurrentPlaybackPosition = {
                         chatViewModel.getCurrentPlaybackPosition()
                     },
-                     isPlaybackComplete = chatViewModel.isPlaybackComplete()
+                     isPlaybackComplete = { chatViewModel.isPlaybackComplete() }
                 )
             }
         }
