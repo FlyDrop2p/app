@@ -21,158 +21,190 @@ class ServerService {
         const val PORT_TEXT_MESSAGE: Int = 8803
         const val PORT_FILE_MESSAGE: Int = 8804
         const val PORT_AUDIO_MESSAGE: Int = 8805
-        const val PORT_MESSAGE_RECEIVED_ACK = 8806
-        const val PORT_MESSAGE_READ_ACK = 8807
-        const val PORT_CALL = 8808
+        const val PORT_MESSAGE_RECEIVED_ACK: Int = 8806
+        const val PORT_MESSAGE_READ_ACK: Int = 8807
+        const val PORT_CALL: Int = 8808
     }
 
-    suspend fun listenKeepalive(): NetworkKeepalive {
-        val networkKeepalive: NetworkKeepalive
+    suspend fun listenKeepalive(): NetworkKeepalive? {
+        var networkKeepalive: NetworkKeepalive? = null
 
         withContext(Dispatchers.IO) {
-            val socket = ServerSocket(PORT_KEEPALIVE)
-            val client = socket.accept()
+            try {
+                val socket = ServerSocket(PORT_KEEPALIVE)
+                val client = socket.accept()
 
-            val inputStream = client.getInputStream()
-            val buffer = inputStream.readBytes()
-            networkKeepalive = Json.decodeFromString(buffer.decodeToString())
+                val inputStream = client.getInputStream()
+                val buffer = inputStream.readBytes()
+                networkKeepalive = Json.decodeFromString(buffer.decodeToString())
 
-            socket.close()
+                socket.close()
 
-            Log.d("KEEPALIVE", networkKeepalive.toString())
+                Log.d("KEEPALIVE", networkKeepalive.toString())
+            } catch (e: Exception) {
+                Log.d("KEEPALIVE", e.toString())
+            }
         }
 
         return networkKeepalive
     }
 
-    suspend fun listenProfileRequest(): NetworkProfileRequest {
-        val networkProfileRequest: NetworkProfileRequest
+    suspend fun listenProfileRequest(): NetworkProfileRequest? {
+        var networkProfileRequest: NetworkProfileRequest? = null
 
         withContext(Dispatchers.IO) {
-            val socket = ServerSocket(PORT_PROFILE_REQUEST)
-            val client = socket.accept()
+            try {
+                val socket = ServerSocket(PORT_PROFILE_REQUEST)
+                val client = socket.accept()
 
-            val inputStream = client.getInputStream()
-            val buffer = inputStream.readBytes()
-            networkProfileRequest = Json.decodeFromString(buffer.decodeToString())
+                val inputStream = client.getInputStream()
+                val buffer = inputStream.readBytes()
+                networkProfileRequest = Json.decodeFromString(buffer.decodeToString())
 
-            socket.close()
+                socket.close()
 
-            Log.d("PROFILE REQUEST", networkProfileRequest.toString())
+                Log.d("PROFILE REQUEST", networkProfileRequest.toString())
+            } catch (e: Exception) {
+                Log.d("PROFILE REQUEST", e.toString())
+            }
         }
 
         return networkProfileRequest
     }
 
-    suspend fun listenProfileResponse(): NetworkProfileResponse {
-        val networkProfileResponse: NetworkProfileResponse
+    suspend fun listenProfileResponse(): NetworkProfileResponse? {
+        var networkProfileResponse: NetworkProfileResponse? = null
 
         withContext(Dispatchers.IO) {
-            val socket = ServerSocket(PORT_PROFILE_RESPONSE)
-            val client = socket.accept()
+            try {
+                val socket = ServerSocket(PORT_PROFILE_RESPONSE)
+                val client = socket.accept()
 
-            val inputStream = client.getInputStream()
-            val buffer = inputStream.readBytes()
-            networkProfileResponse = Json.decodeFromString(buffer.decodeToString())
+                val inputStream = client.getInputStream()
+                val buffer = inputStream.readBytes()
+                networkProfileResponse = Json.decodeFromString(buffer.decodeToString())
 
-            socket.close()
+                socket.close()
 
-            Log.d("PROFILE RESPONSE", networkProfileResponse.toString())
+                Log.d("PROFILE RESPONSE", networkProfileResponse.toString())
+            } catch (e: Exception) {
+                Log.d("PROFILE RESPONSE", e.toString())
+            }
         }
 
         return networkProfileResponse
     }
 
-    suspend fun listenTextMessage(): NetworkTextMessage {
-        val networkTextMessage: NetworkTextMessage
+    suspend fun listenTextMessage(): NetworkTextMessage? {
+        var networkTextMessage: NetworkTextMessage? = null
 
         withContext(Dispatchers.IO) {
-            val socket = ServerSocket(PORT_TEXT_MESSAGE)
-            val client = socket.accept()
+            try {
+                val socket = ServerSocket(PORT_TEXT_MESSAGE)
+                val client = socket.accept()
 
-            val inputStream = client.getInputStream()
-            val buffer = inputStream.readBytes()
-            networkTextMessage = Json.decodeFromString(buffer.decodeToString())
+                val inputStream = client.getInputStream()
+                val buffer = inputStream.readBytes()
+                networkTextMessage = Json.decodeFromString(buffer.decodeToString())
 
-            socket.close()
+                socket.close()
 
-            Log.d("TEXT MESSAGE", networkTextMessage.toString())
+                Log.d("TEXT MESSAGE", networkTextMessage.toString())
+            } catch (e: Exception) {
+                Log.d("TEXT MESSAGE", e.toString())
+            }
         }
 
         return networkTextMessage
     }
 
-    suspend fun listenFileMessage(): NetworkFileMessage {
-        val networkFileMessage: NetworkFileMessage
+    suspend fun listenFileMessage(): NetworkFileMessage? {
+        var networkFileMessage: NetworkFileMessage? = null
 
         withContext(Dispatchers.IO) {
-            val socket = ServerSocket(PORT_FILE_MESSAGE)
-            val client = socket.accept()
+            try {
+                val socket = ServerSocket(PORT_FILE_MESSAGE)
+                val client = socket.accept()
 
-            val inputStream = client.getInputStream()
-            val buffer = inputStream.readBytes()
-            networkFileMessage = Json.decodeFromString(buffer.decodeToString())
+                val inputStream = client.getInputStream()
+                val buffer = inputStream.readBytes()
+                networkFileMessage = Json.decodeFromString(buffer.decodeToString())
 
-            socket.close()
+                socket.close()
 
-            Log.d("FILE MESSAGE", networkFileMessage.toString())
+                Log.d("FILE MESSAGE", networkFileMessage.toString())
+            } catch (e: Exception) {
+                Log.d("FILE MESSAGE", e.toString())
+            }
         }
 
         return networkFileMessage
     }
 
-    suspend fun listenAudioMessage(): NetworkAudioMessage {
-        val networkAudioMessage: NetworkAudioMessage
+    suspend fun listenAudioMessage(): NetworkAudioMessage? {
+        var networkAudioMessage: NetworkAudioMessage? = null
 
         withContext(Dispatchers.IO) {
-            val socket = ServerSocket(PORT_AUDIO_MESSAGE)
-            val client = socket.accept()
+            try {
+                val socket = ServerSocket(PORT_AUDIO_MESSAGE)
+                val client = socket.accept()
 
-            val inputStream = client.getInputStream()
-            val buffer = inputStream.readBytes()
-            networkAudioMessage = Json.decodeFromString(buffer.decodeToString())
+                val inputStream = client.getInputStream()
+                val buffer = inputStream.readBytes()
+                networkAudioMessage = Json.decodeFromString(buffer.decodeToString())
 
-            socket.close()
+                socket.close()
 
-            Log.d("AUDIO MESSAGE", networkAudioMessage.toString())
+                Log.d("AUDIO MESSAGE", networkAudioMessage.toString())
+            } catch (e: Exception) {
+                Log.d("AUDIO MESSAGE", e.toString())
+            }
         }
 
         return networkAudioMessage
     }
 
-    suspend fun listenMessageReceivedAck(): NetworkMessageAck {
-        val networkMessageAck: NetworkMessageAck
+    suspend fun listenMessageReceivedAck(): NetworkMessageAck? {
+        var networkMessageAck: NetworkMessageAck? = null
 
         withContext(Dispatchers.IO) {
-            val socket = ServerSocket(PORT_MESSAGE_RECEIVED_ACK)
-            val client = socket.accept()
+            try {
+                val socket = ServerSocket(PORT_MESSAGE_RECEIVED_ACK)
+                val client = socket.accept()
 
-            val inputStream = client.getInputStream()
-            val buffer = inputStream.readBytes()
-            networkMessageAck = Json.decodeFromString(buffer.decodeToString())
+                val inputStream = client.getInputStream()
+                val buffer = inputStream.readBytes()
+                networkMessageAck = Json.decodeFromString(buffer.decodeToString())
 
-            socket.close()
+                socket.close()
 
-            Log.d("MESSAGE RECEIVED ACK", networkMessageAck.toString())
+                Log.d("MESSAGE RECEIVED ACK", networkMessageAck.toString())
+            } catch (e: Exception) {
+                Log.d("MESSAGE RECEIVED ACK", e.toString())
+            }
         }
 
         return networkMessageAck
     }
 
-    suspend fun listenMessageReadAck(): NetworkMessageAck {
-        val networkMessageAck: NetworkMessageAck
+    suspend fun listenMessageReadAck(): NetworkMessageAck? {
+        var networkMessageAck: NetworkMessageAck? = null
 
         withContext(Dispatchers.IO) {
-            val socket = ServerSocket(PORT_MESSAGE_READ_ACK)
-            val client = socket.accept()
+            try {
+                val socket = ServerSocket(PORT_MESSAGE_READ_ACK)
+                val client = socket.accept()
 
-            val inputStream = client.getInputStream()
-            val buffer = inputStream.readBytes()
-            networkMessageAck = Json.decodeFromString(buffer.decodeToString())
+                val inputStream = client.getInputStream()
+                val buffer = inputStream.readBytes()
+                networkMessageAck = Json.decodeFromString(buffer.decodeToString())
 
-            socket.close()
+                socket.close()
 
-            Log.d("MESSAGE READ ACK", networkMessageAck.toString())
+                Log.d("MESSAGE READ ACK", networkMessageAck.toString())
+            } catch (e: Exception) {
+                Log.d("MESSAGE READ ACK", e.toString())
+            }
         }
 
         return networkMessageAck

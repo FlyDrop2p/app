@@ -42,7 +42,8 @@ class MainActivity : ComponentActivity() {
         networkManager = (application as App).container.networkManager
 
         networkManager.startConnections()
-        networkManager.startKeepaliveHandler()
+        networkManager.startSendKeepaliveHandler()
+        networkManager.startUpdateConnectedDevicesHandler()
 
         setContent {
             FlyDrop2pTheme {

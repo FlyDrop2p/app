@@ -36,7 +36,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.File
-import kotlin.math.abs
 
 
 class NetworkManager(
@@ -50,7 +49,7 @@ class NetworkManager(
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    private var ownDevice = Device(null, Account(0, 0), Profile(0, 0, "", null))
+    private var ownDevice = Device(null, 0, Account(0, 0), Profile(0, 0, "", null))
 
     private val _connectedDevices: MutableStateFlow<List<NetworkDevice>> = MutableStateFlow(listOf())
     val connectedDevices: StateFlow<List<NetworkDevice>>
@@ -59,8 +58,6 @@ class NetworkManager(
     private val _callFragment: MutableStateFlow<ByteArray?> = MutableStateFlow(null)
     val callFragment: StateFlow<ByteArray?>
         get() = _callFragment
-
-    private val lastKeepalives: MutableMap<Long, Long> = mutableMapOf()
 
     private val serverService = ServerService()
     private val clientService = ClientService()
@@ -79,7 +76,7 @@ class NetworkManager(
         }
     }
 
-    fun startKeepaliveHandler() {
+    fun startSendKeepaliveHandler() {
         val handler = handlerFactory.buildHandler()
 
         val runnable = object : Runnable {
@@ -92,14 +89,27 @@ class NetworkManager(
         handler.post(runnable)
     }
 
+    fun startUpdateConnectedDevicesHandler() {
+        val handler = handlerFactory.buildHandler()
+
+        val runnable = object : Runnable {
+            override fun run() {
+                updateConnectedDevices()
+                handler.postDelayed(this, 2000)
+            }
+        }
+
+        handler.post(runnable)
+    }
+
     fun updateConnectedDevices() {
         val currentTimestamp = System.currentTimeMillis()
-        val disconnectedDevicesIds = lastKeepalives.asSequence().filter { abs(currentTimestamp - it.value) > 10000 }.map { it.key }.toSet()
-        _connectedDevices.value = _connectedDevices.value.filter { disconnectedDevicesIds.contains(it.account.accountId) }
+        _connectedDevices.value = _connectedDevices.value.filter { currentTimestamp - it.keepalive <= 10000 }
     }
 
     fun sendKeepalive() {
         coroutineScope.launch {
+            ownDevice.keepalive = System.currentTimeMillis()
             val networkKeepalive = NetworkKeepalive(connectedDevices.value + ownDevice.toNetworkDevice())
 
             if(ownDevice.ipAddress != IP_GROUP_OWNER) {
@@ -255,7 +265,7 @@ class NetworkManager(
             while(true) {
                 val networkKeepalive = serverService.listenKeepalive()
 
-                networkKeepalive.networkDevices.forEach { networkDevice ->
+                networkKeepalive?.networkDevices?.forEach { networkDevice ->
                     if(networkDevice.account.accountId != ownDevice.account.accountId) {
                         handleDeviceKeepalive(networkDevice)
                     }
@@ -269,7 +279,7 @@ class NetworkManager(
             while(true) {
                 val networkProfileRequest = serverService.listenProfileRequest()
 
-                if(networkProfileRequest.receiverId == ownDevice.account.accountId) {
+                if(networkProfileRequest?.receiverId == ownDevice.account.accountId) {
                     handleProfileRequest(networkProfileRequest)
                 }
             }
@@ -281,7 +291,7 @@ class NetworkManager(
             while(true) {
                 val networkProfileResponse = serverService.listenProfileResponse()
 
-                if(networkProfileResponse.receiverId == ownDevice.account.accountId) {
+                if(networkProfileResponse?.receiverId == ownDevice.account.accountId) {
                     handleProfileResponse(networkProfileResponse)
                 }
             }
@@ -293,7 +303,7 @@ class NetworkManager(
             while(true) {
                 val networkTextMessage = serverService.listenTextMessage()
 
-                if(networkTextMessage.receiverId == ownDevice.account.accountId) {
+                if(networkTextMessage?.receiverId == ownDevice.account.accountId) {
                     handleTextMessage(networkTextMessage)
                 }
             }
@@ -305,7 +315,7 @@ class NetworkManager(
             while(true) {
                 val networkFileMessage = serverService.listenFileMessage()
 
-                if(networkFileMessage.receiverId == ownDevice.account.accountId) {
+                if(networkFileMessage?.receiverId == ownDevice.account.accountId) {
                     handleFileMessage(networkFileMessage)
                 }
             }
@@ -317,7 +327,7 @@ class NetworkManager(
             while(true) {
                 val networkAudioMessage = serverService.listenAudioMessage()
 
-                if(networkAudioMessage.receiverId == ownDevice.account.accountId) {
+                if(networkAudioMessage?.receiverId == ownDevice.account.accountId) {
                     handleAudioMessage(networkAudioMessage)
                 }
             }
@@ -329,7 +339,7 @@ class NetworkManager(
             while(true) {
                 val networkMessageAck = serverService.listenMessageReceivedAck()
 
-                if(networkMessageAck.receiverId == ownDevice.account.accountId) {
+                if(networkMessageAck?.receiverId == ownDevice.account.accountId) {
                     handleMessageReceivedAck(networkMessageAck)
                 }
             }
@@ -341,7 +351,7 @@ class NetworkManager(
             while(true) {
                 val networkMessageAck = serverService.listenMessageReadAck()
 
-                if(networkMessageAck.receiverId == ownDevice.account.accountId) {
+                if(networkMessageAck?.receiverId == ownDevice.account.accountId) {
                     handleMessageReadAck(networkMessageAck)
                 }
             }
@@ -369,8 +379,6 @@ class NetworkManager(
             }
 
             _connectedDevices.value = _connectedDevices.value.filter { it.account.accountId != networkDevice.account.accountId } + networkDevice
-
-            lastKeepalives[networkDevice.account.accountId] = System.currentTimeMillis()
         }
     }
 
