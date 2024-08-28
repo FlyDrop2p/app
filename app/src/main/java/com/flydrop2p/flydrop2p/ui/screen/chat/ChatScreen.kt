@@ -60,7 +60,7 @@ fun ChatScreen(
     accountId: Long,
     chatViewModel: ChatViewModel,
     navController: NavHostController,
-    onCallButtonClick: (Long) -> Unit,
+    navigateToCallScreen: (Long) -> Unit,
     onInfoButtonClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -74,7 +74,10 @@ fun ChatScreen(
             ChatTopAppBar(
                 title = chatState.contact.username ?: "Connecting...",
                 canNavigateBack = true,
-                onCallButtonClick = { onCallButtonClick(chatState.contact.accountId) },
+                onCallButtonClick = {
+                    chatViewModel.sendCallRequest(accountId)
+                    navigateToCallScreen(accountId)
+                },
                 onSettingsButtonClick = { },
                 modifier = modifier,
                 navigateUp = { navController.navigateUp() },

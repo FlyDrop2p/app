@@ -66,6 +66,10 @@ class ChatViewModel(
         }
     }
 
+    fun sendCallRequest(accountId: Long) {
+        networkManager.sendCallRequest(accountId)
+    }
+
     fun startRecordingAudio() = audioReplayer.startRecording(fileManager.getAudioTempFile())
     fun stopRecordingAudio() = audioReplayer.stopRecording()
     fun startPlayingAudio(file: File) = audioReplayer.startPlaying(file)

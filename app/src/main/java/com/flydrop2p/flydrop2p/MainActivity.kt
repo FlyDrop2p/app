@@ -13,8 +13,11 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.flydrop2p.flydrop2p.network.NetworkManager
 import com.flydrop2p.flydrop2p.ui.FlyDropApp
+import com.flydrop2p.flydrop2p.ui.screen.chat.ChatDestination
 import com.flydrop2p.flydrop2p.ui.theme.FlyDrop2pTheme
 
 class MainActivity : ComponentActivity() {

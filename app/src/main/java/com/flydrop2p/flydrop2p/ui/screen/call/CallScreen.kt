@@ -48,7 +48,7 @@ object CallDestination : NavigationDestination {
 fun CallScreen(
     callViewModel: CallViewModel,
     navController: NavHostController,
-    onHangUpClick: () -> Unit,
+    popBackStack: () -> Unit,
     onSpeakerClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -123,7 +123,7 @@ fun CallScreen(
                 iconResId = R.drawable.call_end_24px,
                 contentDescription = "Metti giù",
                 onClick = {
-                    onHangUpClick()
+                    popBackStack()
                 },
                 buttonColor = Color.Red,
                 iconTintColor = Color.White
