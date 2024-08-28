@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val ownAccountRepository: OwnAccountRepository,
-    val ownProfileRepository: OwnProfileRepository,
+    private val ownProfileRepository: OwnProfileRepository,
     private val chatRepository: ChatRepository,
     private val fileManager: FileManager,
     val networkManager: NetworkManager

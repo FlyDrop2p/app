@@ -86,7 +86,7 @@ dependencies {
     implementation("androidx.datastore:datastore:1.1.1")
 
     // Serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.1")
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.11.0")

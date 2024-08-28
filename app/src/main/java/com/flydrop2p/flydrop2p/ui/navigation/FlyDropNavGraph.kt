@@ -3,6 +3,7 @@ package com.flydrop2p.flydrop2p.ui.navigation
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -45,7 +46,8 @@ fun FlyDropNavHost(
         modifier = modifier
     ) {
         composable(route = HomeDestination.route) {
-            val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory())
+            val homeViewModelFactory = remember { HomeViewModelFactory() }
+            val homeViewModel: HomeViewModel = viewModel(factory = homeViewModelFactory)
 
             HomeScreen(
                 homeViewModel = homeViewModel,
@@ -65,7 +67,8 @@ fun FlyDropNavHost(
         ) { backStackEntry ->
             val accountId = backStackEntry.arguments?.getLong(ChatDestination.itemIdArg)
             accountId?.let {
-                val chatViewModel: ChatViewModel = viewModel(factory = ChatViewModelFactory(accountId))
+                val chatViewModelFactory = remember(accountId) { ChatViewModelFactory(accountId) }
+                val chatViewModel: ChatViewModel = viewModel(factory = chatViewModelFactory)
 
                 ChatScreen(
                     accountId = it,
@@ -85,7 +88,8 @@ fun FlyDropNavHost(
         ) { backStackEntry ->
             val accountId = backStackEntry.arguments?.getLong(CallDestination.itemIdArg)
             accountId?.let {
-                val callViewModel: CallViewModel = viewModel(factory = CallViewModelFactory(accountId))
+                val callViewModelFactory = remember(accountId) { CallViewModelFactory(accountId) }
+                val callViewModel: CallViewModel = viewModel(factory = callViewModelFactory)
 
                 CallScreen(
                     callViewModel = callViewModel,
@@ -98,7 +102,8 @@ fun FlyDropNavHost(
         composable(
             route = SettingsDestination.route
         ) {
-            val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory())
+            val settingsViewModelFactory = remember { SettingsViewModelFactory() }
+            val settingsViewModel: SettingsViewModel = viewModel(factory = settingsViewModelFactory)
 
             SettingsScreen(
                 settingsViewModel = settingsViewModel,
