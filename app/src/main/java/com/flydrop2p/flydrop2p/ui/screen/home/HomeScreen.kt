@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -35,6 +36,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.chat.ChatPreview
@@ -48,6 +50,7 @@ import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 import com.flydrop2p.flydrop2p.ui.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.ui.components.getMimeType
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
+import com.flydrop2p.flydrop2p.ui.screen.call.CallDestination
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -61,11 +64,20 @@ object HomeDestination : NavigationDestination {
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel,
+    navController: NavHostController,
     onChatClick: (Contact) -> Unit,
     onConnectionButtonClick: () -> Unit,
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val callRequest by homeViewModel.networkManager.callRequest.collectAsState()
+
+    LaunchedEffect(callRequest) {
+        callRequest?.let {
+            navController.navigate("${CallDestination.route}/${it.senderId}")
+        }
+    }
+
     val uiState by homeViewModel.uiState.collectAsState()
 
     Scaffold(topBar = {

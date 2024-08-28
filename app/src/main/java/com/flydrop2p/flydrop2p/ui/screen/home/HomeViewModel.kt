@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val chatRepository: ChatRepository,
-    private val networkManager: NetworkManager
+    val networkManager: NetworkManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeViewState())
     val uiState: StateFlow<HomeViewState> = _uiState.asStateFlow()
@@ -28,5 +28,9 @@ class HomeViewModel(
                 _uiState.value = _uiState.value.copy(onlineChats = device.map { it.account.accountId }.toSet())
             }
         }
+    }
+
+    fun connect() {
+        networkManager.receiver.discoverPeers()
     }
 }

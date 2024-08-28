@@ -272,8 +272,6 @@ class ServerService {
             audio = buffer
 
             socket.close()
-
-            Log.d("CALL FRAGMENT", audio.toString())
         }
 
         return audio

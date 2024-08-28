@@ -1,6 +1,7 @@
 package com.flydrop2p.flydrop2p.network
 
 import android.net.Uri
+import android.telecom.CallScreeningService.CallResponse
 import com.flydrop2p.flydrop2p.HandlerFactory
 import com.flydrop2p.flydrop2p.data.local.FileManager
 import com.flydrop2p.flydrop2p.domain.model.device.Account
@@ -34,6 +35,7 @@ import com.flydrop2p.flydrop2p.network.wifidirect.WiFiDirectBroadcastReceiver
 import com.flydrop2p.flydrop2p.network.wifidirect.WiFiDirectBroadcastReceiver.Companion.IP_GROUP_OWNER
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -56,6 +58,14 @@ class NetworkManager(
     private val _connectedDevices: MutableStateFlow<List<NetworkDevice>> = MutableStateFlow(listOf())
     val connectedDevices: StateFlow<List<NetworkDevice>>
         get() = _connectedDevices
+
+    private val _callRequest: MutableStateFlow<NetworkCallRequest?> = MutableStateFlow(null)
+    val callRequest: StateFlow<NetworkCallRequest?>
+        get() = _callRequest
+
+    private val _callEnd: MutableStateFlow<NetworkCallEnd?> = MutableStateFlow(null)
+    val callEnd: StateFlow<NetworkCallEnd?>
+        get() = _callEnd
 
     private val _callFragment: MutableStateFlow<ByteArray?> = MutableStateFlow(null)
     val callFragment: StateFlow<ByteArray?>
@@ -238,26 +248,26 @@ class NetworkManager(
         }
     }
 
-    fun sendCallRequest(accountId: Long) {
+    fun sendCallRequest(accountId: Long, ack: Boolean) {
         val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
 
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
-                    val networkCallRequest = NetworkCallRequest(ownDevice.account.accountId, accountId)
+                    val networkCallRequest = NetworkCallRequest(ownDevice.account.accountId, accountId, ack)
                     clientService.sendCallRequest(ipAddress, ownDevice, networkCallRequest)
                 }
             }
         }
     }
 
-    fun sendCallEnd(accountId: Long) {
+    fun sendCallEnd(accountId: Long, ack: Boolean) {
         val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
 
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
-                    val networkCallEnd = NetworkCallEnd(ownDevice.account.accountId, accountId)
+                    val networkCallEnd = NetworkCallEnd(ownDevice.account.accountId, accountId, ack)
                     clientService.sendCallEnd(ipAddress, ownDevice, networkCallEnd)
                 }
             }
@@ -499,12 +509,22 @@ class NetworkManager(
         }
     }
 
-    var handleCallRequest: (NetworkCallRequest) -> Unit = {
+    private fun handleCallRequest(networkCallRequest: NetworkCallRequest) {
+        _callRequest.value = networkCallRequest
+        _callEnd.value = null
 
+        if(!networkCallRequest.ack) {
+            sendCallRequest(networkCallRequest.senderId, true)
+        }
     }
 
-    var handleCallEnd: (NetworkCallEnd) -> Unit = {
+    private fun handleCallEnd(networkCallEnd: NetworkCallEnd) {
+        _callEnd.value = networkCallEnd
+        _callRequest.value = null
 
+        if(!networkCallEnd.ack) {
+            sendCallEnd(networkCallEnd.senderId, true)
+        }
     }
 
     private fun handleCallFragment(callFragment: ByteArray) {

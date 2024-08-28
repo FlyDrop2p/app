@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.net.wifi.WifiManager
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Build
 import android.os.Bundle
@@ -31,6 +32,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         requestPermissions()
+
+        val wifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
+
+        if(!wifiManager.isWifiEnabled) {
+            Toast.makeText(this, "Please activate Wi-Fi", Toast.LENGTH_LONG).show()
+        }
 
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 

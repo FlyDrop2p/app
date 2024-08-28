@@ -43,6 +43,7 @@ import com.flydrop2p.flydrop2p.ui.components.FileMessageInput
 import com.flydrop2p.flydrop2p.ui.components.TextMessageComponent
 import com.flydrop2p.flydrop2p.ui.components.TextMessageInput
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
+import com.flydrop2p.flydrop2p.ui.screen.call.CallDestination
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -60,10 +61,18 @@ fun ChatScreen(
     accountId: Long,
     chatViewModel: ChatViewModel,
     navController: NavHostController,
-    onCallButtonClick: (Long) -> Unit,
+    navigateToCallScreen: (Long) -> Unit,
     onInfoButtonClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val callRequest by chatViewModel.networkManager.callRequest.collectAsState()
+
+    LaunchedEffect(callRequest) {
+        callRequest?.let {
+            navController.navigate("${CallDestination.route}/${it.senderId}")
+        }
+    }
+
     val currentAccount by chatViewModel.ownAccount.collectAsState(initial = null)
     val chatState by chatViewModel.uiState.collectAsState()
 
@@ -74,7 +83,10 @@ fun ChatScreen(
             ChatTopAppBar(
                 title = chatState.contact.username ?: "Connecting...",
                 canNavigateBack = true,
-                onCallButtonClick = { onCallButtonClick(chatState.contact.accountId) },
+                onCallButtonClick = {
+                    chatViewModel.sendCallRequest(accountId)
+                    navigateToCallScreen(accountId)
+                },
                 onSettingsButtonClick = { },
                 modifier = modifier,
                 navigateUp = { navController.navigateUp() },

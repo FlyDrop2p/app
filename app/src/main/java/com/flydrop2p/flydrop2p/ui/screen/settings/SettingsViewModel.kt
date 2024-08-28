@@ -11,6 +11,7 @@ import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
 import com.flydrop2p.flydrop2p.network.BackupInstance
 import com.flydrop2p.flydrop2p.network.BackupRequestBody
+import com.flydrop2p.flydrop2p.network.NetworkManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,6 +22,7 @@ class SettingsViewModel(
     private val ownProfileRepository: OwnProfileRepository,
     private val chatRepository: ChatRepository,
     private val fileManager: FileManager,
+    val networkManager: NetworkManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsViewState())
@@ -32,6 +34,10 @@ class SettingsViewModel(
                 _uiState.value = SettingsViewState(profile = it)
             }
         }
+    }
+
+    fun connect() {
+        networkManager.receiver.discoverPeers()
     }
 
     private fun setLoading(isLoading: Boolean) {

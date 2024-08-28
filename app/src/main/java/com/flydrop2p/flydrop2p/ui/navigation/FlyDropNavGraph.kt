@@ -49,8 +49,9 @@ fun FlyDropNavHost(
 
             HomeScreen(
                 homeViewModel = homeViewModel,
+                navController = navController,
                 onChatClick = { navController.navigate("${ChatDestination.route}/${it.accountId}") },
-                onConnectionButtonClick = {}, // TODO
+                onConnectionButtonClick = { homeViewModel.connect() },
                 onSettingsButtonClick = { navController.navigate(SettingsDestination.route) },
             )
         }
@@ -70,7 +71,7 @@ fun FlyDropNavHost(
                     accountId = it,
                     chatViewModel = chatViewModel,
                     navController = navController,
-                    onCallButtonClick = { navController.navigate("${CallDestination.route}/${it}") },
+                    navigateToCallScreen = { navController.navigate("${CallDestination.route}/${it}") },
                     onInfoButtonClick = {} // TODO
                 )
             }
@@ -89,10 +90,6 @@ fun FlyDropNavHost(
                 CallScreen(
                     callViewModel = callViewModel,
                     navController = navController,
-                    onHangUpClick = {
-                        callViewModel.endCall()
-                        navController.popBackStack()
-                    },
                     onSpeakerClick = { /*TODO*/ },
                 )
             }
@@ -106,6 +103,7 @@ fun FlyDropNavHost(
             SettingsScreen(
                 settingsViewModel = settingsViewModel,
                 navController = navController,
+                onConnectionButtonClick = { settingsViewModel.connect() },
                 onSettingsButtonClick = { navController.navigate(SettingsDestination.route) },
             )
         }
