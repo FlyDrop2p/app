@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.net.wifi.WifiManager
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Build
 import android.os.Bundle
@@ -13,11 +14,8 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import com.flydrop2p.flydrop2p.network.NetworkManager
 import com.flydrop2p.flydrop2p.ui.FlyDropApp
-import com.flydrop2p.flydrop2p.ui.screen.chat.ChatDestination
 import com.flydrop2p.flydrop2p.ui.theme.FlyDrop2pTheme
 
 class MainActivity : ComponentActivity() {
@@ -34,6 +32,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         requestPermissions()
+
+        val wifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
+
+        if(!wifiManager.isWifiEnabled) {
+            Toast.makeText(this, "Please activate Wi-Fi", Toast.LENGTH_LONG).show()
+        }
 
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
