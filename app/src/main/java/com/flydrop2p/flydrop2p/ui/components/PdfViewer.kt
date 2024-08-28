@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -16,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -76,6 +78,7 @@ fun PdfFirstPageViewer(
             contentDescription = "First Page of PDF",
             modifier = modifier
                 .size(imageWidth, imageHeight)
+                .clip(RoundedCornerShape(8.dp))
                 .background(Color.White),
             contentScale = ContentScale.Crop
         )
@@ -83,6 +86,7 @@ fun PdfFirstPageViewer(
         Box(
             modifier = modifier
                 .size(imageWidth, imageHeight)
+                .clip(RoundedCornerShape(8.dp))
                 .background(Color.Gray)
         )
     }

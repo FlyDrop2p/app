@@ -79,19 +79,6 @@ fun VideoThumbnail(
                 .align(Alignment.Center),
             tint = Color.White,
         )
-
-        if (videoDuration.isNotEmpty()) {
-            Text(
-                text = videoDuration,
-                color = Color.White,
-                fontSize = 14.sp,
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(8.dp)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.7f), RoundedCornerShape(4.dp))
-                    .padding(4.dp)
-            )
-        }
     }
 }
 

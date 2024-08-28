@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -213,6 +214,7 @@ fun SendMessageInput(
             .fillMaxWidth()
             .padding(top = 5.dp, bottom = 10.dp)
     ) {
+        /* BOTTONE ALLEGATI E FILE PREVIEW */
         if (!isTyping && !isRecording) {
             FileMessageInput(
                 fileUri = attachedFileUri,
@@ -229,6 +231,7 @@ fun SendMessageInput(
             )
         }
 
+        /* INPUT DI TESTO */
         if (attachedFileUri == null && !isRecording) {
             TextMessageInput(
                 isTyping = isTyping,
@@ -237,10 +240,12 @@ fun SendMessageInput(
                     textFieldValue = it
                     isTyping = it.text.isNotEmpty()
                 },
-                onSendTextMessage = onSendTextMessage
+                onSendTextMessage = onSendTextMessage,
+                modifier = Modifier.weight(1f)
             )
         }
 
+        /* BOTTONE REGISTRAZIONE E GESTIONE AUDIO */
         if ((!isTyping && attachedFileUri == null) || isRecording) {
             AudioRecordingControls(
                 isRecording = isRecording,
@@ -259,7 +264,7 @@ fun SendMessageInput(
                 onSendAudioMessage = {
                     onSendAudioMessage()
                     isRecording = false
-                }
+                },
             )
         }
     }
