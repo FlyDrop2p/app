@@ -217,7 +217,12 @@ fun FileMessageInput(
     } else {
         val context = LocalContext.current
         val mimeType = context.contentResolver.getType(fileUri) ?: "application/octet-stream"
-        Log.d("FilePreview", "MIME type: $mimeType")
+
+        val fileName = context.contentResolver.query(fileUri, null, null, null, null)?.use { cursor ->
+            val nameIndex = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+            cursor.moveToFirst()
+            cursor.getString(nameIndex)
+        } ?: "Unknown"
 
         Row(
             modifier = Modifier
@@ -230,7 +235,11 @@ fun FileMessageInput(
             when {
                 mimeType.startsWith("image/") -> ImagePreview(fileUri)
                 mimeType.startsWith("video/") -> VideoPreview(fileUri)
-                mimeType.startsWith("application/pdf") -> PdfPreview(context, fileUri)
+                mimeType.startsWith("application/pdf") -> {
+                    val tempFile = getFileFromContentUri(context, fileUri)
+                    val fileUriNewUri = Uri.fromFile(tempFile)
+                    PdfPreview(context, fileUriNewUri, filename = fileName)
+                }
                 else -> GenericFilePreview(fileUri)
             }
 
@@ -325,19 +334,17 @@ fun GenericFilePreview(fileUri: Uri) {
 fun PdfPreview(
     context: Context,
     fileUri: Uri,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    filename: String? = null
 ) {
-    val tempFile = getFileFromContentUri(context, fileUri)
-    val fileUriNewUri = Uri.fromFile(tempFile)
-
     PdfFirstPageViewer(
-        uri = fileUriNewUri,
+        uri = fileUri,
         imageWidth = 50.dp,
         imageHeight = 50.dp
     )
     Spacer(modifier = Modifier.size(8.dp))
     Text(
-        text = fileUri.lastPathSegment ?: "Unknown File",
+        text = filename ?: fileUri.lastPathSegment ?: "Unknown File",
         color = Color.Black,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
