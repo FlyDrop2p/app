@@ -66,6 +66,7 @@ fun FlyDropApp(
 fun FlyDropTopAppBar(
     title: String,
     canNavigateBack: Boolean,
+    isSettingsScreen: Boolean,
     onConnectionButtonClick: () -> Unit,
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -95,27 +96,32 @@ fun FlyDropTopAppBar(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
-                Spacer(modifier = Modifier.weight(1f))
-                IconButton(
-                    onClick = onConnectionButtonClick
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.wifi_tethering_24px),
-                        contentDescription = "Connection",
-                        modifier = Modifier.size(36.dp)
-                    )
-                }
-                IconButton(
-                    onClick = onSettingsButtonClick
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Settings,
-                        contentDescription = "Settings",
-                        modifier = Modifier.size(36.dp)
-                    )
-                }
             }
 
+        },
+        actions = {
+            IconButton(
+                onClick = onConnectionButtonClick
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.wifi_tethering_24px),
+                    contentDescription = "Connection",
+                    tint = Color.Black,
+                    modifier = Modifier.size(30.dp)
+                )
+            }
+
+            IconButton(
+                onClick = onSettingsButtonClick,
+                enabled = !isSettingsScreen
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Settings,
+                    contentDescription = "Settings",
+                    tint = if (isSettingsScreen) Color.Gray else Color.Black,
+                    modifier = Modifier.size(30.dp)
+                )
+            }
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.surfaceBright,

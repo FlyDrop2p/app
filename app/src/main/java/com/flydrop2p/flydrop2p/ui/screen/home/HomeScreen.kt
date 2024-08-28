@@ -85,6 +85,7 @@ fun HomeScreen(
         FlyDropTopAppBar(
             title = "Chat",
             canNavigateBack = false,
+            isSettingsScreen = false,
             onConnectionButtonClick = onConnectionButtonClick,
             onSettingsButtonClick = onSettingsButtonClick,
             modifier = modifier

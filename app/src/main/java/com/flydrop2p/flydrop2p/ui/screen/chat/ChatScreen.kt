@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.message.AudioMessage
@@ -290,6 +291,7 @@ fun SendMessageInput(
 fun DateSeparator(date: String) {
     Text(
         text = date,
+        fontSize = 12.sp,
         color = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier
             .fillMaxWidth()

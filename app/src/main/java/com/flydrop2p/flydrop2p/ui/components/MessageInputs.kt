@@ -3,6 +3,11 @@ package com.flydrop2p.flydrop2p.ui.components
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +30,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.flydrop2p.flydrop2p.R
+import kotlinx.coroutines.delay
 import java.io.File
 import java.io.FileOutputStream
 
@@ -135,6 +146,35 @@ fun AudioRecordingControls(
     onSendAudioMessage: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var recordingTime by remember { mutableStateOf(0L) }
+
+    val infiniteTransition = rememberInfiniteTransition(label = "")
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 0.2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 700),
+            repeatMode = RepeatMode.Reverse
+        ), label = ""
+    )
+
+    if (isRecording) {
+        LaunchedEffect(Unit) {
+            while (isRecording) {
+                delay(1000L)
+                recordingTime += 1000L
+            }
+        }
+    } else {
+        recordingTime = 0L
+    }
+
+    val formattedTime = remember(recordingTime) {
+        val minutes = (recordingTime / 60000).toString().padStart(2, '0')
+        val seconds = ((recordingTime / 1000) % 60).toString().padStart(2, '0')
+        "$minutes:$seconds"
+    }
+
     if (isRecording) {
 
         Row(
@@ -145,10 +185,11 @@ fun AudioRecordingControls(
                 modifier = Modifier
                     .size(10.dp)
                     .clip(CircleShape)
-                    .background(Color.Red)
+                    .background(Color.Red.copy(alpha = alpha))
             ) {}
             Spacer(modifier = Modifier.size(16.dp))
-            Text("Recording...", color = Color.Red)
+            Text(formattedTime, color = Color.Red)
+            Spacer(modifier = Modifier.size(2.dp))
         }
 
         Row(

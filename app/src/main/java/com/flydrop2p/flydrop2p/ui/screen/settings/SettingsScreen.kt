@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -46,6 +48,8 @@ import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import java.io.File
 import kotlin.random.Random
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.ui.text.TextStyle
 import com.flydrop2p.flydrop2p.ui.screen.call.CallDestination
 
 object SettingsDestination : NavigationDestination {
@@ -53,6 +57,7 @@ object SettingsDestination : NavigationDestination {
     override val titleRes = R.string.settings_screen
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     settingsViewModel: SettingsViewModel,
@@ -108,6 +113,7 @@ fun SettingsScreen(
             FlyDropTopAppBar(
                 title = "Settings",
                 canNavigateBack = true,
+                isSettingsScreen = true,
                 onConnectionButtonClick = onConnectionButtonClick,
                 onSettingsButtonClick = onSettingsButtonClick,
                 modifier = modifier,
@@ -168,10 +174,23 @@ fun SettingsScreen(
                     onValueChange = {
                         usernameText = it
                     },
-                    label = { Text("Update Username") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.tertiaryContainer)
+                    placeholder = {
+                        Text(
+                            "Update Username",
+                            fontSize = 14.sp,
+                        )
+                    },
+                    textStyle = TextStyle(
+                        fontSize = 14.sp
+                    ),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = TextFieldDefaults.textFieldColors(
+                        cursorColor = Color.Black,
+                        disabledLabelColor = Color.Transparent,
+                        containerColor = Color.White,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
                 )
 
                 Button(
