@@ -1,6 +1,8 @@
 package com.flydrop2p.flydrop2p.network.service
 
 import android.util.Log
+import com.flydrop2p.flydrop2p.network.model.call.NetworkCallEnd
+import com.flydrop2p.flydrop2p.network.model.call.NetworkCallRequest
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
 import com.flydrop2p.flydrop2p.network.model.message.NetworkAudioMessage
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
@@ -23,7 +25,9 @@ class ServerService {
         const val PORT_AUDIO_MESSAGE: Int = 8805
         const val PORT_MESSAGE_RECEIVED_ACK: Int = 8806
         const val PORT_MESSAGE_READ_ACK: Int = 8807
-        const val PORT_CALL: Int = 8808
+        const val PORT_CALL_REQUEST: Int = 8808
+        const val PORT_CALL_END: Int = 8809
+        const val PORT_CALL_FRAGMENT: Int = 8810
     }
 
     suspend fun listenKeepalive(): NetworkKeepalive? {
@@ -210,11 +214,57 @@ class ServerService {
         return networkMessageAck
     }
 
+    suspend fun listenCallRequest(): NetworkCallRequest? {
+        var networkCallRequest: NetworkCallRequest? = null
+
+        withContext(Dispatchers.IO) {
+            try {
+                val socket = ServerSocket(PORT_CALL_REQUEST)
+                val client = socket.accept()
+
+                val inputStream = client.getInputStream()
+                val buffer = inputStream.readBytes()
+                networkCallRequest = Json.decodeFromString(buffer.decodeToString())
+
+                socket.close()
+
+                Log.d("CALL REQUEST", networkCallRequest.toString())
+            } catch (e: Exception) {
+                Log.d("CALL REQUEST", e.toString())
+            }
+        }
+
+        return networkCallRequest
+    }
+
+    suspend fun listenCallEnd(): NetworkCallEnd? {
+        var networkCallRequest: NetworkCallEnd? = null
+
+        withContext(Dispatchers.IO) {
+            try {
+                val socket = ServerSocket(PORT_CALL_END)
+                val client = socket.accept()
+
+                val inputStream = client.getInputStream()
+                val buffer = inputStream.readBytes()
+                networkCallRequest = Json.decodeFromString(buffer.decodeToString())
+
+                socket.close()
+
+                Log.d("CALL END", networkCallRequest.toString())
+            } catch (e: Exception) {
+                Log.d("CALL END", e.toString())
+            }
+        }
+
+        return networkCallRequest
+    }
+
     suspend fun listenCallFragment(): ByteArray {
         val audio: ByteArray
 
         withContext(Dispatchers.IO) {
-            val socket = ServerSocket(PORT_CALL)
+            val socket = ServerSocket(PORT_CALL_FRAGMENT)
             val client = socket.accept()
 
             val inputStream = client.getInputStream()

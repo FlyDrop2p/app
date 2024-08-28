@@ -17,6 +17,8 @@ import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
+import com.flydrop2p.flydrop2p.network.model.call.NetworkCallEnd
+import com.flydrop2p.flydrop2p.network.model.call.NetworkCallRequest
 import com.flydrop2p.flydrop2p.network.model.device.NetworkDevice
 import com.flydrop2p.flydrop2p.network.model.device.NetworkProfile
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
@@ -257,6 +259,8 @@ class NetworkManager(
         startAudioMessageConnection()
         startMessageReceivedAckConnection()
         startMessageReadAckConnection()
+        startCallRequestConnection()
+        startCallEndConnection()
         startCallFragmentConnection()
     }
 
@@ -358,6 +362,32 @@ class NetworkManager(
         }
     }
 
+    private fun startCallRequestConnection() {
+        coroutineScope.launch {
+            while(true) {
+                val networkCallRequest = serverService.listenCallRequest()
+
+                if(networkCallRequest?.receiverId == ownDevice.account.accountId) {
+                    handleCallRequest(networkCallRequest)
+                }
+            }
+        }
+    }
+
+
+    private fun startCallEndConnection() {
+        coroutineScope.launch {
+            while(true) {
+                val networkCallEnd = serverService.listenCallEnd()
+
+                if(networkCallEnd?.receiverId == ownDevice.account.accountId) {
+                    handleCallEnd(networkCallEnd)
+                }
+            }
+        }
+    }
+
+
     private fun startCallFragmentConnection() {
         coroutineScope.launch {
             while(true) {
@@ -441,6 +471,14 @@ class NetworkManager(
                 }
             }
         }
+    }
+
+    var handleCallRequest: (NetworkCallRequest) -> Unit = {
+
+    }
+
+    var handleCallEnd: (NetworkCallEnd) -> Unit = {
+
     }
 
     private fun handleCallFragment(callFragment: ByteArray) {
