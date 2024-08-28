@@ -47,4 +47,14 @@ sealed class MediaReplayer {
         isPlaying = false
         player = null
     }
+
+    fun getCurrentPlaybackPosition(): Int {
+        return player?.currentPosition ?: 0
+    }
+
+    fun isPlaybackComplete(): Boolean {
+        return player?.let {
+            it.currentPosition >= it.duration
+        } ?: false
+    }
 }

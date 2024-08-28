@@ -60,6 +60,18 @@ data class AudioMessage(
             String.format("%02d:%02d", minutes, seconds)
         }
     }
+
+    fun formatDuration(duration: Int): String {
+        val seconds = (duration / 1000) % 60
+        val minutes = (duration / (1000 * 60)) % 60
+        val hours = (duration / (1000 * 60 * 60)) % 24
+
+        return if (hours > 0) {
+            String.format("%d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            String.format("%02d:%02d", minutes, seconds)
+        }
+    }
 }
 
 fun MessageEntity.toAudioMessage(): AudioMessage {

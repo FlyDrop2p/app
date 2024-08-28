@@ -71,6 +71,14 @@ class ChatViewModel(
     fun startPlayingAudio(file: File) = audioReplayer.startPlaying(file)
     fun stopPlayingAudio() = audioReplayer.stopPlaying()
 
+    fun getCurrentPlaybackPosition(): Int {
+        return audioReplayer.getCurrentPlaybackPosition()
+    }
+
+    fun isPlaybackComplete(): Boolean {
+        return audioReplayer.isPlaybackComplete()
+    }
+
     fun updateMessagesState(messages: List<Message>) {
         viewModelScope.launch {
             val ownAccountId = ownAccountRepository.getAccount().accountId

@@ -169,14 +169,19 @@ fun MessageItem(message: Message, accountId: Long, chatViewModel: ChatViewModel)
             }
 
             is AudioMessage -> {
-                AudioMessageComponent(message,
+                AudioMessageComponent(
+                    message,
                     currentAccountId = accountId,
                     startPlayingAudio = { fileName ->
                         chatViewModel.startPlayingAudio(File(context.filesDir, fileName))
                     },
                     stopPlayingAudio = {
                         chatViewModel.stopPlayingAudio()
-                    }
+                    },
+                    getCurrentPlaybackPosition = {
+                        chatViewModel.getCurrentPlaybackPosition()
+                    },
+                     isPlaybackComplete = chatViewModel.isPlaybackComplete()
                 )
             }
         }
