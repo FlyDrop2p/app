@@ -22,17 +22,18 @@ class ChatViewModel(
     private val contactRepository: ContactRepository,
     private val ownAccountRepository: OwnAccountRepository,
     private val fileManager: FileManager,
-    private val networkManager: NetworkManager
+    private val networkManager: NetworkManager,
+    private val accountId: Long
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ChatViewState())
     val uiState: StateFlow<ChatViewState> = _uiState.asStateFlow()
 
-    private val audioReplayer = AudioReplayer()
-
     val ownAccount
         get() = ownAccountRepository.getAccountAsFlow()
 
-    fun collectContact(accountId: Long) {
+    private val audioReplayer = AudioReplayer()
+
+    init {
         viewModelScope.launch {
             contactRepository.getContactByAccountIdAsFlow(accountId).collect { contact ->
                 if(contact != null) {
@@ -40,9 +41,7 @@ class ChatViewModel(
                 }
             }
         }
-    }
 
-    fun collectMessages(accountId: Long) {
         viewModelScope.launch {
             chatRepository.getAllMessagesByAccountIdAsFlow(accountId).collect { messages ->
                 _uiState.value = _uiState.value.copy(messages = messages)
@@ -86,9 +85,5 @@ class ChatViewModel(
                 networkManager.sendMessageReadAck(message.senderId, message.messageId)
             }
         }
-    }
-
-    fun resetChat() {
-        _uiState.value = ChatViewState()
     }
 }

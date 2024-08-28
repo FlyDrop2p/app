@@ -123,7 +123,6 @@ fun CallScreen(
                 iconResId = R.drawable.call_end_24px,
                 contentDescription = "Metti giù",
                 onClick = {
-                    callViewModel.endCall()
                     onHangUpClick()
                 },
                 buttonColor = Color.Red,

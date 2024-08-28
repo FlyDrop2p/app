@@ -1,7 +1,5 @@
 package com.flydrop2p.flydrop2p.ui.screen.home
 
-import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,7 +35,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import coil.compose.rememberAsyncImagePainter
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.domain.model.chat.ChatPreview
@@ -51,7 +48,6 @@ import com.flydrop2p.flydrop2p.domain.model.message.TextMessage
 import com.flydrop2p.flydrop2p.ui.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.ui.components.getMimeType
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
-import com.flydrop2p.flydrop2p.ui.screen.chat.ChatViewModel
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -65,7 +61,6 @@ object HomeDestination : NavigationDestination {
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel,
-    chatViewModel: ChatViewModel,
     onChatClick: (Contact) -> Unit,
     onConnectionButtonClick: () -> Unit,
     onSettingsButtonClick: () -> Unit,

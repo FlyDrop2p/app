@@ -10,12 +10,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 
 class CallViewModel(
-    private val contactRepository: ContactRepository,
     private val ownAccountRepository: OwnAccountRepository,
+    private val contactRepository: ContactRepository,
     private val networkManager: NetworkManager,
-    private val callManager: CallManager
+    private val callManager: CallManager,
+    private val accountId: Long
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CallViewState())
     val uiState: StateFlow<CallViewState> = _uiState.asStateFlow()
@@ -23,17 +25,9 @@ class CallViewModel(
     val ownAccount
         get() = ownAccountRepository.getAccountAsFlow()
 
-    init {
-        viewModelScope.launch {
-            networkManager.callFragment.collect { audioBytes ->
-                audioBytes?.let {
-                    callManager.playAudio(audioBytes)
-                }
-            }
-        }
-    }
+    private val isCalling = AtomicBoolean(false)
 
-    fun collectContact(accountId: Long) {
+    init {
         viewModelScope.launch {
             contactRepository.getContactByAccountIdAsFlow(accountId).collect { contact ->
                 if (contact != null) {
@@ -41,18 +35,38 @@ class CallViewModel(
                 }
             }
         }
+
+        viewModelScope.launch {
+            networkManager.callFragment.collect { audioBytes ->
+                audioBytes?.let {
+                    callManager.playAudio(audioBytes)
+                }
+            }
+        }
+
+        startCall(accountId)
     }
 
-    fun startCall(accountId: Long) {
-        callManager.startPlaying()
-        callManager.startRecording { audioBytes ->
-            networkManager.sendCallFragment(accountId, audioBytes)
+    private fun startCall(accountId: Long) {
+        if(!isCalling.get()) {
+            isCalling.set(true)
+
+            callManager.startPlaying()
+            callManager.startRecording { audioBytes ->
+                networkManager.sendCallFragment(accountId, audioBytes)
+            }
         }
     }
 
     fun endCall() {
-        callManager.stopPlaying()
-        callManager.stopRecording()
+        if(isCalling.get()) {
+            isCalling.set(false)
+
+            viewModelScope.launch {
+                callManager.stopPlaying()
+                callManager.stopRecording()
+            }
+        }
     }
 
     fun setSpeakerOn(isSpeakerOn: Boolean) {

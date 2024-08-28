@@ -53,7 +53,6 @@ object SettingsDestination : NavigationDestination {
 fun SettingsScreen(
     settingsViewModel: SettingsViewModel,
     navController: NavHostController,
-    onConnectionButtonClick: () -> Unit,
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -78,7 +77,7 @@ fun SettingsScreen(
             FlyDropTopAppBar(
                 title = "Settings",
                 canNavigateBack = true,
-                onConnectionButtonClick = onConnectionButtonClick,
+                onConnectionButtonClick = {}, // TODO
                 onSettingsButtonClick = onSettingsButtonClick,
                 modifier = modifier,
                 navigateUp = {
@@ -138,7 +137,8 @@ fun SettingsScreen(
                         usernameText = it
                     },
                     label = { Text("Update Username") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .background(MaterialTheme.colorScheme.tertiaryContainer)
                 )
 

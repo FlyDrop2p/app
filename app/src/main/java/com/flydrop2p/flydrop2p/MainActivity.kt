@@ -47,11 +47,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             FlyDrop2pTheme {
-                FlyDropApp(
-                    onConnectionButtonClick = {
-                        networkManager.receiver.discoverPeers()
-                    }
-                )
+                FlyDropApp()
             }
         }
     }

@@ -8,13 +8,12 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.AudioTrack
 import android.media.MediaRecorder
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
-import java.util.concurrent.atomic.AtomicBoolean
 
 class CallManager(private val context: Context) {
     companion object {
@@ -36,7 +35,6 @@ class CallManager(private val context: Context) {
     private val audioTrack = AudioTrack(audioAttributes, audioFormat, BUFFER_SIZE, AudioTrack.MODE_STREAM, 0)
     private var audioRecord: AudioRecord? = null
 
-    private val recordingInProgress = AtomicBoolean(false)
     private var recordingJob: Job? = null
 
     fun playAudio(audioBytes: ByteArray) {
@@ -55,20 +53,13 @@ class CallManager(private val context: Context) {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
             audioRecord = AudioRecord(MediaRecorder.AudioSource.VOICE_RECOGNITION, SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, ENCODING, BUFFER_SIZE)
 
-            audioRecord?.apply {
-                startRecording()
-                recordingInProgress.set(true)
+            audioRecord?.let {
+                it.startRecording()
+                val buffer = ByteArray(BUFFER_SIZE)
 
                 recordingJob = CoroutineScope(Dispatchers.IO).launch {
-                    val buffer = ByteArray(BUFFER_SIZE)
-
-                    while (recordingInProgress.get()) {
-                        val result: Int = read(buffer, 0, BUFFER_SIZE)
-
-                        if (result < 0) {
-                            Log.d("AudioRecord", "Read error")
-                        }
-
+                    while(recordingJob?.isActive == true) {
+                        it.read(buffer, 0, BUFFER_SIZE)
                         handleAudioBytes(buffer)
                     }
                 }
@@ -76,9 +67,9 @@ class CallManager(private val context: Context) {
         }
     }
 
-    fun stopRecording() {
-        recordingInProgress.set(false)
-        recordingJob?.cancel()
+    suspend fun stopRecording() {
+        recordingJob?.cancelAndJoin()
+        recordingJob = null
 
         audioRecord?.apply {
             stop()

@@ -2,7 +2,6 @@ package com.flydrop2p.flydrop2p.data.repository
 
 import com.flydrop2p.flydrop2p.data.local.account.AccountDAO
 import com.flydrop2p.flydrop2p.data.local.message.MessageDAO
-import com.flydrop2p.flydrop2p.data.local.message.MessageEntity
 import com.flydrop2p.flydrop2p.data.local.profile.ProfileDAO
 import com.flydrop2p.flydrop2p.domain.model.chat.ChatPreview
 import com.flydrop2p.flydrop2p.domain.model.device.Contact

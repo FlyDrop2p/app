@@ -12,7 +12,6 @@ import com.flydrop2p.flydrop2p.network.model.profile.NetworkProfileRequest
 import com.flydrop2p.flydrop2p.network.model.profile.NetworkProfileResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.net.InetAddress

@@ -3,7 +3,6 @@ package com.flydrop2p.flydrop2p.ui.screen.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
-import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.network.NetworkManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +11,6 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val chatRepository: ChatRepository,
-    private val contactRepository: ContactRepository,
     private val networkManager: NetworkManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeViewState())

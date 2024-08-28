@@ -1,6 +1,5 @@
 package com.flydrop2p.flydrop2p.domain.repository
 
-import com.flydrop2p.flydrop2p.data.local.message.MessageEntity
 import com.flydrop2p.flydrop2p.domain.model.chat.ChatPreview
 import com.flydrop2p.flydrop2p.domain.model.message.Message
 import com.flydrop2p.flydrop2p.domain.model.message.MessageState
