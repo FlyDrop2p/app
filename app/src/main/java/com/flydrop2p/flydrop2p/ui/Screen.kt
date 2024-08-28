@@ -195,7 +195,7 @@ fun ChatTopAppBar(
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     text = title,
-                    fontSize = 30.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
@@ -212,7 +212,7 @@ fun ChatTopAppBar(
                 Icon(
                     imageVector = Icons.Filled.Call,
                     contentDescription = "Call",
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(25.dp)
                 )
             }
             IconButton(
@@ -221,19 +221,25 @@ fun ChatTopAppBar(
                 Icon(
                     imageVector = Icons.Filled.Info,
                     contentDescription = "Info",
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(25.dp)
                 )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.surfaceBright,
         ),
-        modifier = modifier.padding(bottom = 8.dp)
+        modifier = modifier
     )
 }
 
 @Preview
 @Composable
 fun FlyDropAppPreview() {
-    FlyDropApp(onConnectionButtonClick = {})
+    ChatTopAppBar(
+        title = "Chat",
+        canNavigateBack = true,
+        onCallButtonClick = {},
+        onSettingsButtonClick = {},
+        navigateUp = {}
+    )
 }
