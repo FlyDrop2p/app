@@ -1,7 +1,10 @@
 package com.flydrop2p.flydrop2p.ui.components
 
+import MessageStatusIndicator
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -17,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
@@ -30,117 +35,37 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun SentTextMessageComponent(message: TextMessage) {
-    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-    val timeString = timeFormat.format(Date(message.timestamp))
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.End
-    ) {
-        Surface(
-            shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.tertiaryContainer,
-            modifier = Modifier.widthIn(max = 250.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(
-                    start = 14.dp, top = 8.dp, bottom = 8.dp, end = 14.dp
-                )
-            ) {
-                Text(
-                    text = message.text,
-                    fontSize = 16.sp,
-                    color = Color.Black
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = timeString,
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    when (message.messageState){
-                        MessageState.MESSAGE_READ -> Image(
-                            painter = painterResource(id = R.drawable.done_all_24px),
-                            colorFilter = ColorFilter.tint(Color(0xFF037971)),
-                            contentDescription = "Visualizzato",
-                            modifier = Modifier.size(16.dp)
-                        )
-                        MessageState.MESSAGE_RECEIVED -> Image(
-                            painter = painterResource(id = R.drawable.done_all_24px),
-                            colorFilter = ColorFilter.tint(Color(0xFFADADAD)),
-                            contentDescription = "Visualizzato",
-                            modifier = Modifier.size(16.dp)
-                        )
-                        MessageState.MESSAGE_SENT -> Image(
-                            painter = painterResource(id = R.drawable.check_24px),
-                            colorFilter = ColorFilter.tint(Color(0xFFADADAD)),
-                            contentDescription = "Visualizzato",
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun ReceivedTextMessageComponent(message: TextMessage) {
-    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-    val timeString = timeFormat.format(Date(message.timestamp))
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.Start
-    ) {
-        Surface(
-            shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.secondaryContainer,
-            modifier = Modifier.widthIn(max = 250.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(
-                    start = 14.dp, top = 8.dp, bottom = 8.dp, end = 14.dp
-                )
-            ) {
-                Text(
-                    text = message.text,
-                    fontSize = 16.sp,
-                    color = Color.Black
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = timeString,
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
 fun TextMessageComponent(message: TextMessage, currentAccountId: Long) {
-    if (message.senderId == currentAccountId) {
-        SentTextMessageComponent(message = message)
-    } else {
-        ReceivedTextMessageComponent(message = message)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 2.dp, vertical = 4.dp),
+        horizontalArrangement = if (message.senderId == currentAccountId) Arrangement.End else Arrangement.Start
+    ) {
+        Box(
+            modifier = Modifier
+                .widthIn(min = 100.dp, max = 300.dp)
+                .clip(RoundedCornerShape(corner = CornerSize(16.dp)))
+                .background(Color(0xFFEFEFEF))
+        ) {
+            Row (
+                horizontalArrangement = Arrangement.Start,
+                modifier = Modifier
+                    .padding(top = 4.dp, start = 8.dp, end = 8.dp, bottom = 22.dp)
+            ) {
+                Text(
+                    text = message.text,
+                    fontSize = 16.sp,
+                    color = Color.Black
+                )
+            }
+
+            MessageStatusIndicator(
+                message = message,
+                currentAccountId = currentAccountId,
+                backgroundColor = Color(0x00EFEFEF),
+                modifier = Modifier.align(Alignment.BottomEnd)
+            )
+        }
     }
 }

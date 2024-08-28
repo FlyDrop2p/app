@@ -74,7 +74,11 @@ class ChatViewModel(
 
     fun startRecordingAudio() = audioReplayer.startRecording(fileManager.getAudioTempFile())
     fun stopRecordingAudio() = audioReplayer.stopRecording()
-    fun startPlayingAudio(file: File) = audioReplayer.startPlaying(file)
+
+    fun startPlayingAudio(file: File, startPosition: Int) {
+        audioReplayer.startPlaying(file, startPosition)
+    }
+
     fun stopPlayingAudio() = audioReplayer.stopPlaying()
 
     fun getCurrentPlaybackPosition(): Int {

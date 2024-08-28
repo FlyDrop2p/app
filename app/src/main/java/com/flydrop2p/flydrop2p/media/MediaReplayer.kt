@@ -28,10 +28,11 @@ sealed class MediaReplayer {
         recorder = null
     }
 
-    fun startPlaying(file: File) {
+    fun startPlaying(file: File, startPosition: Int) {
         player = MediaPlayer().apply {
             setDataSource(file.path)
             prepare()
+            seekTo(startPosition)
             start()
         }
 

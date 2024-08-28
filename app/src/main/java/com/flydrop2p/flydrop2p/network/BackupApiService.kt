@@ -31,6 +31,8 @@ data class BackupResponse(
 
 
 interface BackupApiService {
+    @GET("register")
+    suspend fun register(): Long
 
     @POST("backup")
     suspend fun backupMessages(@Body request: BackupRequestBody): BackupResponse

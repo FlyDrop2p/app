@@ -185,8 +185,8 @@ fun MessageItem(message: Message, accountId: Long, chatViewModel: ChatViewModel)
                 AudioMessageComponent(
                     message,
                     currentAccountId = accountId,
-                    startPlayingAudio = { fileName ->
-                        chatViewModel.startPlayingAudio(File(context.filesDir, fileName))
+                    startPlayingAudio = { fileName, startPosition ->
+                        chatViewModel.startPlayingAudio(File(context.filesDir, fileName), startPosition)
                     },
                     stopPlayingAudio = {
                         chatViewModel.stopPlayingAudio()

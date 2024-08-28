@@ -37,7 +37,7 @@ import kotlinx.coroutines.delay
 fun AudioMessageComponent(
     message: AudioMessage,
     currentAccountId: Long,
-    startPlayingAudio: (String) -> Unit,
+    startPlayingAudio: (String, Int) -> Unit,
     stopPlayingAudio: () -> Unit,
     getCurrentPlaybackPosition: () -> Int,
     isPlaybackComplete: () -> Boolean,
@@ -83,7 +83,7 @@ fun AudioMessageComponent(
                         if (isPlaying.value) {
                             stopPlayingAudio()
                         } else {
-                            startPlayingAudio(message.fileName)
+                            startPlayingAudio(message.fileName, playbackPosition.intValue)
                         }
                         isPlaying.value = !isPlaying.value
                     },
