@@ -238,6 +238,32 @@ class NetworkManager(
         }
     }
 
+    fun sendCallRequest(accountId: Long) {
+        val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
+
+        connectedDevice?.let { device ->
+            device.ipAddress?.let { ipAddress ->
+                coroutineScope.launch {
+                    val networkCallRequest = NetworkCallRequest(ownDevice.account.accountId, accountId)
+                    clientService.sendCallRequest(ipAddress, ownDevice, networkCallRequest)
+                }
+            }
+        }
+    }
+
+    fun sendCallEnd(accountId: Long) {
+        val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
+
+        connectedDevice?.let { device ->
+            device.ipAddress?.let { ipAddress ->
+                coroutineScope.launch {
+                    val networkCallEnd = NetworkCallEnd(ownDevice.account.accountId, accountId)
+                    clientService.sendCallEnd(ipAddress, ownDevice, networkCallEnd)
+                }
+            }
+        }
+    }
+
     fun sendCallFragment(accountId: Long, callFragment: ByteArray) {
         val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
 
