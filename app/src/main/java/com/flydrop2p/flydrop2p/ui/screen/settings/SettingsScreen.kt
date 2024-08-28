@@ -20,7 +20,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -44,9 +43,10 @@ import coil.request.ImageRequest
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.ui.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
-import com.flydrop2p.flydrop2p.ui.screen.call.CallDestination
 import java.io.File
 import kotlin.random.Random
+import androidx.compose.material3.SnackbarHostState
+import com.flydrop2p.flydrop2p.ui.screen.call.CallDestination
 
 object SettingsDestination : NavigationDestination {
     override val route = "settings"
@@ -71,7 +71,7 @@ fun SettingsScreen(
 
     val context = LocalContext.current
     val settingsState by settingsViewModel.uiState.collectAsState()
-    var usernameText by remember { mutableStateOf(settingsState.profile.username) }
+    var usernameText by remember { mutableStateOf("") }
     val profileImageFileName = settingsState.profile.imageFileName ?: ""
 
     val imagePickerLauncher =
@@ -158,7 +158,7 @@ fun SettingsScreen(
                 }
 
                 Text(
-                    text = "Name: $usernameText",
+                    text = settingsState.profile.username,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
