@@ -29,69 +29,94 @@ class SettingsViewModel(
     init {
         viewModelScope.launch {
             ownProfileRepository.getProfileAsFlow().collect {
-                _uiState.value = SettingsViewState(it)
+                _uiState.value = SettingsViewState(profile = it)
             }
         }
     }
 
+    private fun setLoading(isLoading: Boolean) {
+        _uiState.value = _uiState.value.copy(isLoading = isLoading)
+    }
+
+    fun setSuccess(isSuccess: Boolean) {
+        _uiState.value = _uiState.value.copy(isSuccess = isSuccess)
+    }
+
+    fun setError(message: String?) {
+        _uiState.value = _uiState.value.copy(errorMessage = message)
+    }
+
     fun updateUsername(username: String) {
         viewModelScope.launch {
-            val currentTimestamp = System.currentTimeMillis()
-            ownProfileRepository.setUsername(username)
-            ownProfileRepository.setUpdateTimestamp(currentTimestamp)
-            ownAccountRepository.setProfileUpdateTimestamp(currentTimestamp)
+            setLoading(true)
+            try {
+                val currentTimestamp = System.currentTimeMillis()
+                ownProfileRepository.setUsername(username)
+                ownProfileRepository.setUpdateTimestamp(currentTimestamp)
+                ownAccountRepository.setProfileUpdateTimestamp(currentTimestamp)
+                setSuccess(true)
+            } catch (e: Exception) {
+                setError("Failed to update username")
+            } finally {
+                setLoading(false)
+            }
         }
     }
 
     fun updateProfileImage(profileImageUri: Uri) {
         viewModelScope.launch {
-            fileManager.saveProfileImage(profileImageUri, ownAccountRepository.getAccount().accountId)?.let { profileImageName ->
-                val currentTimestamp = System.currentTimeMillis()
-                ownProfileRepository.setImageFileName(profileImageName)
-                ownProfileRepository.setUpdateTimestamp(currentTimestamp)
-                ownAccountRepository.setProfileUpdateTimestamp(currentTimestamp)
+            setLoading(true)
+            try {
+                fileManager.saveProfileImage(profileImageUri, ownAccountRepository.getAccount().accountId)?.let { profileImageName ->
+                    val currentTimestamp = System.currentTimeMillis()
+                    ownProfileRepository.setImageFileName(profileImageName)
+                    ownProfileRepository.setUpdateTimestamp(currentTimestamp)
+                    ownAccountRepository.setProfileUpdateTimestamp(currentTimestamp)
+                    setSuccess(true)
+                }
+            } catch (e: Exception) {
+                setError("Failed to update profile image")
+            } finally {
+                setLoading(false)
             }
         }
     }
 
     fun backupMessages() {
         viewModelScope.launch {
+            setLoading(true)
             try {
                 Log.d("Backup", "Backup started")
                 val messages = chatRepository.getAllMessages().map { it.toMessageEntity() }
-
-                val temp = 5
-
                 val body = BackupRequestBody(uiState.value.profile.accountId, messages)
-
-                Log.d("Backup", body.toString())
-
                 val response = BackupInstance.api.backupMessages(body)
-
                 Log.d("Backup", "Backup completed with message: ${response.message}")
+                setSuccess(true)
             } catch (e: Exception) {
-                // Gestisci gli errori
+                setError("Failed to backup messages")
+            } finally {
+                setLoading(false)
             }
         }
     }
 
-
     fun retrieveBackup() {
         viewModelScope.launch {
+            setLoading(true)
             try {
                 val messages = BackupInstance.api.getBackup(uiState.value.profile.accountId)
                 Log.d("Backup", "Backup retrieved")
-
                 messages.forEach { message ->
                     val existingMessage = chatRepository.getMessageByMessageId(message.messageId)
-
                     if (existingMessage == null) {
                         chatRepository.addMessage(message.toMessage())
                     }
                 }
-
+                setSuccess(true)
             } catch (e: Exception) {
-                // Gestisci gli errori
+                setError("Failed to retrieve backup")
+            } finally {
+                setLoading(false)
             }
         }
     }

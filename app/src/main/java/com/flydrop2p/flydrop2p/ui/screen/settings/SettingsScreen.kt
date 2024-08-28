@@ -19,9 +19,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +45,7 @@ import com.flydrop2p.flydrop2p.ui.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import java.io.File
 import kotlin.random.Random
+import androidx.compose.material3.SnackbarHostState
 
 object SettingsDestination : NavigationDestination {
     override val route = "settings"
@@ -72,6 +75,24 @@ fun SettingsScreen(
         return Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat())
     }
 
+    // Define SnackbarHostState
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Handle success and error messages
+    LaunchedEffect(settingsState.isSuccess) {
+        if (settingsState.isSuccess) {
+            snackbarHostState.showSnackbar("Operation successful!")
+            settingsViewModel.setSuccess(false)
+        }
+    }
+
+    LaunchedEffect(settingsState.errorMessage) {
+        settingsState.errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            settingsViewModel.setError(null)
+        }
+    }
+
     Scaffold(
         topBar = {
             FlyDropTopAppBar(
@@ -85,6 +106,7 @@ fun SettingsScreen(
                 }
             )
         },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }, // Add SnackbarHost here
         content = { paddingValues ->
             Column(
                 modifier = Modifier
@@ -175,3 +197,4 @@ fun SettingsScreen(
         }
     )
 }
+
