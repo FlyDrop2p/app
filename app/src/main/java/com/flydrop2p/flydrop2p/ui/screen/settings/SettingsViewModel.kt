@@ -19,12 +19,11 @@ import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val ownAccountRepository: OwnAccountRepository,
-    private val ownProfileRepository: OwnProfileRepository,
+    val ownProfileRepository: OwnProfileRepository,
     private val chatRepository: ChatRepository,
     private val fileManager: FileManager,
     val networkManager: NetworkManager
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(SettingsViewState())
     val uiState: StateFlow<SettingsViewState> = _uiState.asStateFlow()
 
