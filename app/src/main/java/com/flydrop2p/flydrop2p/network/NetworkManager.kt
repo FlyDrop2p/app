@@ -1,7 +1,6 @@
 package com.flydrop2p.flydrop2p.network
 
 import android.net.Uri
-import android.telecom.CallScreeningService.CallResponse
 import com.flydrop2p.flydrop2p.HandlerFactory
 import com.flydrop2p.flydrop2p.data.local.FileManager
 import com.flydrop2p.flydrop2p.domain.model.device.Account
@@ -35,7 +34,6 @@ import com.flydrop2p.flydrop2p.network.wifidirect.WiFiDirectBroadcastReceiver
 import com.flydrop2p.flydrop2p.network.wifidirect.WiFiDirectBroadcastReceiver.Companion.IP_GROUP_OWNER
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

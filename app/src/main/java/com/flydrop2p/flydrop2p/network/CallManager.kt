@@ -19,7 +19,7 @@ class CallManager(private val context: Context) {
     companion object {
         private const val SAMPLE_RATE = 44100
         private const val ENCODING = AudioFormat.ENCODING_PCM_16BIT
-        private const val BUFFER_SIZE_FACTOR = 5
+        private const val BUFFER_SIZE_FACTOR = 15
         private val BUFFER_SIZE = AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, ENCODING) * BUFFER_SIZE_FACTOR
     }
 
