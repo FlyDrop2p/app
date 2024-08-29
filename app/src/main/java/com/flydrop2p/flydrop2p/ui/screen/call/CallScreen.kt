@@ -49,7 +49,6 @@ object CallDestination : NavigationDestination {
 fun CallScreen(
     callViewModel: CallViewModel,
     navController: NavHostController,
-    onSpeakerClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val callEnd by callViewModel.networkManager.callEnd.collectAsState()
@@ -118,9 +117,9 @@ fun CallScreen(
                 contentDescription = if (callState.isSpeakerOn) "Vivavoce attivo" else "Vivavoce",
                 onClick = {
                     if (callState.isSpeakerOn) {
-                        callViewModel.setSpeakerOn(false)
+                        callViewModel.setSpeakerOn()
                     } else {
-                        callViewModel.setSpeakerOn(true)
+                        callViewModel.setSpeakerOff()
                     }
                 },
                 buttonColor = if (callState.isSpeakerOn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,

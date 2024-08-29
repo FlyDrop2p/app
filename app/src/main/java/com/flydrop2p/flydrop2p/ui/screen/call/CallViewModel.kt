@@ -71,7 +71,13 @@ class CallViewModel(
         }
     }
 
-    fun setSpeakerOn(isSpeakerOn: Boolean) {
-        _uiState.value = _uiState.value.copy(isSpeakerOn = isSpeakerOn)
+    fun setSpeakerOn() {
+        _uiState.value = _uiState.value.copy(isSpeakerOn = true)
+        callManager.enableSpeakerVolume()
+    }
+
+    fun setSpeakerOff() {
+        _uiState.value = _uiState.value.copy(isSpeakerOn = false)
+        callManager.disableSpeakerVolume()
     }
 }

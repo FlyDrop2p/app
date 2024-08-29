@@ -107,8 +107,7 @@ fun FlyDropNavHost(
 
                 CallScreen(
                     callViewModel = callViewModel,
-                    navController = navController,
-                    onSpeakerClick = { /*TODO*/ },
+                    navController = navController
                 )
             }
         }

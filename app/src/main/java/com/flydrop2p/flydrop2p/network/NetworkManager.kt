@@ -92,7 +92,7 @@ class NetworkManager(
         val runnable = object : Runnable {
             override fun run() {
                 sendKeepalive()
-                handler.postDelayed(this, 2000)
+                handler.postDelayed(this, 1000)
             }
         }
 
@@ -105,7 +105,7 @@ class NetworkManager(
         val runnable = object : Runnable {
             override fun run() {
                 updateConnectedDevices()
-                handler.postDelayed(this, 2000)
+                handler.postDelayed(this, 1000)
             }
         }
 
@@ -114,7 +114,7 @@ class NetworkManager(
 
     fun updateConnectedDevices() {
         val currentTimestamp = System.currentTimeMillis()
-        _connectedDevices.value = _connectedDevices.value.filter { currentTimestamp - it.keepalive <= 10000 }
+        _connectedDevices.value = _connectedDevices.value.filter { currentTimestamp - it.keepalive <= 3000 }
     }
 
     fun sendKeepalive() {

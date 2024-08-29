@@ -8,12 +8,16 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.AudioTrack
 import android.media.MediaRecorder
+import android.media.audiofx.AcousticEchoCanceler
+import android.media.audiofx.LoudnessEnhancer
+import android.media.audiofx.NoiseSuppressor
 import androidx.core.app.ActivityCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
+
 
 class CallManager(private val context: Context) {
     companion object {
@@ -32,21 +36,38 @@ class CallManager(private val context: Context) {
         .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
         .setEncoding(ENCODING).build()
 
-    private val audioTrack = AudioTrack(audioAttributes, audioFormat, BUFFER_SIZE, AudioTrack.MODE_STREAM, 0)
+    private var audioTrack: AudioTrack? = null
     private var audioRecord: AudioRecord? = null
+    private var enhancer: LoudnessEnhancer? = null
 
     private var recordingJob: Job? = null
 
     fun playAudio(audioBytes: ByteArray) {
-        audioTrack.write(audioBytes, 0, BUFFER_SIZE)
+        audioTrack?.write(audioBytes, 0, BUFFER_SIZE)
     }
 
     fun startPlaying() {
-        audioTrack.play()
+        audioTrack = AudioTrack(audioAttributes, audioFormat, BUFFER_SIZE, AudioTrack.MODE_STREAM, 0)
+
+        audioTrack?.apply {
+            enhancer = LoudnessEnhancer(audioSessionId)
+            enhancer?.setTargetGain(10000)
+            play()
+        }
     }
 
     fun stopPlaying() {
-        audioTrack.stop()
+        audioTrack?.stop()
+        audioTrack = null
+        enhancer = null
+    }
+
+    fun enableSpeakerVolume() {
+        enhancer?.setEnabled(true)
+    }
+
+    fun disableSpeakerVolume() {
+        enhancer?.setEnabled(false)
     }
 
     fun startRecording(handleAudioBytes: (ByteArray) -> Unit) {
