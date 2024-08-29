@@ -3,6 +3,7 @@ package com.flydrop2p.flydrop2p.network.service
 import android.util.Log
 import com.flydrop2p.flydrop2p.network.model.call.NetworkCallEnd
 import com.flydrop2p.flydrop2p.network.model.call.NetworkCallRequest
+import com.flydrop2p.flydrop2p.network.model.call.NetworkCallResponse
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
 import com.flydrop2p.flydrop2p.network.model.message.NetworkAudioMessage
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
@@ -26,8 +27,9 @@ class ServerService {
         const val PORT_MESSAGE_RECEIVED_ACK: Int = 8806
         const val PORT_MESSAGE_READ_ACK: Int = 8807
         const val PORT_CALL_REQUEST: Int = 8808
-        const val PORT_CALL_END: Int = 8809
-        const val PORT_CALL_FRAGMENT: Int = 8810
+        const val PORT_CALL_RESPONSE: Int = 8009
+        const val PORT_CALL_END: Int = 8810
+        const val PORT_CALL_FRAGMENT: Int = 8811
     }
 
     suspend fun listenKeepalive(): NetworkKeepalive? {
@@ -235,6 +237,29 @@ class ServerService {
         }
 
         return networkCallRequest
+    }
+
+    suspend fun listenCallResponse(): NetworkCallResponse? {
+        var networkCallResponse: NetworkCallResponse? = null
+
+        withContext(Dispatchers.IO) {
+            try {
+                val socket = ServerSocket(PORT_CALL_RESPONSE)
+                val client = socket.accept()
+
+                val inputStream = client.getInputStream()
+                val buffer = inputStream.readBytes()
+                networkCallResponse = Json.decodeFromString(buffer.decodeToString())
+
+                socket.close()
+
+                Log.d("CALL RESPONSE", networkCallResponse.toString())
+            } catch (e: Exception) {
+                Log.d("CALL RESPONSE", e.toString())
+            }
+        }
+
+        return networkCallResponse
     }
 
     suspend fun listenCallEnd(): NetworkCallEnd? {

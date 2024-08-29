@@ -73,6 +73,16 @@ fun SettingsScreen(
         }
     }
 
+    val callResponse by settingsViewModel.networkManager.callResponse.collectAsState()
+
+    LaunchedEffect(callResponse) {
+        callResponse?.let {
+            if(it.accepted) {
+                navController.navigate("${CallDestination.route}/${it.senderId}")
+            }
+        }
+    }
+
     val context = LocalContext.current
     val settingsState by settingsViewModel.uiState.collectAsState()
     var usernameText by remember { mutableStateOf("") }

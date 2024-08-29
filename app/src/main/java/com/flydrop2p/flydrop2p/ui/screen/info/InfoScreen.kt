@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -63,6 +64,7 @@ import com.flydrop2p.flydrop2p.ui.components.getPreviewPainter
 import com.flydrop2p.flydrop2p.ui.components.getVideoDuration
 import com.flydrop2p.flydrop2p.ui.components.shareFile
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
+import com.flydrop2p.flydrop2p.ui.screen.call.CallDestination
 import java.io.File
 
 object InfoDestination : NavigationDestination {
@@ -79,6 +81,24 @@ fun InfoScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
+    val callRequest by infoViewModel.networkManager.callRequest.collectAsState()
+
+    LaunchedEffect(callRequest) {
+        callRequest?.let {
+            navController.navigate("${CallDestination.route}/${it.senderId}")
+        }
+    }
+
+    val callResponse by infoViewModel.networkManager.callResponse.collectAsState()
+
+    LaunchedEffect(callResponse) {
+        callResponse?.let {
+            if(it.accepted) {
+                navController.navigate("${CallDestination.route}/${it.senderId}")
+            }
+        }
+    }
+
     val infoState by infoViewModel.uiState.collectAsState()
 
     Scaffold(

@@ -73,6 +73,16 @@ fun ChatScreen(
         }
     }
 
+    val callResponse by chatViewModel.networkManager.callResponse.collectAsState()
+
+    LaunchedEffect(callResponse) {
+        callResponse?.let {
+            if(it.accepted) {
+                navController.navigate("${CallDestination.route}/${it.senderId}")
+            }
+        }
+    }
+
     val currentAccount by chatViewModel.ownAccount.collectAsState(initial = null)
     val chatState by chatViewModel.uiState.collectAsState()
 

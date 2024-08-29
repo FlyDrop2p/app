@@ -68,6 +68,7 @@ class CallViewModel(
     @OptIn(DelicateCoroutinesApi::class)
     fun endCall() {
         networkManager.callRequest.value = null
+        networkManager.callResponse.value = null
 
         if(isCalling.get()) {
             GlobalScope.launch {

@@ -3,6 +3,7 @@ package com.flydrop2p.flydrop2p.network.service
 import com.flydrop2p.flydrop2p.domain.model.device.Device
 import com.flydrop2p.flydrop2p.network.model.call.NetworkCallEnd
 import com.flydrop2p.flydrop2p.network.model.call.NetworkCallRequest
+import com.flydrop2p.flydrop2p.network.model.call.NetworkCallResponse
 import com.flydrop2p.flydrop2p.network.model.keepalive.NetworkKeepalive
 import com.flydrop2p.flydrop2p.network.model.message.NetworkAudioMessage
 import com.flydrop2p.flydrop2p.network.model.message.NetworkFileMessage
@@ -174,6 +175,24 @@ class ClientService {
 
                 val outputStream = socket.getOutputStream()
                 outputStream.write(Json.encodeToString(networkCallRequest).encodeToByteArray())
+                outputStream.close()
+            } catch (_: Exception) {
+
+            }
+        }
+    }
+
+    suspend fun sendCallResponse(ipAddress: String, ownDevice: Device, networkCallResponse: NetworkCallResponse) {
+        withContext(Dispatchers.IO) {
+            try {
+                val socket = Socket()
+                socket.bind(null)
+                socket.connect(InetSocketAddress(InetAddress.getByName(ipAddress), ServerService.PORT_CALL_RESPONSE))
+
+                ownDevice.ipAddress = socket.localAddress.hostAddress?.toString()
+
+                val outputStream = socket.getOutputStream()
+                outputStream.write(Json.encodeToString(networkCallResponse).encodeToByteArray())
                 outputStream.close()
             } catch (_: Exception) {
 

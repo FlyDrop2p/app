@@ -78,6 +78,16 @@ fun HomeScreen(
         }
     }
 
+    val callResponse by homeViewModel.networkManager.callResponse.collectAsState()
+
+    LaunchedEffect(callResponse) {
+        callResponse?.let {
+            if(it.accepted) {
+                navController.navigate("${CallDestination.route}/${it.senderId}")
+            }
+        }
+    }
+
     val homeState by homeViewModel.uiState.collectAsState()
 
     Scaffold(topBar = {
