@@ -15,6 +15,9 @@ interface MessageDAO {
     @Query("SELECT * FROM MessageEntity WHERE receiverId = :accountId ORDER BY timestamp ASC")
     fun getMessagesByReceiverAccountId(accountId: Long): List<MessageEntity>
 
+    @Query("SELECT * FROM MessageEntity WHERE (senderId = :accountId OR receiverId = :accountId) AND messageType = 'FILE_MESSAGE' ORDER BY timestamp ASC")
+    fun getAllMediaMessagesByAccountId(accountId: Long): Flow<List<MessageEntity>>
+
     @Query("SELECT * FROM MessageEntity")
     suspend fun getAllMessages(): List<MessageEntity>
 

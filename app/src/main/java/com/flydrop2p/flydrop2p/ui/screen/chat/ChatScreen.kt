@@ -88,7 +88,7 @@ fun ChatScreen(
                     chatViewModel.sendCallRequest(accountId)
                     navigateToCallScreen(accountId)
                 },
-                onSettingsButtonClick = { },
+                onInfoButtonClick = { onInfoButtonClick(accountId) },
                 modifier = modifier,
                 navigateUp = { navController.navigateUp() },
                 contactImageFileName = chatState.contact.imageFileName
@@ -186,7 +186,10 @@ fun MessageItem(message: Message, accountId: Long, chatViewModel: ChatViewModel)
                     message,
                     currentAccountId = accountId,
                     startPlayingAudio = { fileName, startPosition ->
-                        chatViewModel.startPlayingAudio(File(context.filesDir, fileName), startPosition)
+                        chatViewModel.startPlayingAudio(
+                            File(context.filesDir, fileName),
+                            startPosition
+                        )
                     },
                     stopPlayingAudio = {
                         chatViewModel.stopPlayingAudio()
@@ -194,7 +197,7 @@ fun MessageItem(message: Message, accountId: Long, chatViewModel: ChatViewModel)
                     getCurrentPlaybackPosition = {
                         chatViewModel.getCurrentPlaybackPosition()
                     },
-                     isPlaybackComplete = { chatViewModel.isPlaybackComplete() }
+                    isPlaybackComplete = { chatViewModel.isPlaybackComplete() }
                 )
             }
         }

@@ -10,6 +10,8 @@ interface ChatRepository {
 
     fun getAllMessagesByAccountIdAsFlow(accountId: Long): Flow<List<Message>>
 
+    fun getAllMediaMessagesByAccountIdAsFlow(accountId: Long): Flow<List<Message>>
+
     fun getAllMessagesByReceiverAccountId(accountId: Long): List<Message>
 
     suspend fun getAllMessages(): List<Message>

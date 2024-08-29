@@ -42,6 +42,12 @@ class ChatLocalRepository(private val accountDAO: AccountDAO, private val messag
         }
     }
 
+    override fun getAllMediaMessagesByAccountIdAsFlow(accountId: Long): Flow<List<Message>> {
+        return messageDAO.getAllMediaMessagesByAccountId(accountId).map { messageEntities ->
+            messageEntities.map { it.toMessage() }
+        }
+    }
+
     override fun getAllMessagesByReceiverAccountId(accountId: Long): List<Message> {
         return messageDAO.getMessagesByReceiverAccountId(accountId).map { it.toMessage() }
     }

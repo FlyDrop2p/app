@@ -23,6 +23,10 @@ import com.flydrop2p.flydrop2p.ui.screen.home.HomeDestination
 import com.flydrop2p.flydrop2p.ui.screen.home.HomeScreen
 import com.flydrop2p.flydrop2p.ui.screen.home.HomeViewModel
 import com.flydrop2p.flydrop2p.ui.screen.home.HomeViewModelFactory
+import com.flydrop2p.flydrop2p.ui.screen.info.InfoDestination
+import com.flydrop2p.flydrop2p.ui.screen.info.InfoScreen
+import com.flydrop2p.flydrop2p.ui.screen.info.InfoViewModel
+import com.flydrop2p.flydrop2p.ui.screen.info.InfoViewModelFactory
 import com.flydrop2p.flydrop2p.ui.screen.settings.SettingsDestination
 import com.flydrop2p.flydrop2p.ui.screen.settings.SettingsScreen
 import com.flydrop2p.flydrop2p.ui.screen.settings.SettingsViewModel
@@ -63,7 +67,6 @@ fun FlyDropNavHost(
             arguments = listOf(navArgument(ChatDestination.itemIdArg) {
                 type = NavType.LongType
             })
-
         ) { backStackEntry ->
             val accountId = backStackEntry.arguments?.getLong(ChatDestination.itemIdArg)
             accountId?.let {
@@ -75,7 +78,25 @@ fun FlyDropNavHost(
                     chatViewModel = chatViewModel,
                     navController = navController,
                     navigateToCallScreen = { navController.navigate("${CallDestination.route}/${it}") },
-                    onInfoButtonClick = {} // TODO
+                    onInfoButtonClick = { navController.navigate("${InfoDestination.route}/${it}") },
+                )
+            }
+        }
+
+        composable(
+            route = InfoDestination.routeWithArgs,
+            arguments = listOf(navArgument(InfoDestination.itemIdArg) {
+                type = NavType.LongType
+            })
+        ){backStackEntry ->
+            val accountId = backStackEntry.arguments?.getLong(InfoDestination.itemIdArg)
+            accountId?.let {
+                val infoViewModelFactory = remember(accountId) { InfoViewModelFactory(accountId) }
+                val infoViewModel: InfoViewModel = viewModel(factory = infoViewModelFactory)
+
+                InfoScreen(
+                    infoViewModel = infoViewModel,
+                    navController = navController,
                 )
             }
         }

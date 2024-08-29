@@ -39,7 +39,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.flydrop2p.flydrop2p.R
-import com.flydrop2p.flydrop2p.network.NetworkManager
 import com.flydrop2p.flydrop2p.ui.navigation.FlyDropNavHost
 import java.io.File
 
@@ -139,7 +138,7 @@ fun ChatTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     onCallButtonClick: () -> Unit,
-    onSettingsButtonClick: () -> Unit,
+    onInfoButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
     navigateUp: () -> Unit = {},
     contactImageFileName: String? = null
@@ -205,7 +204,7 @@ fun ChatTopAppBar(
                 )
             }
             IconButton(
-                onClick = onSettingsButtonClick
+                onClick = onInfoButtonClick
             ) {
                 Icon(
                     imageVector = Icons.Filled.Info,
@@ -228,7 +227,7 @@ fun FlyDropAppPreview() {
         title = "Chat",
         canNavigateBack = true,
         onCallButtonClick = {},
-        onSettingsButtonClick = {},
+        onInfoButtonClick = {},
         navigateUp = {}
     )
 }
