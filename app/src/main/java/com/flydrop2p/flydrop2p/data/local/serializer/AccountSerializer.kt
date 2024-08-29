@@ -12,7 +12,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 object AccountSerializer : Serializer<AccountEntity> {
-    override val defaultValue = AccountEntity(Build.MODEL[4].code.toLong(), 0)
+    override val defaultValue = AccountEntity(0, 0)
 
     override suspend fun readFrom(input: InputStream): AccountEntity {
         try {

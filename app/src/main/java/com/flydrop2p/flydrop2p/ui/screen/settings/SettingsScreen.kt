@@ -50,6 +50,7 @@ import kotlin.random.Random
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.ui.text.TextStyle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.flydrop2p.flydrop2p.ui.screen.call.CallDestination
 
 object SettingsDestination : NavigationDestination {
@@ -60,12 +61,13 @@ object SettingsDestination : NavigationDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    settingsViewModel: SettingsViewModel,
     navController: NavHostController,
-    onConnectionButtonClick: () -> Unit,
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val settingsViewModelFactory = remember { SettingsViewModelFactory() }
+    val settingsViewModel: SettingsViewModel = viewModel(factory = settingsViewModelFactory)
+
     val callRequest by settingsViewModel.networkManager.callRequest.collectAsState()
 
     LaunchedEffect(callRequest) {
@@ -114,7 +116,7 @@ fun SettingsScreen(
                 title = "Settings",
                 canNavigateBack = true,
                 isSettingsScreen = true,
-                onConnectionButtonClick = onConnectionButtonClick,
+                onConnectionButtonClick = { settingsViewModel.connect() },
                 onSettingsButtonClick = onSettingsButtonClick,
                 modifier = modifier,
                 navigateUp = {
@@ -176,7 +178,7 @@ fun SettingsScreen(
                     },
                     placeholder = {
                         Text(
-                            "Update Username",
+                            "Update username",
                             fontSize = 14.sp,
                         )
                     },

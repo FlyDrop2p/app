@@ -29,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.ImageLoader
 import coil.compose.AsyncImage
@@ -54,10 +55,13 @@ object InfoDestination : NavigationDestination {
 
 @Composable
 fun InfoScreen(
-    infoViewModel: InfoViewModel,
+    accountId: Long,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
+    val infoViewModelFactory = remember(accountId) { InfoViewModelFactory(accountId) }
+    val infoViewModel: InfoViewModel = viewModel(factory = infoViewModelFactory)
+
     val infoState by infoViewModel.uiState.collectAsState()
 
     Column(
@@ -105,7 +109,7 @@ fun InfoScreen(
 
         // Sezione File multimediali
         Text(
-            text = "Media Condivisi",
+            text = "Media",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onBackground
         )

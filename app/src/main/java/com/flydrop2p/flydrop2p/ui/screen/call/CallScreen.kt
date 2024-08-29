@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.flydrop2p.flydrop2p.R
@@ -47,11 +49,14 @@ object CallDestination : NavigationDestination {
 
 @Composable
 fun CallScreen(
-    callViewModel: CallViewModel,
+    accountId: Long,
     navController: NavHostController,
     onSpeakerClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val callViewModelFactory = remember(accountId) { CallViewModelFactory(accountId) }
+    val callViewModel: CallViewModel = viewModel(factory = callViewModelFactory)
+
     val callEnd by callViewModel.networkManager.callEnd.collectAsState()
 
     LaunchedEffect(callEnd) {

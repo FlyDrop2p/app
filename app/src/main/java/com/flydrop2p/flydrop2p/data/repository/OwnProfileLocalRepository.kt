@@ -18,6 +18,10 @@ class OwnProfileLocalRepository(private val ownProfileDataStore: DataStore<Profi
         return ownProfileDataStore.data.first().toProfile()
     }
 
+    override suspend fun setAccountId(accountId: Long) {
+        ownProfileDataStore.updateData { it.copy(accountId = accountId) }
+    }
+
     override suspend fun setUpdateTimestamp(updateTimestamp: Long) {
         ownProfileDataStore.updateData { it.copy(updateTimestamp = updateTimestamp) }
     }

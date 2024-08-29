@@ -50,14 +50,9 @@ fun FlyDropNavHost(
         modifier = modifier
     ) {
         composable(route = HomeDestination.route) {
-            val homeViewModelFactory = remember { HomeViewModelFactory() }
-            val homeViewModel: HomeViewModel = viewModel(factory = homeViewModelFactory)
-
             HomeScreen(
-                homeViewModel = homeViewModel,
                 navController = navController,
                 onChatClick = { navController.navigate("${ChatDestination.route}/${it.accountId}") },
-                onConnectionButtonClick = { homeViewModel.connect() },
                 onSettingsButtonClick = { navController.navigate(SettingsDestination.route) },
             )
         }
@@ -70,12 +65,8 @@ fun FlyDropNavHost(
         ) { backStackEntry ->
             val accountId = backStackEntry.arguments?.getLong(ChatDestination.itemIdArg)
             accountId?.let {
-                val chatViewModelFactory = remember(accountId) { ChatViewModelFactory(accountId) }
-                val chatViewModel: ChatViewModel = viewModel(factory = chatViewModelFactory)
-
                 ChatScreen(
                     accountId = it,
-                    chatViewModel = chatViewModel,
                     navController = navController,
                     navigateToCallScreen = { navController.navigate("${CallDestination.route}/${it}") },
                     onInfoButtonClick = { navController.navigate("${InfoDestination.route}/${it}") },
@@ -91,11 +82,8 @@ fun FlyDropNavHost(
         ){backStackEntry ->
             val accountId = backStackEntry.arguments?.getLong(InfoDestination.itemIdArg)
             accountId?.let {
-                val infoViewModelFactory = remember(accountId) { InfoViewModelFactory(accountId) }
-                val infoViewModel: InfoViewModel = viewModel(factory = infoViewModelFactory)
-
                 InfoScreen(
-                    infoViewModel = infoViewModel,
+                    accountId,
                     navController = navController,
                 )
             }
@@ -109,11 +97,8 @@ fun FlyDropNavHost(
         ) { backStackEntry ->
             val accountId = backStackEntry.arguments?.getLong(CallDestination.itemIdArg)
             accountId?.let {
-                val callViewModelFactory = remember(accountId) { CallViewModelFactory(accountId) }
-                val callViewModel: CallViewModel = viewModel(factory = callViewModelFactory)
-
                 CallScreen(
-                    callViewModel = callViewModel,
+                    accountId,
                     navController = navController,
                     onSpeakerClick = { /*TODO*/ },
                 )
@@ -123,13 +108,8 @@ fun FlyDropNavHost(
         composable(
             route = SettingsDestination.route
         ) {
-            val settingsViewModelFactory = remember { SettingsViewModelFactory() }
-            val settingsViewModel: SettingsViewModel = viewModel(factory = settingsViewModelFactory)
-
             SettingsScreen(
-                settingsViewModel = settingsViewModel,
                 navController = navController,
-                onConnectionButtonClick = { settingsViewModel.connect() },
                 onSettingsButtonClick = { navController.navigate(SettingsDestination.route) },
             )
         }

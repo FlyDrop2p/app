@@ -14,9 +14,14 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
+import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
+import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
+import com.flydrop2p.flydrop2p.network.BackupInstance
 import com.flydrop2p.flydrop2p.network.NetworkManager
 import com.flydrop2p.flydrop2p.ui.FlyDropApp
-import com.flydrop2p.flydrop2p.ui.theme.FlyDrop2pTheme
+import com.flydrop2p.flydrop2p.ui.theme.FlyDropTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private val intentFilter = IntentFilter().apply {
@@ -26,34 +31,36 @@ class MainActivity : ComponentActivity() {
         addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
     }
 
+    private lateinit var ownAccountRepository: OwnAccountRepository
+    private lateinit var ownProfileRepository: OwnProfileRepository
     private lateinit var networkManager: NetworkManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        requestPermissions()
-
-        val wifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
-
-        if(!wifiManager.isWifiEnabled) {
-            Toast.makeText(this, "Please activate Wi-Fi", Toast.LENGTH_LONG).show()
-        }
-
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-
-        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Toast.makeText(this, "Please activate location", Toast.LENGTH_LONG).show()
-        }
-
         (application as App).initializeContainer(this)
+
+        requestPermissions()
+        checkServices()
+
+        ownAccountRepository = (application as App).container.ownAccountRepository
+        ownProfileRepository = (application as App).container.ownProfileRepository
         networkManager = (application as App).container.networkManager
 
-        networkManager.startConnections()
-        networkManager.startSendKeepaliveHandler()
-        networkManager.startUpdateConnectedDevicesHandler()
+        lifecycleScope.launch {
+            if(ownAccountRepository.getAccount().accountId == 0L) {
+                val id = BackupInstance.api.register()
+                ownAccountRepository.setAccountId(id)
+                ownProfileRepository.setAccountId(id)
+            }
+
+            networkManager.startConnections()
+            networkManager.startSendKeepaliveHandler()
+            networkManager.startUpdateConnectedDevicesHandler()
+        }
 
         setContent {
-            FlyDrop2pTheme {
+            FlyDropTheme {
                 FlyDropApp()
             }
         }
@@ -123,6 +130,20 @@ class MainActivity : ComponentActivity() {
             }
 
             permissionsResultLauncher.launch(permissions.toTypedArray())
+        }
+    }
+
+    private fun checkServices() {
+        val wifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
+
+        if(!wifiManager.isWifiEnabled) {
+            Toast.makeText(this, "Please activate Wi-Fi", Toast.LENGTH_LONG).show()
+        }
+
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Toast.makeText(this, "Please activate location", Toast.LENGTH_LONG).show()
         }
     }
 }
