@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 
 class CallManager(private val context: Context) {
     companion object {
-        private var sessionId: Int = 0
         private const val SAMPLE_RATE = 44100
         private const val ENCODING = AudioFormat.ENCODING_PCM_16BIT
         private const val BUFFER_SIZE_FACTOR = 25
@@ -58,9 +57,7 @@ class CallManager(private val context: Context) {
             .setAudioFormat(audioTrackFormat)
             .setBufferSizeInBytes(BUFFER_SIZE)
             .setTransferMode(AudioTrack.MODE_STREAM)
-            .setSessionId(sessionId).build()
-
-        sessionId += 1
+            .build()
 
         audioTrack?.apply {
             enhancer = LoudnessEnhancer(audioSessionId)

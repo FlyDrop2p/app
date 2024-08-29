@@ -50,11 +50,15 @@ class CallViewModel(
 
     private fun startCall(accountId: Long) {
         if(!isCalling.get()) {
-            isCalling.set(true)
+            try {
+                callManager.startPlaying()
+                callManager.startRecording { audioBytes ->
+                    networkManager.sendCallFragment(accountId, audioBytes)
+                }
 
-            callManager.startPlaying()
-            callManager.startRecording { audioBytes ->
-                networkManager.sendCallFragment(accountId, audioBytes)
+                isCalling.set(true)
+            } catch (_: Exception) {
+
             }
         }
     }
@@ -62,11 +66,10 @@ class CallViewModel(
     @OptIn(DelicateCoroutinesApi::class)
     fun endCall() {
         if(isCalling.get()) {
-            isCalling.set(false)
-
             GlobalScope.launch {
                 callManager.stopPlaying()
                 callManager.stopRecording()
+                isCalling.set(false)
             }
         }
     }
