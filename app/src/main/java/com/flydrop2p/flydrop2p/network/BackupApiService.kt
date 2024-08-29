@@ -11,7 +11,6 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 
-// Base URL del backend
 private const val BASE_URL = "https://flydrop.riccardobenevelli.com/api/"
 
 private val retrofit = Retrofit.Builder()

@@ -47,8 +47,8 @@ class SettingsViewModel(
         _uiState.value = _uiState.value.copy(isSuccess = isSuccess)
     }
 
-    fun setError(message: String?) {
-        _uiState.value = _uiState.value.copy(errorMessage = message)
+    fun setError(errorMessage: String?) {
+        _uiState.value = _uiState.value.copy(errorMessage = errorMessage)
     }
 
     fun updateUsername(username: String) {
