@@ -76,7 +76,6 @@ class CallViewModel(
                     networkManager.sendCallFragment(accountId, audioBytes)
                 }
 
-                _uiState.value = _uiState.value.copy(callState = CallState.CALL)
                 isCalling.set(true)
             } catch (_: Exception) {
 
