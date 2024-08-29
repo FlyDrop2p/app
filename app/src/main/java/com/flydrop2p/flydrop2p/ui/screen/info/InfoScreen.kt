@@ -149,7 +149,7 @@ fun InfoScreen(
 
             // Sezione File multimediali
             Text(
-                text = "Media Condivisi",
+                text = "Media",
                 fontSize = 18.sp,
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground

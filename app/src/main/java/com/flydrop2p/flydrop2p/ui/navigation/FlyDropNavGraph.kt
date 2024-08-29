@@ -1,5 +1,6 @@
 package com.flydrop2p.flydrop2p.ui.navigation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
@@ -103,6 +104,10 @@ fun FlyDropNavHost(
         ) { backStackEntry ->
             val accountId = backStackEntry.arguments?.getLong(CallDestination.itemIdArg)
             accountId?.let {
+                BackHandler(true) {
+
+                }
+
                 val callViewModel: CallViewModel = viewModel(factory = CallViewModelFactory(accountId))
 
                 CallScreen(
