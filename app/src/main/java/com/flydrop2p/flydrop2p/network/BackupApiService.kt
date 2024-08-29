@@ -13,11 +13,9 @@ import retrofit2.http.Path
 
 private const val BASE_URL = "https://flydrop.riccardobenevelli.com/api/"
 
-private val networkJson = Json { ignoreUnknownKeys = true }
-
 private val retrofit = Retrofit.Builder()
     .baseUrl(BASE_URL)
-    .addConverterFactory(networkJson.asConverterFactory("application/json".toMediaType()))
+    .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
     .build()
 
 @Serializable
