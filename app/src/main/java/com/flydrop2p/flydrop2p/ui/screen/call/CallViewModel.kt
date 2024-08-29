@@ -17,9 +17,10 @@ class CallViewModel(
     private val contactRepository: ContactRepository,
     private val callManager: CallManager,
     val networkManager: NetworkManager,
-    private val accountId: Long
+    private val accountId: Long,
+    callState: CallState
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(CallViewState())
+    private val _uiState = MutableStateFlow(CallViewState(callState))
     val uiState: StateFlow<CallViewState> = _uiState.asStateFlow()
 
     private val isCalling = AtomicBoolean(false)
@@ -40,16 +41,23 @@ class CallViewModel(
                 }
             }
         }
+    }
 
-        startCall()
+    fun acceptCall() {
+        networkManager.sendCallResponse(accountId, true)
+    }
+
+    fun declineCall() {
+        networkManager.sendCallResponse(accountId, false)
     }
 
     fun sendCallEnd() {
         networkManager.sendCallEnd(accountId)
     }
 
-    private fun startCall() {
+    fun startCallSession() {
         networkManager.callEnd.value = null
+        _uiState.value = _uiState.value.copy(callState = CallState.CALL)
 
         if(!isCalling.get()) {
             try {
@@ -58,6 +66,7 @@ class CallViewModel(
                     networkManager.sendCallFragment(accountId, audioBytes)
                 }
 
+                _uiState.value = _uiState.value.copy(callState = CallState.CALL)
                 isCalling.set(true)
             } catch (_: Exception) {
 
@@ -66,7 +75,7 @@ class CallViewModel(
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun endCall() {
+    fun endCallSession() {
         networkManager.callRequest.value = null
         networkManager.callResponse.value = null
 

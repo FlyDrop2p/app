@@ -51,6 +51,7 @@ import com.flydrop2p.flydrop2p.ui.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.ui.components.getMimeType
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import com.flydrop2p.flydrop2p.ui.screen.call.CallDestination
+import com.flydrop2p.flydrop2p.ui.screen.call.CallState
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -74,17 +75,7 @@ fun HomeScreen(
 
     LaunchedEffect(callRequest) {
         callRequest?.let {
-            navController.navigate("${CallDestination.route}/${it.senderId}")
-        }
-    }
-
-    val callResponse by homeViewModel.networkManager.callResponse.collectAsState()
-
-    LaunchedEffect(callResponse) {
-        callResponse?.let {
-            if(it.accepted) {
-                navController.navigate("${CallDestination.route}/${it.senderId}")
-            }
+            navController.navigate("${CallDestination.route}/${it.senderId}/${CallState.RECEIVED_CALL_REQUEST.name}")
         }
     }
 

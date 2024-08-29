@@ -45,6 +45,7 @@ import com.flydrop2p.flydrop2p.ui.components.TextMessageComponent
 import com.flydrop2p.flydrop2p.ui.components.TextMessageInput
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import com.flydrop2p.flydrop2p.ui.screen.call.CallDestination
+import com.flydrop2p.flydrop2p.ui.screen.call.CallState
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -53,8 +54,8 @@ import java.util.Locale
 object ChatDestination : NavigationDestination {
     override val route = "chat"
     override val titleRes = R.string.chat_screen
-    const val itemIdArg = "chatId"
-    val routeWithArgs = "$route/{$itemIdArg}"
+    const val accountIdArgId = "chatId"
+    val routeWithArgs = "$route/{$accountIdArgId}"
 }
 
 @Composable
@@ -69,17 +70,7 @@ fun ChatScreen(
 
     LaunchedEffect(callRequest) {
         callRequest?.let {
-            navController.navigate("${CallDestination.route}/${it.senderId}")
-        }
-    }
-
-    val callResponse by chatViewModel.networkManager.callResponse.collectAsState()
-
-    LaunchedEffect(callResponse) {
-        callResponse?.let {
-            if(it.accepted) {
-                navController.navigate("${CallDestination.route}/${it.senderId}")
-            }
+            navController.navigate("${CallDestination.route}/${it.senderId}/${CallState.RECEIVED_CALL_REQUEST.name}")
         }
     }
 
@@ -93,7 +84,10 @@ fun ChatScreen(
             ChatTopAppBar(
                 title = chatState.contact.username ?: "Connecting...",
                 canNavigateBack = true,
-                onCallButtonClick = { chatViewModel.sendCallRequest() },
+                onCallButtonClick = {
+                    chatViewModel.sendCallRequest()
+                    navController.navigate("${CallDestination.route}/${accountId}/${CallState.SENT_CALL_REQUEST.name}")
+                },
                 onInfoButtonClick = { onInfoButtonClick(accountId) },
                 modifier = modifier,
                 navigateUp = { navController.navigateUp() },
