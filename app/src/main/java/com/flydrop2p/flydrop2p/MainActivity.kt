@@ -22,6 +22,7 @@ import com.flydrop2p.flydrop2p.network.NetworkManager
 import com.flydrop2p.flydrop2p.ui.FlyDropApp
 import com.flydrop2p.flydrop2p.ui.theme.FlyDropTheme
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
     private val intentFilter = IntentFilter().apply {
@@ -49,7 +50,12 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             if(ownAccountRepository.getAccount().accountId == 0L) {
-                val id = BackupInstance.api.register()
+                val id = try {
+                    BackupInstance.api.register()
+                } catch (_: Exception) {
+                    Random.nextLong(1000, Long.MAX_VALUE)
+                }
+
                 ownAccountRepository.setAccountId(id)
                 ownProfileRepository.setAccountId(id)
             }
