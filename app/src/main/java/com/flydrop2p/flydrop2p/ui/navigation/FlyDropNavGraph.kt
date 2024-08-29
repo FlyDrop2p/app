@@ -73,7 +73,6 @@ fun FlyDropNavHost(
                     accountId = accountId,
                     chatViewModel = chatViewModel,
                     navController = navController,
-                    navigateToCallScreen = { navController.navigate("${CallDestination.route}/${it}") },
                     onInfoButtonClick = { navController.navigate("${InfoDestination.route}/${it}") },
                 )
             }
