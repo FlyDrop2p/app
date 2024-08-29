@@ -286,7 +286,6 @@ fun FileMessageInput(
                     val tempFile = getFileFromContentUri(context, fileUri)
                     val fileUriNewUri = Uri.fromFile(tempFile)
                     PdfPreview(
-                        context,
                         fileUriNewUri,
                         filename = fileName,
                         modifier = Modifier.weight(1f)

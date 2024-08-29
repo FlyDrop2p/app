@@ -117,7 +117,6 @@ class SettingsViewModel(
 
                 setSuccess(true)
             } catch (e: Exception) {
-                Log.e("Backup", "Failed to retrieve backup2", e)
                 setError("Failed to retrieve backup")
             } finally {
                 setLoading(false)

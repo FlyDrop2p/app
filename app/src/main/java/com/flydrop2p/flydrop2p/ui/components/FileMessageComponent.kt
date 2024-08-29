@@ -220,7 +220,7 @@ fun PdfMessageComponent(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(top = 6.dp, start = 6.dp, end = 6.dp)
                 ){
-                    PdfPreview(context, fileUri, mine = message.senderId == currentAccountId)
+                    PdfPreview(fileUri, mine = message.senderId == currentAccountId)
                 }
 
                 MessageStatusIndicator(
