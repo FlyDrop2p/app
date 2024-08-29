@@ -143,7 +143,7 @@ fun InfoScreen(
             } else {
                 Image(
                     painter = painterResource(id = R.drawable.account_circle_24px),
-                    colorFilter = ColorFilter.tint(Color.Black),
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
                     contentDescription = "Immagine di default",
                     modifier = Modifier
                         .size(150.dp)
@@ -153,7 +153,6 @@ fun InfoScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Sezione Nome utente
             Text(
                 text = infoState.profile.username,
                 style = MaterialTheme.typography.headlineMedium,
@@ -162,7 +161,6 @@ fun InfoScreen(
 
             Spacer(modifier = Modifier.fillMaxHeight(0.05f))
 
-            // Sezione File multimediali
             Text(
                 text = "Media",
                 fontSize = 18.sp,

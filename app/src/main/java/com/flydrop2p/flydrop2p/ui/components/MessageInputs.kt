@@ -93,37 +93,6 @@ fun TextMessageInput(
         modifier = modifier
     )
 
-//    BasicTextField(
-//        value = textFieldValue,
-//        onValueChange = onValueChange,
-//        textStyle = TextStyle(
-//            fontSize = 14.sp
-//        ),
-//        decorationBox = { innerTextField ->
-//            Column(
-//                modifier = modifier
-//                    .fillMaxWidth()
-//                    .clip(RoundedCornerShape(8.dp))
-//                    .background(Color.White)
-//                    .padding(horizontal = 8.dp, vertical = 10.dp),
-//                verticalArrangement = Arrangement.Center
-//            ) {
-//                if (textFieldValue.text.isEmpty()) {
-//                    Text(
-//                        text = "Scrivi un messaggio...",
-//                        style = TextStyle(
-//                            fontSize = 14.sp,
-//                            lineHeight = 14.sp,
-//                            color = Color.Gray
-//                        )
-//                    )
-//                } else {
-//                    innerTextField()
-//                }
-//            }
-//        }
-//    )
-
     if (isTyping) {
         SendButton(onClick = {
             onSendTextMessage(textFieldValue.text)

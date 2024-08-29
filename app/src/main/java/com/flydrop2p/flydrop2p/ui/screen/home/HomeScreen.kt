@@ -189,7 +189,7 @@ fun ChatItem(
         } else {
             Image(
                 painter = painterResource(id = R.drawable.account_circle_24px),
-                colorFilter = ColorFilter.tint(Color.Black),
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
                 contentDescription = "Immagine di default",
                 modifier = imageModifier
             )
