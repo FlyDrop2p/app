@@ -107,7 +107,7 @@ class SettingsViewModel(
         viewModelScope.launch {
             setLoading(true)
             try {
-                val messages = BackupInstance.api.getBackup(uiState.value.profile.accountId)
+                val messages = BackupInstance.api.retrieveMessages(uiState.value.profile.accountId)
 
                 messages.forEach { message ->
                     if(chatRepository.getMessageByMessageId(message.messageId) == null) {
