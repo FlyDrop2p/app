@@ -1,6 +1,7 @@
 package com.flydrop2p.flydrop2p.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -159,7 +160,8 @@ fun ChatTopAppBar(
         },
         title = {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.clickable(onClick = onInfoButtonClick)
             ) {
                 val imageModifier = Modifier
                     .size(50.dp)
