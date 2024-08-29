@@ -1,6 +1,5 @@
 package com.flydrop2p.flydrop2p.data.local.serializer
 
-import android.os.Build
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
 import com.flydrop2p.flydrop2p.data.local.account.AccountEntity
