@@ -50,7 +50,10 @@ fun FlyDropNavHost(
         modifier = modifier
     ) {
         composable(route = HomeDestination.route) {
+            val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory())
+
             HomeScreen(
+                homeViewModel = homeViewModel,
                 navController = navController,
                 onChatClick = { navController.navigate("${ChatDestination.route}/${it.accountId}") },
                 onSettingsButtonClick = { navController.navigate(SettingsDestination.route) },
@@ -65,8 +68,11 @@ fun FlyDropNavHost(
         ) { backStackEntry ->
             val accountId = backStackEntry.arguments?.getLong(ChatDestination.itemIdArg)
             accountId?.let {
+                val chatViewModel: ChatViewModel = viewModel(factory = ChatViewModelFactory(accountId))
+
                 ChatScreen(
-                    accountId = it,
+                    accountId = accountId,
+                    chatViewModel = chatViewModel,
                     navController = navController,
                     navigateToCallScreen = { navController.navigate("${CallDestination.route}/${it}") },
                     onInfoButtonClick = { navController.navigate("${InfoDestination.route}/${it}") },
@@ -82,8 +88,10 @@ fun FlyDropNavHost(
         ){backStackEntry ->
             val accountId = backStackEntry.arguments?.getLong(InfoDestination.itemIdArg)
             accountId?.let {
+                val infoViewModel: InfoViewModel = viewModel(factory = InfoViewModelFactory(accountId))
+
                 InfoScreen(
-                    accountId,
+                    infoViewModel,
                     navController = navController,
                 )
             }
@@ -97,8 +105,10 @@ fun FlyDropNavHost(
         ) { backStackEntry ->
             val accountId = backStackEntry.arguments?.getLong(CallDestination.itemIdArg)
             accountId?.let {
+                val callViewModel: CallViewModel = viewModel(factory = CallViewModelFactory(accountId))
+
                 CallScreen(
-                    accountId,
+                    callViewModel = callViewModel,
                     navController = navController,
                     onSpeakerClick = { /*TODO*/ },
                 )
@@ -108,7 +118,10 @@ fun FlyDropNavHost(
         composable(
             route = SettingsDestination.route
         ) {
+            val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory())
+
             SettingsScreen(
+                settingsViewModel = settingsViewModel,
                 navController = navController,
                 onSettingsButtonClick = { navController.navigate(SettingsDestination.route) },
             )

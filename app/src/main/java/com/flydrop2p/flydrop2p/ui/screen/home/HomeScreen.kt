@@ -24,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,7 +36,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.flydrop2p.flydrop2p.R
@@ -66,14 +64,12 @@ object HomeDestination : NavigationDestination {
 
 @Composable
 fun HomeScreen(
+    homeViewModel: HomeViewModel,
     navController: NavHostController,
     onChatClick: (Contact) -> Unit,
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val homeViewModelFactory = remember { HomeViewModelFactory() }
-    val homeViewModel: HomeViewModel = viewModel(factory = homeViewModelFactory)
-
     val callRequest by homeViewModel.networkManager.callRequest.collectAsState()
 
     LaunchedEffect(callRequest) {
@@ -82,7 +78,7 @@ fun HomeScreen(
         }
     }
 
-    val uiState by homeViewModel.uiState.collectAsState()
+    val homeState by homeViewModel.uiState.collectAsState()
 
     Scaffold(topBar = {
         FlyDropTopAppBar(
@@ -95,8 +91,8 @@ fun HomeScreen(
         )
     }, content = { innerPadding ->
         ChatList(
-            chatPreviews = uiState.chatPreviews,
-            onlineChats = uiState.onlineChats,
+            chatPreviews = homeState.chatPreviews,
+            onlineChats = homeState.onlineChats,
             onChatClick = onChatClick,
             modifier = Modifier.padding(innerPadding)
         )
@@ -152,7 +148,7 @@ fun ChatItem(
         }
         // Se il messaggio è stato inviato ieri
         today - 1 == messageDay && currentYear == messageYear -> {
-            "ieri"
+            "Yesterday"
         }
         // Se il messaggio è stato inviato questa settimana
         today - messageDay in 1..6 && currentYear == messageYear -> {

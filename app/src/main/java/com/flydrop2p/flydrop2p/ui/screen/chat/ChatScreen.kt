@@ -61,14 +61,12 @@ object ChatDestination : NavigationDestination {
 @Composable
 fun ChatScreen(
     accountId: Long,
+    chatViewModel: ChatViewModel,
     navController: NavHostController,
     navigateToCallScreen: (Long) -> Unit,
     onInfoButtonClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val chatViewModelFactory = remember(accountId) { ChatViewModelFactory(accountId) }
-    val chatViewModel: ChatViewModel = viewModel(factory = chatViewModelFactory)
-
     val callRequest by chatViewModel.networkManager.callRequest.collectAsState()
 
     LaunchedEffect(callRequest) {
@@ -88,7 +86,7 @@ fun ChatScreen(
                 title = chatState.contact.username ?: "Connecting...",
                 canNavigateBack = true,
                 onCallButtonClick = {
-                    chatViewModel.sendCallRequest(accountId)
+                    chatViewModel.sendCallRequest()
                     navigateToCallScreen(accountId)
                 },
                 onInfoButtonClick = { onInfoButtonClick(accountId) },
@@ -122,13 +120,13 @@ fun ChatScreen(
                         chatViewModel.stopRecordingAudio()
                     },
                     onSendTextMessage = { messageText ->
-                        chatViewModel.sendTextMessage(accountId, messageText)
+                        chatViewModel.sendTextMessage(messageText)
                     },
                     onSendFileMessage = { fileUri ->
-                        chatViewModel.sendFileMessage(accountId, fileUri)
+                        chatViewModel.sendFileMessage(fileUri)
                     },
                     onSendAudioMessage = {
-                        chatViewModel.sendAudioMessage(accountId)
+                        chatViewModel.sendAudioMessage()
                     }
                 )
             }

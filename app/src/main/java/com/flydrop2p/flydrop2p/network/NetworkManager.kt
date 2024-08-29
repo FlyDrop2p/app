@@ -425,8 +425,9 @@ class NetworkManager(
     private fun startCallFragmentConnection() {
         coroutineScope.launch {
             while(true) {
-                val callFragment = serverService.listenCallFragment()
-                handleCallFragment(callFragment)
+                serverService.listenCallFragment()?.let { callFragment ->
+                    handleCallFragment(callFragment)
+                }
             }
         }
     }

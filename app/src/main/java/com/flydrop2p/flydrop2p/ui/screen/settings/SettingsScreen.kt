@@ -61,6 +61,7 @@ object SettingsDestination : NavigationDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
+    settingsViewModel: SettingsViewModel,
     navController: NavHostController,
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier

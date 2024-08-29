@@ -34,12 +34,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.ui.navigation.FlyDropNavHost
+import com.flydrop2p.flydrop2p.ui.screen.home.HomeViewModel
+import com.flydrop2p.flydrop2p.ui.screen.home.HomeViewModelFactory
+import com.flydrop2p.flydrop2p.ui.screen.settings.SettingsViewModel
+import com.flydrop2p.flydrop2p.ui.screen.settings.SettingsViewModelFactory
 import java.io.File
 
 

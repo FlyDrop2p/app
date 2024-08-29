@@ -49,14 +49,11 @@ object CallDestination : NavigationDestination {
 
 @Composable
 fun CallScreen(
-    accountId: Long,
+    callViewModel: CallViewModel,
     navController: NavHostController,
     onSpeakerClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val callViewModelFactory = remember(accountId) { CallViewModelFactory(accountId) }
-    val callViewModel: CallViewModel = viewModel(factory = callViewModelFactory)
-
     val callEnd by callViewModel.networkManager.callEnd.collectAsState()
 
     LaunchedEffect(callEnd) {

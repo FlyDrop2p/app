@@ -55,13 +55,10 @@ object InfoDestination : NavigationDestination {
 
 @Composable
 fun InfoScreen(
-    accountId: Long,
+    infoViewModel: InfoViewModel,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    val infoViewModelFactory = remember(accountId) { InfoViewModelFactory(accountId) }
-    val infoViewModel: InfoViewModel = viewModel(factory = infoViewModelFactory)
-
     val infoState by infoViewModel.uiState.collectAsState()
 
     Column(
