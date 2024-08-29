@@ -220,7 +220,7 @@ fun PdfMessageComponent(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(top = 6.dp, start = 6.dp, end = 6.dp)
                 ){
-                    PdfPreview(context, fileUri)
+                    PdfPreview(fileUri)
                 }
 
                 MessageStatusIndicator(
@@ -239,7 +239,6 @@ fun GenericFileMessageComponent(
     currentAccountId: Long
 ){
     val context = LocalContext.current
-    val fileUri = Uri.fromFile(File(context.filesDir, message.fileName))
 
     Row(
         modifier = Modifier

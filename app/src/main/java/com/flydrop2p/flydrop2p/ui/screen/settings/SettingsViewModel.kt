@@ -1,7 +1,6 @@
 package com.flydrop2p.flydrop2p.ui.screen.settings
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flydrop2p.flydrop2p.data.local.FileManager
@@ -91,11 +90,10 @@ class SettingsViewModel(
         viewModelScope.launch {
             setLoading(true)
             try {
-                Log.d("Backup", "Backup started")
                 val messages = chatRepository.getAllMessages().map { it.toMessageEntity() }
                 val body = BackupRequestBody(uiState.value.profile.accountId, messages)
-                val response = BackupInstance.api.backupMessages(body)
-                Log.d("Backup", "Backup completed with message: ${response.message}")
+                BackupInstance.api.backupMessages(body)
+
                 setSuccess(true)
             } catch (e: Exception) {
                 setError("Failed to backup messages")
@@ -105,18 +103,18 @@ class SettingsViewModel(
         }
     }
 
-    fun retrieveBackup() {
+    fun retrieveMessages() {
         viewModelScope.launch {
             setLoading(true)
             try {
                 val messages = BackupInstance.api.getBackup(uiState.value.profile.accountId)
-                Log.d("Backup", "Backup retrieved")
+
                 messages.forEach { message ->
-                    val existingMessage = chatRepository.getMessageByMessageId(message.messageId)
-                    if (existingMessage == null) {
+                    if(chatRepository.getMessageByMessageId(message.messageId) == null) {
                         chatRepository.addMessage(message.toMessage())
                     }
                 }
+
                 setSuccess(true)
             } catch (e: Exception) {
                 setError("Failed to retrieve backup")

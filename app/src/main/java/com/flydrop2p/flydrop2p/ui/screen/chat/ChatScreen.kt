@@ -54,8 +54,8 @@ import java.util.Locale
 object ChatDestination : NavigationDestination {
     override val route = "chat"
     override val titleRes = R.string.chat_screen
-    const val accountIdArgId = "chatId"
-    val routeWithArgs = "$route/{$accountIdArgId}"
+    const val accountIdArg = "accountId"
+    val routeWithArgs = "$route/{$accountIdArg}"
 }
 
 @Composable

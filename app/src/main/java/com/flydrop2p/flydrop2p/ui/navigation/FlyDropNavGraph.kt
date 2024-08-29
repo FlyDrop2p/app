@@ -63,11 +63,11 @@ fun FlyDropNavHost(
 
         composable(
             route = ChatDestination.routeWithArgs,
-            arguments = listOf(navArgument(ChatDestination.accountIdArgId) {
+            arguments = listOf(navArgument(ChatDestination.accountIdArg) {
                 type = NavType.LongType
             })
         ) { backStackEntry ->
-            val accountId = backStackEntry.arguments?.getLong(ChatDestination.accountIdArgId)
+            val accountId = backStackEntry.arguments?.getLong(ChatDestination.accountIdArg)
             accountId?.let {
                 val chatViewModel: ChatViewModel = viewModel(factory = ChatViewModelFactory(accountId))
 
@@ -82,11 +82,11 @@ fun FlyDropNavHost(
 
         composable(
             route = InfoDestination.routeWithArgs,
-            arguments = listOf(navArgument(InfoDestination.itemIdArg) {
+            arguments = listOf(navArgument(InfoDestination.accountIdArg) {
                 type = NavType.LongType
             })
         ){backStackEntry ->
-            val accountId = backStackEntry.arguments?.getLong(InfoDestination.itemIdArg)
+            val accountId = backStackEntry.arguments?.getLong(InfoDestination.accountIdArg)
             accountId?.let {
                 val infoViewModel: InfoViewModel = viewModel(factory = InfoViewModelFactory(accountId))
 
@@ -99,12 +99,12 @@ fun FlyDropNavHost(
 
         composable(
             route = CallDestination.routeWithArgs,
-            arguments = listOf(navArgument(CallDestination.accountIdArgId) {
+            arguments = listOf(navArgument(CallDestination.accountIdArg) {
                 type = NavType.LongType
             })
         ) { backStackEntry ->
-            val accountId = backStackEntry.arguments?.getLong(CallDestination.accountIdArgId)
-            val callState = backStackEntry.arguments?.getString(CallDestination.callStateArgId)?.let { CallState.valueOf(it) }
+            val accountId = backStackEntry.arguments?.getLong(CallDestination.accountIdArg)
+            val callState = backStackEntry.arguments?.getString(CallDestination.callStateArg)?.let { CallState.valueOf(it) }
 
             if(accountId != null && callState != null) {
                 BackHandler(true) {

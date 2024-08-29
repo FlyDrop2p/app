@@ -28,7 +28,6 @@ data class BackupResponse(
     val message: String
 )
 
-
 interface BackupApiService {
     @GET("register")
     suspend fun register(): Long

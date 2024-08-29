@@ -210,17 +210,17 @@ fun SettingsScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Make Backup", color = MaterialTheme.colorScheme.onPrimaryContainer)
+                    Text("Backup messages", color = MaterialTheme.colorScheme.onPrimaryContainer)
                 }
 
                 Button(
                     onClick = {
-                        settingsViewModel.retrieveBackup()
+                        settingsViewModel.retrieveMessages()
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Retrieve Backup", color = MaterialTheme.colorScheme.onTertiaryContainer)
+                    Text("Retrieve messages", color = MaterialTheme.colorScheme.onTertiaryContainer)
                 }
             }
         }

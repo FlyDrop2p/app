@@ -41,9 +41,9 @@ import java.io.File
 object CallDestination : NavigationDestination {
     override val route = "call"
     override val titleRes = R.string.call_screen
-    const val accountIdArgId = "accountId"
-    const val callStateArgId = "callState"
-    val routeWithArgs = "$route/{$accountIdArgId}/{$callStateArgId}"
+    const val accountIdArg = "accountId"
+    const val callStateArg = "callState"
+    val routeWithArgs = "$route/{$accountIdArg}/{$callStateArg}"
 }
 
 @Composable
