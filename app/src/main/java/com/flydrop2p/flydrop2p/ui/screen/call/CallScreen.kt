@@ -41,8 +41,9 @@ import java.io.File
 object CallDestination : NavigationDestination {
     override val route = "call"
     override val titleRes = R.string.call_screen
-    const val itemIdArg = "chatId"
-    val routeWithArgs = "$route/{$itemIdArg}"
+    const val accountIdArg = "accountId"
+    const val callStateArg = "callState"
+    val routeWithArgs = "$route/{$accountIdArg}/{$callStateArg}"
 }
 
 @Composable
@@ -51,6 +52,18 @@ fun CallScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
+    val callResponse by callViewModel.networkManager.callResponse.collectAsState()
+
+    LaunchedEffect(callResponse) {
+        callResponse?.let {
+            if(it.accepted) {
+                callViewModel.startCall()
+            } else {
+                navController.popBackStack()
+            }
+        }
+    }
+
     val callEnd by callViewModel.networkManager.callEnd.collectAsState()
 
     LaunchedEffect(callEnd) {
@@ -112,31 +125,72 @@ fun CallScreen(
                 .padding(bottom = 32.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            CallActionButton(
-                iconResId = R.drawable.volume_up_24px,
-                contentDescription = if (callState.isSpeakerOn) "Vivavoce attivo" else "Vivavoce",
-                onClick = {
-                    if (callState.isSpeakerOn) {
-                        callViewModel.setSpeakerOff()
-                    } else {
-                        callViewModel.setSpeakerOn()
-                    }
-                },
-                buttonColor = if (callState.isSpeakerOn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
-                iconTintColor = if (callState.isSpeakerOn) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary
-            )
+            when(callState.callState) {
+                CallState.SENT_CALL_REQUEST -> {
+                    CallActionButton(
+                        iconResId = R.drawable.call_phone_24px,
+                        contentDescription = "Metti giù",
+                        onClick = {
+                            callViewModel.sendCallEnd()
+                            navController.popBackStack()
+                        },
+                        buttonColor = Color.Red,
+                        iconTintColor = Color.White
+                    )
+                }
 
-            CallActionButton(
-                iconResId = R.drawable.call_end_24px,
-                contentDescription = "Metti giù",
-                onClick = {
-                    callViewModel.sendCallEnd()
-                    callViewModel.endCall()
-                    navController.popBackStack()
-                },
-                buttonColor = Color.Red,
-                iconTintColor = Color.White
-            )
+                CallState.RECEIVED_CALL_REQUEST -> {
+                    CallActionButton(
+                        iconResId = R.drawable.call_phone_24px,
+                        contentDescription = "Accetta chiamata",
+                        onClick = {
+                            callViewModel.acceptCall()
+                            callViewModel.startCall()
+                        },
+                        buttonColor = Color.Green,
+                        iconTintColor = Color.White
+                    )
+
+                    CallActionButton(
+                        iconResId = R.drawable.call_phone_24px,
+                        contentDescription = "Rifiuta chaiamata",
+                        onClick = {
+                            callViewModel.declineCall()
+                            navController.popBackStack()
+                        },
+                        buttonColor = Color.Red,
+                        iconTintColor = Color.White
+                    )
+                }
+
+                CallState.CALL -> {
+                    CallActionButton(
+                        iconResId = R.drawable.volume_up_24px,
+                        contentDescription = if (callState.isSpeakerOn) "Vivavoce attivo" else "Vivavoce",
+                        onClick = {
+                            if (callState.isSpeakerOn) {
+                                callViewModel.setSpeakerOff()
+                            } else {
+                                callViewModel.setSpeakerOn()
+                            }
+                        },
+                        buttonColor = if (callState.isSpeakerOn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+                        iconTintColor = if (callState.isSpeakerOn) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary
+                    )
+
+                    CallActionButton(
+                        iconResId = R.drawable.call_phone_24px,
+                        contentDescription = "Metti giù",
+                        onClick = {
+                            callViewModel.sendCallEnd()
+                            callViewModel.endCall()
+                            navController.popBackStack()
+                        },
+                        buttonColor = Color.Red,
+                        iconTintColor = Color.White
+                    )
+                }
+            }
         }
     }
 }

@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.flydrop2p.flydrop2p.ui.screen.call.CallDestination
 import com.flydrop2p.flydrop2p.ui.screen.call.CallScreen
+import com.flydrop2p.flydrop2p.ui.screen.call.CallState
 import com.flydrop2p.flydrop2p.ui.screen.call.CallViewModel
 import com.flydrop2p.flydrop2p.ui.screen.call.CallViewModelFactory
 import com.flydrop2p.flydrop2p.ui.screen.chat.ChatDestination
@@ -64,11 +65,11 @@ fun FlyDropNavHost(
 
         composable(
             route = ChatDestination.routeWithArgs,
-            arguments = listOf(navArgument(ChatDestination.itemIdArg) {
+            arguments = listOf(navArgument(ChatDestination.accountIdArg) {
                 type = NavType.LongType
             })
         ) { backStackEntry ->
-            val accountId = backStackEntry.arguments?.getLong(ChatDestination.itemIdArg)
+            val accountId = backStackEntry.arguments?.getLong(ChatDestination.accountIdArg)
             accountId?.let {
                 val chatViewModel: ChatViewModel = viewModel(factory = ChatViewModelFactory(accountId))
 
@@ -83,11 +84,11 @@ fun FlyDropNavHost(
 
         composable(
             route = InfoDestination.routeWithArgs,
-            arguments = listOf(navArgument(InfoDestination.itemIdArg) {
+            arguments = listOf(navArgument(InfoDestination.accountIdArg) {
                 type = NavType.LongType
             })
         ){backStackEntry ->
-            val accountId = backStackEntry.arguments?.getLong(InfoDestination.itemIdArg)
+            val accountId = backStackEntry.arguments?.getLong(InfoDestination.accountIdArg)
             accountId?.let {
                 val infoViewModel: InfoViewModel = viewModel(factory = InfoViewModelFactory(accountId))
 
@@ -100,17 +101,19 @@ fun FlyDropNavHost(
 
         composable(
             route = CallDestination.routeWithArgs,
-            arguments = listOf(navArgument(CallDestination.itemIdArg) {
+            arguments = listOf(navArgument(CallDestination.accountIdArg) {
                 type = NavType.LongType
             })
         ) { backStackEntry ->
-            val accountId = backStackEntry.arguments?.getLong(CallDestination.itemIdArg)
-            accountId?.let {
+            val accountId = backStackEntry.arguments?.getLong(CallDestination.accountIdArg)
+            val callState = backStackEntry.arguments?.getString(CallDestination.callStateArg)?.let { CallState.valueOf(it) }
+
+            if(accountId != null && callState != null) {
                 BackHandler(true) {
 
                 }
 
-                val callViewModel: CallViewModel = viewModel(factory = CallViewModelFactory(accountId))
+                val callViewModel: CallViewModel = viewModel(factory = CallViewModelFactory(accountId, callState))
 
                 CallScreen(
                     callViewModel = callViewModel,

@@ -17,9 +17,10 @@ class CallViewModel(
     private val contactRepository: ContactRepository,
     private val callManager: CallManager,
     val networkManager: NetworkManager,
-    private val accountId: Long
+    private val accountId: Long,
+    callState: CallState
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(CallViewState())
+    private val _uiState = MutableStateFlow(CallViewState(callState))
     val uiState: StateFlow<CallViewState> = _uiState.asStateFlow()
 
     private val isCalling = AtomicBoolean(false)
@@ -40,17 +41,33 @@ class CallViewModel(
                 }
             }
         }
-
-        startCall()
     }
 
     fun sendCallEnd() {
         networkManager.sendCallEnd(accountId)
     }
 
-    private fun startCall() {
-        networkManager.callEnd.value = null
+    fun acceptCall() {
+        networkManager.resetCallStateFlows()
+        networkManager.sendCallResponse(accountId, true)
+    }
 
+    fun declineCall() {
+        networkManager.resetCallStateFlows()
+        networkManager.sendCallResponse(accountId, false)
+    }
+
+    fun startCall() {
+        networkManager.resetCallStateFlows()
+        startCallSession()
+    }
+
+    fun endCall() {
+        networkManager.resetCallStateFlows()
+        endCallSession()
+    }
+
+    private fun startCallSession() {
         if(!isCalling.get()) {
             try {
                 callManager.startPlaying()
@@ -58,6 +75,7 @@ class CallViewModel(
                     networkManager.sendCallFragment(accountId, audioBytes)
                 }
 
+                _uiState.value = _uiState.value.copy(callState = CallState.CALL)
                 isCalling.set(true)
             } catch (_: Exception) {
 
@@ -66,10 +84,7 @@ class CallViewModel(
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun endCall() {
-        networkManager.callRequest.value = null
-        networkManager.callResponse.value = null
-
+    private fun endCallSession() {
         if(isCalling.get()) {
             GlobalScope.launch {
                 callManager.stopPlaying()

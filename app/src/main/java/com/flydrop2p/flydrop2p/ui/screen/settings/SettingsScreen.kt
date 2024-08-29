@@ -50,6 +50,7 @@ import com.flydrop2p.flydrop2p.R
 import com.flydrop2p.flydrop2p.ui.FlyDropTopAppBar
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import com.flydrop2p.flydrop2p.ui.screen.call.CallDestination
+import com.flydrop2p.flydrop2p.ui.screen.call.CallState
 import java.io.File
 import kotlin.random.Random
 
@@ -70,17 +71,7 @@ fun SettingsScreen(
 
     LaunchedEffect(callRequest) {
         callRequest?.let {
-            navController.navigate("${CallDestination.route}/${it.senderId}")
-        }
-    }
-
-    val callResponse by settingsViewModel.networkManager.callResponse.collectAsState()
-
-    LaunchedEffect(callResponse) {
-        callResponse?.let {
-            if(it.accepted) {
-                navController.navigate("${CallDestination.route}/${it.senderId}")
-            }
+            navController.navigate("${CallDestination.route}/${it.senderId}/${CallState.RECEIVED_CALL_REQUEST.name}")
         }
     }
 
@@ -230,17 +221,17 @@ fun SettingsScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Make Backup", color = MaterialTheme.colorScheme.onPrimaryContainer)
+                    Text("Backup messages", color = MaterialTheme.colorScheme.onPrimaryContainer)
                 }
 
                 Button(
                     onClick = {
-                        settingsViewModel.retrieveBackup()
+                        settingsViewModel.retrieveMessages()
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Retrieve Backup", color = MaterialTheme.colorScheme.surface)
+                    Text("Retrieve messages", color = MaterialTheme.colorScheme.surface)
                 }
             }
         }

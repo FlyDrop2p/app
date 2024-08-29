@@ -239,7 +239,6 @@ fun GenericFileMessageComponent(
     currentAccountId: Long
 ){
     val context = LocalContext.current
-    val fileUri = Uri.fromFile(File(context.filesDir, message.fileName))
 
     Row(
         modifier = Modifier

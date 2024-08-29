@@ -24,7 +24,7 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -65,13 +65,14 @@ import com.flydrop2p.flydrop2p.ui.components.getVideoDuration
 import com.flydrop2p.flydrop2p.ui.components.shareFile
 import com.flydrop2p.flydrop2p.ui.navigation.NavigationDestination
 import com.flydrop2p.flydrop2p.ui.screen.call.CallDestination
+import com.flydrop2p.flydrop2p.ui.screen.call.CallState
 import java.io.File
 
 object InfoDestination : NavigationDestination {
     override val route = "info"
     override val titleRes = R.string.info_screen
-    const val itemIdArg = "chatId"
-    val routeWithArgs = "$route/{$itemIdArg}"
+    const val accountIdArg = "accountId"
+    val routeWithArgs = "$route/{$accountIdArg}"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,17 +86,7 @@ fun InfoScreen(
 
     LaunchedEffect(callRequest) {
         callRequest?.let {
-            navController.navigate("${CallDestination.route}/${it.senderId}")
-        }
-    }
-
-    val callResponse by infoViewModel.networkManager.callResponse.collectAsState()
-
-    LaunchedEffect(callResponse) {
-        callResponse?.let {
-            if(it.accepted) {
-                navController.navigate("${CallDestination.route}/${it.senderId}")
-            }
+            navController.navigate("${CallDestination.route}/${it.senderId}/${CallState.RECEIVED_CALL_REQUEST.name}")
         }
     }
 
@@ -164,7 +155,7 @@ fun InfoScreen(
 
             // Sezione Nome utente
             Text(
-                text = infoState.profile.username ?: "Sconosciuto",
+                text = infoState.profile.username,
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )

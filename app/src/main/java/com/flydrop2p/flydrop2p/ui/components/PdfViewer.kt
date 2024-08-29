@@ -21,7 +21,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -37,7 +36,6 @@ fun PdfFirstPageViewer(
     imageWidth: Dp = 150.dp,
     imageHeight: Dp = 200.dp
 ) {
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
 

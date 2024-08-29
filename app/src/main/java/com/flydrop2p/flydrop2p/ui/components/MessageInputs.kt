@@ -21,8 +21,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,7 +50,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.flydrop2p.flydrop2p.R
 import kotlinx.coroutines.delay
 import java.io.File
@@ -319,23 +320,21 @@ fun FileMessageInput(
 
 @Composable
 fun getPreviewPainter(fileUri: Uri): Painter {
-    return rememberImagePainter(
-        data = fileUri,
-        builder = {
+    return rememberAsyncImagePainter(
+        ImageRequest.Builder(LocalContext.current).data(data = fileUri).apply(block = fun ImageRequest.Builder.() {
             crossfade(true)
             error(R.drawable.error_24px)
-        }
+        }).build()
     )
 }
 
 @Composable
 fun ImagePreview(fileUri: Uri) {
-    val painter = rememberImagePainter(
-        data = fileUri,
-        builder = {
+    val painter = rememberAsyncImagePainter(
+        ImageRequest.Builder(LocalContext.current).data(data = fileUri).apply(block = fun ImageRequest.Builder.() {
             crossfade(true)
             error(R.drawable.error_24px)
-        }
+        }).build()
     )
     Image(
         painter = painter,
@@ -374,7 +373,6 @@ fun GenericFilePreview(fileUri: Uri) {
 
 @Composable
 fun PdfPreview(
-    context: Context,
     fileUri: Uri,
     modifier: Modifier = Modifier,
     mine: Boolean? = false,
