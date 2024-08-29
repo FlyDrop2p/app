@@ -19,9 +19,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -89,6 +91,7 @@ fun ImageMessageComponent(
             MessageStatusIndicator(
                 message = message,
                 currentAccountId = currentAccountId,
+                color = MaterialTheme.colorScheme.surface,
                 backgroundColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.align( Alignment.BottomEnd )
             )
@@ -156,14 +159,27 @@ fun VideoMessageComponent(
                 imageLoader = imageLoader,
             )
 
-            Icon(
-                painter = playIcon,
-                contentDescription = "Play Icon",
-                modifier = Modifier
+            IconButton(
+                onClick = {
+                    shareFile(context, message.fileName)
+                },
+                modifier = modifier
                     .size(48.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = CircleShape
+                    )
+                    .padding(8.dp)
                     .align(Alignment.Center),
-                tint = Color.White,
-            )
+            ) {
+                Icon(
+                    painter = playIcon,
+                    contentDescription = "Play Icon",
+                    modifier = Modifier
+                        .size(24.dp),
+                    tint = Color.White,
+                )
+            }
 
             if (videoDuration.isNotEmpty()) {
                 Text(
@@ -181,7 +197,8 @@ fun VideoMessageComponent(
             MessageStatusIndicator(
                 message = message,
                 currentAccountId = currentAccountId,
-                backgroundColor = Color(0xFFEFEFEF),
+                color = MaterialTheme.colorScheme.surface,
+                backgroundColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.align(Alignment.BottomEnd)
             )
         }

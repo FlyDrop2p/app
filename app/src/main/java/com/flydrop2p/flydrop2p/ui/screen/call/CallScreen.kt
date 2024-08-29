@@ -141,13 +141,13 @@ fun CallScreen(
 
                 CallState.RECEIVED_CALL_REQUEST -> {
                     CallActionButton(
-                        iconResId = R.drawable.call_phone_24px,
+                        iconResId = R.drawable.call,
                         contentDescription = "Accetta chiamata",
                         onClick = {
                             callViewModel.acceptCall()
                             callViewModel.startCall()
                         },
-                        buttonColor = Color.Green,
+                        buttonColor = Color(0xFF16a34a),
                         iconTintColor = Color.White
                     )
 
