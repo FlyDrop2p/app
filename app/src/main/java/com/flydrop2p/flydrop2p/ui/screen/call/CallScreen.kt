@@ -117,9 +117,9 @@ fun CallScreen(
                 contentDescription = if (callState.isSpeakerOn) "Vivavoce attivo" else "Vivavoce",
                 onClick = {
                     if (callState.isSpeakerOn) {
-                        callViewModel.setSpeakerOn()
-                    } else {
                         callViewModel.setSpeakerOff()
+                    } else {
+                        callViewModel.setSpeakerOn()
                     }
                 },
                 buttonColor = if (callState.isSpeakerOn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,

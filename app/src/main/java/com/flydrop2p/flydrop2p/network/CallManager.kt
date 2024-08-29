@@ -7,7 +7,7 @@ import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.AudioTrack
-import android.media.MediaRecorder
+import android.media.MediaRecorder.AudioSource
 import android.media.audiofx.AcousticEchoCanceler
 import android.media.audiofx.LoudnessEnhancer
 import android.media.audiofx.NoiseSuppressor
@@ -21,9 +21,10 @@ import kotlinx.coroutines.launch
 
 class CallManager(private val context: Context) {
     companion object {
+        private var sessionId: Int = 0
         private const val SAMPLE_RATE = 44100
         private const val ENCODING = AudioFormat.ENCODING_PCM_16BIT
-        private const val BUFFER_SIZE_FACTOR = 10
+        private const val BUFFER_SIZE_FACTOR = 25
         private val BUFFER_SIZE = AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, ENCODING) * BUFFER_SIZE_FACTOR
     }
 
@@ -31,9 +32,14 @@ class CallManager(private val context: Context) {
         .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
         .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build()
 
-    private val audioFormat = AudioFormat.Builder()
+    private val audioTrackFormat = AudioFormat.Builder()
         .setSampleRate(SAMPLE_RATE)
         .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+        .setEncoding(ENCODING).build()
+
+    private val audioRecordFormat = AudioFormat.Builder()
+        .setSampleRate(SAMPLE_RATE)
+        .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
         .setEncoding(ENCODING).build()
 
     private var audioTrack: AudioTrack? = null
@@ -47,11 +53,18 @@ class CallManager(private val context: Context) {
     }
 
     fun startPlaying() {
-        audioTrack = AudioTrack(audioAttributes, audioFormat, BUFFER_SIZE, AudioTrack.MODE_STREAM, 0)
+        audioTrack = AudioTrack.Builder()
+            .setAudioAttributes(audioAttributes)
+            .setAudioFormat(audioTrackFormat)
+            .setBufferSizeInBytes(BUFFER_SIZE)
+            .setTransferMode(AudioTrack.MODE_STREAM)
+            .setSessionId(sessionId).build()
+
+        sessionId += 1
 
         audioTrack?.apply {
             enhancer = LoudnessEnhancer(audioSessionId)
-            enhancer?.setTargetGain(10000)
+            enhancer?.setTargetGain(3000)
             play()
         }
     }
@@ -72,15 +85,20 @@ class CallManager(private val context: Context) {
 
     fun startRecording(handleAudioBytes: (ByteArray) -> Unit) {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-            audioRecord = AudioRecord(MediaRecorder.AudioSource.VOICE_RECOGNITION, SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, ENCODING, BUFFER_SIZE)
+            audioRecord = AudioRecord.Builder()
+                .setAudioSource(AudioSource.VOICE_RECOGNITION)
+                .setAudioFormat(audioRecordFormat)
+                .setBufferSizeInBytes(BUFFER_SIZE).build()
 
-            audioRecord?.let {
-                it.startRecording()
+            audioRecord?.apply {
+                NoiseSuppressor.create(audioSessionId)
+                AcousticEchoCanceler.create(audioSessionId)
+                startRecording()
                 val buffer = ByteArray(BUFFER_SIZE)
 
                 recordingJob = CoroutineScope(Dispatchers.IO).launch {
                     while(recordingJob?.isActive == true) {
-                        it.read(buffer, 0, BUFFER_SIZE)
+                        read(buffer, 0, BUFFER_SIZE)
                         handleAudioBytes(buffer)
                     }
                 }
