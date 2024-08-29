@@ -57,9 +57,7 @@ import coil.decode.VideoFrameDecoder
 import coil.request.ImageRequest
 import coil.request.videoFrameMillis
 import com.flydrop2p.flydrop2p.R
-import com.flydrop2p.flydrop2p.ui.ChatTopAppBar
 import com.flydrop2p.flydrop2p.ui.components.PdfFirstPageViewer
-import com.flydrop2p.flydrop2p.ui.components.PdfPreview
 import com.flydrop2p.flydrop2p.ui.components.getMimeType
 import com.flydrop2p.flydrop2p.ui.components.getPreviewPainter
 import com.flydrop2p.flydrop2p.ui.components.getVideoDuration

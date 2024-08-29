@@ -1,6 +1,5 @@
 package com.flydrop2p.flydrop2p.ui.screen.call
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -130,7 +129,11 @@ fun CallScreen(
             CallActionButton(
                 iconResId = R.drawable.call_end_24px,
                 contentDescription = "Metti giù",
-                onClick = { callViewModel.sendCallEnd() },
+                onClick = {
+                    callViewModel.sendCallEnd()
+                    callViewModel.endCall()
+                    navController.popBackStack()
+                },
                 buttonColor = Color.Red,
                 iconTintColor = Color.White
             )

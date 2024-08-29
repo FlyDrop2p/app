@@ -57,13 +57,8 @@ class NetworkManager(
     val connectedDevices: StateFlow<List<NetworkDevice>>
         get() = _connectedDevices
 
-    private val _callRequest: MutableStateFlow<NetworkCallRequest?> = MutableStateFlow(null)
-    val callRequest: StateFlow<NetworkCallRequest?>
-        get() = _callRequest
-
-    private val _callEnd: MutableStateFlow<NetworkCallEnd?> = MutableStateFlow(null)
-    val callEnd: StateFlow<NetworkCallEnd?>
-        get() = _callEnd
+    val callRequest: MutableStateFlow<NetworkCallRequest?> = MutableStateFlow(null)
+    val callEnd: MutableStateFlow<NetworkCallEnd?> = MutableStateFlow(null)
 
     private val _callFragment: MutableStateFlow<ByteArray?> = MutableStateFlow(null)
     val callFragment: StateFlow<ByteArray?>
@@ -259,13 +254,13 @@ class NetworkManager(
         }
     }
 
-    fun sendCallEnd(accountId: Long, ack: Boolean) {
+    fun sendCallEnd(accountId: Long) {
         val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
 
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
-                    val networkCallEnd = NetworkCallEnd(ownDevice.account.accountId, accountId, ack)
+                    val networkCallEnd = NetworkCallEnd(ownDevice.account.accountId, accountId)
                     clientService.sendCallEnd(ipAddress, ownDevice, networkCallEnd)
                 }
             }
@@ -509,8 +504,7 @@ class NetworkManager(
     }
 
     private fun handleCallRequest(networkCallRequest: NetworkCallRequest) {
-        _callRequest.value = networkCallRequest
-        _callEnd.value = null
+        callRequest.value = networkCallRequest
 
         if(!networkCallRequest.ack) {
             sendCallRequest(networkCallRequest.senderId, true)
@@ -518,12 +512,7 @@ class NetworkManager(
     }
 
     private fun handleCallEnd(networkCallEnd: NetworkCallEnd) {
-        _callEnd.value = networkCallEnd
-        _callRequest.value = null
-
-        if(!networkCallEnd.ack) {
-            sendCallEnd(networkCallEnd.senderId, true)
-        }
+        callEnd.value = networkCallEnd
     }
 
     private fun handleCallFragment(callFragment: ByteArray) {

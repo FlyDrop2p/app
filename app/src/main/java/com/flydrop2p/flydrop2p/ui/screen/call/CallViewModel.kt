@@ -45,10 +45,12 @@ class CallViewModel(
     }
 
     fun sendCallEnd() {
-        networkManager.sendCallEnd(accountId, false)
+        networkManager.sendCallEnd(accountId)
     }
 
     private fun startCall() {
+        networkManager.callEnd.value = null
+
         if(!isCalling.get()) {
             try {
                 callManager.startPlaying()
@@ -65,6 +67,8 @@ class CallViewModel(
 
     @OptIn(DelicateCoroutinesApi::class)
     fun endCall() {
+        networkManager.callRequest.value = null
+
         if(isCalling.get()) {
             GlobalScope.launch {
                 callManager.stopPlaying()
