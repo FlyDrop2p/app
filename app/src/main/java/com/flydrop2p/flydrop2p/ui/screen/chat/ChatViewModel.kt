@@ -51,15 +51,15 @@ class ChatViewModel(
         }
     }
 
-    fun sendTextMessage(accountId: Long, text: String) {
+    fun sendTextMessage(text: String) {
         networkManager.sendTextMessage(accountId, text)
     }
 
-    fun sendFileMessage(accountId: Long, fileUri: Uri) {
+    fun sendFileMessage(fileUri: Uri) {
         networkManager.sendFileMessage(accountId, fileUri)
     }
 
-    fun sendAudioMessage(accountId: Long) {
+    fun sendAudioMessage() {
         audioReplayer.apply {
             if(isRecording) {
                 stopRecording()
@@ -68,7 +68,7 @@ class ChatViewModel(
         }
     }
 
-    fun sendCallRequest(accountId: Long) {
+    fun sendCallRequest() {
         networkManager.sendCallRequest(accountId, false)
     }
 

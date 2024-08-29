@@ -2,7 +2,6 @@ package com.flydrop2p.flydrop2p.ui.components
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable

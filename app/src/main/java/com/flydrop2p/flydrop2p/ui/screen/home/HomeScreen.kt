@@ -67,7 +67,6 @@ fun HomeScreen(
     homeViewModel: HomeViewModel,
     navController: NavHostController,
     onChatClick: (Contact) -> Unit,
-    onConnectionButtonClick: () -> Unit,
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -79,21 +78,21 @@ fun HomeScreen(
         }
     }
 
-    val uiState by homeViewModel.uiState.collectAsState()
+    val homeState by homeViewModel.uiState.collectAsState()
 
     Scaffold(topBar = {
         FlyDropTopAppBar(
             title = "Chat",
             canNavigateBack = false,
             isSettingsScreen = false,
-            onConnectionButtonClick = onConnectionButtonClick,
+            onConnectionButtonClick = { homeViewModel.connect() },
             onSettingsButtonClick = onSettingsButtonClick,
             modifier = modifier
         )
     }, content = { innerPadding ->
         ChatList(
-            chatPreviews = uiState.chatPreviews,
-            onlineChats = uiState.onlineChats,
+            chatPreviews = homeState.chatPreviews,
+            onlineChats = homeState.onlineChats,
             onChatClick = onChatClick,
             modifier = Modifier.padding(innerPadding)
         )
@@ -149,7 +148,7 @@ fun ChatItem(
         }
         // Se il messaggio è stato inviato ieri
         today - 1 == messageDay && currentYear == messageYear -> {
-            "ieri"
+            "Yesterday"
         }
         // Se il messaggio è stato inviato questa settimana
         today - messageDay in 1..6 && currentYear == messageYear -> {

@@ -1,6 +1,5 @@
 package com.flydrop2p.flydrop2p.data.local.serializer
 
-import android.os.Build
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
 import com.flydrop2p.flydrop2p.data.local.account.AccountEntity
@@ -12,7 +11,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 object AccountSerializer : Serializer<AccountEntity> {
-    override val defaultValue = AccountEntity(Build.MODEL[4].code.toLong(), 0)
+    override val defaultValue = AccountEntity(0, 0)
 
     override suspend fun readFrom(input: InputStream): AccountEntity {
         try {

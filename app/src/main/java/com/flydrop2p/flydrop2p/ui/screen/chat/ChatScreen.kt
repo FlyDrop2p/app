@@ -62,7 +62,6 @@ fun ChatScreen(
     accountId: Long,
     chatViewModel: ChatViewModel,
     navController: NavHostController,
-    navigateToCallScreen: (Long) -> Unit,
     onInfoButtonClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -84,10 +83,7 @@ fun ChatScreen(
             ChatTopAppBar(
                 title = chatState.contact.username ?: "Connecting...",
                 canNavigateBack = true,
-                onCallButtonClick = {
-                    chatViewModel.sendCallRequest(accountId)
-                    navigateToCallScreen(accountId)
-                },
+                onCallButtonClick = { chatViewModel.sendCallRequest() },
                 onInfoButtonClick = { onInfoButtonClick(accountId) },
                 modifier = modifier,
                 navigateUp = { navController.navigateUp() },
@@ -119,13 +115,13 @@ fun ChatScreen(
                         chatViewModel.stopRecordingAudio()
                     },
                     onSendTextMessage = { messageText ->
-                        chatViewModel.sendTextMessage(accountId, messageText)
+                        chatViewModel.sendTextMessage(messageText)
                     },
                     onSendFileMessage = { fileUri ->
-                        chatViewModel.sendFileMessage(accountId, fileUri)
+                        chatViewModel.sendFileMessage(fileUri)
                     },
                     onSendAudioMessage = {
-                        chatViewModel.sendAudioMessage(accountId)
+                        chatViewModel.sendAudioMessage()
                     }
                 )
             }

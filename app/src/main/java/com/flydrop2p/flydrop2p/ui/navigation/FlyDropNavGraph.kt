@@ -3,7 +3,6 @@ package com.flydrop2p.flydrop2p.ui.navigation
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -50,14 +49,12 @@ fun FlyDropNavHost(
         modifier = modifier
     ) {
         composable(route = HomeDestination.route) {
-            val homeViewModelFactory = remember { HomeViewModelFactory() }
-            val homeViewModel: HomeViewModel = viewModel(factory = homeViewModelFactory)
+            val homeViewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory())
 
             HomeScreen(
                 homeViewModel = homeViewModel,
                 navController = navController,
                 onChatClick = { navController.navigate("${ChatDestination.route}/${it.accountId}") },
-                onConnectionButtonClick = { homeViewModel.connect() },
                 onSettingsButtonClick = { navController.navigate(SettingsDestination.route) },
             )
         }
@@ -70,14 +67,12 @@ fun FlyDropNavHost(
         ) { backStackEntry ->
             val accountId = backStackEntry.arguments?.getLong(ChatDestination.itemIdArg)
             accountId?.let {
-                val chatViewModelFactory = remember(accountId) { ChatViewModelFactory(accountId) }
-                val chatViewModel: ChatViewModel = viewModel(factory = chatViewModelFactory)
+                val chatViewModel: ChatViewModel = viewModel(factory = ChatViewModelFactory(accountId))
 
                 ChatScreen(
-                    accountId = it,
+                    accountId = accountId,
                     chatViewModel = chatViewModel,
                     navController = navController,
-                    navigateToCallScreen = { navController.navigate("${CallDestination.route}/${it}") },
                     onInfoButtonClick = { navController.navigate("${InfoDestination.route}/${it}") },
                 )
             }
@@ -91,11 +86,10 @@ fun FlyDropNavHost(
         ){backStackEntry ->
             val accountId = backStackEntry.arguments?.getLong(InfoDestination.itemIdArg)
             accountId?.let {
-                val infoViewModelFactory = remember(accountId) { InfoViewModelFactory(accountId) }
-                val infoViewModel: InfoViewModel = viewModel(factory = infoViewModelFactory)
+                val infoViewModel: InfoViewModel = viewModel(factory = InfoViewModelFactory(accountId))
 
                 InfoScreen(
-                    infoViewModel = infoViewModel,
+                    infoViewModel,
                     navController = navController,
                 )
             }
@@ -109,8 +103,7 @@ fun FlyDropNavHost(
         ) { backStackEntry ->
             val accountId = backStackEntry.arguments?.getLong(CallDestination.itemIdArg)
             accountId?.let {
-                val callViewModelFactory = remember(accountId) { CallViewModelFactory(accountId) }
-                val callViewModel: CallViewModel = viewModel(factory = callViewModelFactory)
+                val callViewModel: CallViewModel = viewModel(factory = CallViewModelFactory(accountId))
 
                 CallScreen(
                     callViewModel = callViewModel,
@@ -123,13 +116,11 @@ fun FlyDropNavHost(
         composable(
             route = SettingsDestination.route
         ) {
-            val settingsViewModelFactory = remember { SettingsViewModelFactory() }
-            val settingsViewModel: SettingsViewModel = viewModel(factory = settingsViewModelFactory)
+            val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory())
 
             SettingsScreen(
                 settingsViewModel = settingsViewModel,
                 navController = navController,
-                onConnectionButtonClick = { settingsViewModel.connect() },
                 onSettingsButtonClick = { navController.navigate(SettingsDestination.route) },
             )
         }

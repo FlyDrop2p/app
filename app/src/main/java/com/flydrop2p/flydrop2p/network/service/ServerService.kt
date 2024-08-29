@@ -260,18 +260,22 @@ class ServerService {
         return networkCallRequest
     }
 
-    suspend fun listenCallFragment(): ByteArray {
-        val audio: ByteArray
+    suspend fun listenCallFragment(): ByteArray? {
+        var audio: ByteArray? = null
 
         withContext(Dispatchers.IO) {
-            val socket = ServerSocket(PORT_CALL_FRAGMENT)
-            val client = socket.accept()
+            try {
+                val socket = ServerSocket(PORT_CALL_FRAGMENT)
+                val client = socket.accept()
 
-            val inputStream = client.getInputStream()
-            val buffer = inputStream.readBytes()
-            audio = buffer
+                val inputStream = client.getInputStream()
+                val buffer = inputStream.readBytes()
+                audio = buffer
 
-            socket.close()
+                socket.close()
+            } catch (_: Exception) {
+
+            }
         }
 
         return audio
