@@ -16,7 +16,6 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 class FileManager(private val context: Context) {
     fun getAudioTempFile(): File = File(context.filesDir, "audio_${System.currentTimeMillis()}.3gp")
-    fun getVideoTempFile(): File = File(context.filesDir, "video_${System.currentTimeMillis()}.mp4")
 
     @OptIn(ExperimentalEncodingApi::class)
     fun getFileBase64(file: File): String? {
@@ -26,8 +25,7 @@ class FileManager(private val context: Context) {
             }
 
             Base64.encode(byteArray)
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (_: Exception) {
             null
         }
     }
@@ -47,8 +45,7 @@ class FileManager(private val context: Context) {
             }
 
             file.name
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (_: Exception) {
             null
         } finally {
             inputStream?.close()

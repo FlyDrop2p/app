@@ -94,7 +94,7 @@ fun AudioMessageComponent(
                         .animateContentSize()
                 ) {
                     Icon(
-                        painter = painterResource(id = if (isPlaying.value) R.drawable.stop_circle_24px else R.drawable.play_arrow_24px),
+                        painter = painterResource(id = if (isPlaying.value) R.drawable.pause_24px else R.drawable.play_arrow_24px),
                         contentDescription = "Audio Icon",
                         tint = Color.White,
                         modifier = Modifier
