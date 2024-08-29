@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.flydrop2p.flydrop2p.domain.repository.ContactRepository
 import com.flydrop2p.flydrop2p.network.CallManager
 import com.flydrop2p.flydrop2p.network.NetworkManager
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -57,11 +59,12 @@ class CallViewModel(
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun endCall() {
         if(isCalling.get()) {
             isCalling.set(false)
 
-            viewModelScope.launch {
+            GlobalScope.launch {
                 callManager.stopPlaying()
                 callManager.stopRecording()
             }
