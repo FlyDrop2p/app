@@ -21,6 +21,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -99,10 +100,8 @@ fun SettingsScreen(
         return Color(Random.nextFloat(), Random.nextFloat(), Random.nextFloat())
     }
 
-    // Define SnackbarHostState
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Handle success and error messages
     LaunchedEffect(settingsState.isSuccess) {
         if (settingsState.isSuccess) {
             snackbarHostState.showSnackbar("Operation successful!")
@@ -131,7 +130,18 @@ fun SettingsScreen(
                 }
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }, // Add SnackbarHost here
+        containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = { SnackbarHost(
+            hostState = snackbarHostState,
+            snackbar = { snackbarData ->
+                Snackbar(
+                    snackbarData = snackbarData,
+                    containerColor = MaterialTheme.colorScheme.inverseOnSurface,
+                    contentColor = MaterialTheme.colorScheme.surface,
+                    // actionColor = MaterialTheme.colorScheme.secondary,
+                )
+            },
+        ) },
         content = { paddingValues ->
             Column(
                 modifier = Modifier
@@ -196,7 +206,7 @@ fun SettingsScreen(
                     colors = TextFieldDefaults.textFieldColors(
                         cursorColor = Color.Black,
                         disabledLabelColor = Color.Transparent,
-                        containerColor = Color.White,
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
                     ),
@@ -206,17 +216,18 @@ fun SettingsScreen(
                     onClick = {
                         settingsViewModel.updateUsername(usernameText)
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                    modifier = Modifier.fillMaxWidth()
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = usernameText.isNotBlank()
                 ) {
-                    Text("Save", color = MaterialTheme.colorScheme.onPrimaryContainer)
+                    Text("Save", color = MaterialTheme.colorScheme.surface)
                 }
 
                 Button(
                     onClick = {
                         settingsViewModel.backupMessages()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Make Backup", color = MaterialTheme.colorScheme.onPrimaryContainer)
@@ -226,10 +237,10 @@ fun SettingsScreen(
                     onClick = {
                         settingsViewModel.retrieveBackup()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSurface),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Retrieve Backup", color = MaterialTheme.colorScheme.onTertiaryContainer)
+                    Text("Retrieve Backup", color = MaterialTheme.colorScheme.surface)
                 }
             }
         }

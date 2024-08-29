@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -71,7 +72,7 @@ fun AudioMessageComponent(
             modifier = Modifier
                 .width(150.dp)
                 .clip(RoundedCornerShape(corner = CornerSize(16.dp)))
-                .background(Color(0xFFEFEFEF))
+                .background(if (message.senderId == currentAccountId) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -89,14 +90,17 @@ fun AudioMessageComponent(
                     },
                     modifier = Modifier
                         .size(45.dp)
-                        .background(Color(0xFF323232), shape = CircleShape)
+                        .background(
+                            color = if (message.senderId != currentAccountId) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                            shape = CircleShape
+                        )
                         .padding(8.dp)
                         .animateContentSize()
                 ) {
                     Icon(
                         painter = painterResource(id = if (isPlaying.value) R.drawable.stop_circle_24px else R.drawable.play_arrow_24px),
                         contentDescription = "Audio Icon",
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier
                             .size(30.dp)
                             .align(Alignment.CenterVertically)
@@ -106,7 +110,7 @@ fun AudioMessageComponent(
             Text(
                 text = "${message.formatDuration(playbackPosition.intValue)} / $formattedDuration",
                 fontSize = 10.sp,
-                color = Color(0xFF083249),
+                color = if (message.senderId == currentAccountId) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
                     .padding(horizontal = 8.dp, vertical = 4.dp)
                     .align(Alignment.TopEnd)

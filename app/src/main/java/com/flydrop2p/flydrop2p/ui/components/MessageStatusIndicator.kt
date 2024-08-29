@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +34,7 @@ fun MessageStatusIndicator(
     message: Message,
     currentAccountId: Long,
     modifier: Modifier = Modifier,
+    color: Color = if (message.senderId == currentAccountId) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface,
     backgroundColor: Color = Color(0xFFEFEFEF),
 ) {
     val context = LocalContext.current
@@ -54,7 +56,7 @@ fun MessageStatusIndicator(
             Text(
                 text = timeString,
                 fontSize = 10.sp,
-                color = Color(0xFF083249)
+                color = color,
             )
 
             if (message.senderId == currentAccountId) {
@@ -63,19 +65,19 @@ fun MessageStatusIndicator(
                 when (message.messageState) {
                     MessageState.MESSAGE_READ -> Image(
                         painter = painterResource(id = R.drawable.done_all_24px),
-                        colorFilter = ColorFilter.tint(Color(0xFF037971)),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.surface),
                         contentDescription = "Visualizzato",
                         modifier = Modifier.size(16.dp)
                     )
                     MessageState.MESSAGE_RECEIVED -> Image(
                         painter = painterResource(id = R.drawable.done_all_24px),
-                        colorFilter = ColorFilter.tint(Color(0xFFADADAD)),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.inverseSurface),
                         contentDescription = "Ricevuto",
                         modifier = Modifier.size(16.dp)
                     )
                     MessageState.MESSAGE_SENT -> Image(
                         painter = painterResource(id = R.drawable.check_24px),
-                        colorFilter = ColorFilter.tint(Color(0xFFADADAD)),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.inverseSurface),
                         contentDescription = "Inviato",
                         modifier = Modifier.size(16.dp)
                     )

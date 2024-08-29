@@ -89,7 +89,7 @@ fun ImageMessageComponent(
             MessageStatusIndicator(
                 message = message,
                 currentAccountId = currentAccountId,
-                backgroundColor = Color(0xFFEFEFEF),
+                backgroundColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.align( Alignment.BottomEnd )
             )
         }
@@ -204,7 +204,7 @@ fun PdfMessageComponent(
         horizontalArrangement = if (message.senderId == currentAccountId) Arrangement.End else Arrangement.Start
     ) {
         Surface(
-            color = MaterialTheme.colorScheme.surfaceVariant,
+            color = if (message.senderId == currentAccountId) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
             modifier = Modifier
                 .widthIn(min = 150.dp, max = 300.dp)
                 .clip(RoundedCornerShape(corner = CornerSize(16.dp)))
@@ -220,7 +220,7 @@ fun PdfMessageComponent(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(top = 6.dp, start = 6.dp, end = 6.dp)
                 ){
-                    PdfPreview(context, fileUri)
+                    PdfPreview(context, fileUri, mine = message.senderId == currentAccountId)
                 }
 
                 MessageStatusIndicator(
@@ -248,7 +248,7 @@ fun GenericFileMessageComponent(
         horizontalArrangement = if (message.senderId == currentAccountId) Arrangement.End else Arrangement.Start
     ) {
         Surface(
-            color = MaterialTheme.colorScheme.surfaceVariant,
+            color = if (message.senderId == currentAccountId) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
             modifier = Modifier
                 .widthIn(min = 150.dp, max = 300.dp)
                 .clip(RoundedCornerShape(corner = CornerSize(16.dp)))
@@ -276,7 +276,7 @@ fun GenericFileMessageComponent(
                         Text(
                             text = message.fileName,
                             fontSize = 16.sp,
-                            color = Color(0xFF075985),
+                            color = if (message.senderId == currentAccountId) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Medium
                         )
                     }

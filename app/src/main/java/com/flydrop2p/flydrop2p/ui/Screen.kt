@@ -1,9 +1,12 @@
 package com.flydrop2p.flydrop2p.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -49,8 +52,11 @@ fun FlyDropApp(
     navController: NavHostController = rememberNavController()
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
-
-    Scaffold { innerPadding ->
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        modifier = Modifier
+    ) { innerPadding ->
         FlyDropNavHost(
             navController = navController,
             modifier = Modifier.padding(innerPadding)
@@ -76,12 +82,17 @@ fun FlyDropTopAppBar(
     TopAppBar(
         navigationIcon = {
             if (canNavigateBack) {
-                IconButton(onClick = {
-                    navigateUp()
-                }) {
+                IconButton(
+                    onClick = { navigateUp() },
+                    modifier = modifier
+                        .padding(8.dp)
+                ) {
                     Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Go back"
+                        painter = painterResource(id = R.drawable.back),
+                        contentDescription = "Go back",
+                        modifier = Modifier
+                            .size(24.dp),
+                        tint = MaterialTheme.colorScheme.onSurface,
                     )
                 }
             }
@@ -106,7 +117,7 @@ fun FlyDropTopAppBar(
                 Icon(
                     painter = painterResource(id = R.drawable.wifi_tethering_24px),
                     contentDescription = "Connection",
-                    tint = Color.Black,
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(30.dp)
                 )
             }
@@ -118,13 +129,13 @@ fun FlyDropTopAppBar(
                 Icon(
                     imageVector = Icons.Filled.Settings,
                     contentDescription = "Settings",
-                    tint = if (isSettingsScreen) Color.Gray else Color.Black,
+                    tint = if (isSettingsScreen) MaterialTheme.colorScheme.inverseSurface else MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(30.dp)
                 )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surfaceBright,
+            containerColor = MaterialTheme.colorScheme.surface,
         ),
         modifier = modifier.padding(bottom = 8.dp)
     )
@@ -148,12 +159,17 @@ fun ChatTopAppBar(
     TopAppBar(
         navigationIcon = {
             if (canNavigateBack) {
-                IconButton(onClick = {
-                    navigateUp()
-                }) {
+                IconButton(
+                    onClick = { navigateUp() },
+                    modifier = modifier
+                        .padding(8.dp)
+                ) {
                     Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Go back"
+                        painter = painterResource(id = R.drawable.back),
+                        contentDescription = "Go back",
+                        modifier = Modifier
+                            .size(24.dp),
+                        tint = MaterialTheme.colorScheme.onSurface,
                     )
                 }
             }
@@ -164,12 +180,17 @@ fun ChatTopAppBar(
                 modifier = Modifier.clickable(onClick = onInfoButtonClick)
             ) {
                 val imageModifier = Modifier
-                    .size(50.dp)
+                    .size(40.dp)
                     .clip(CircleShape)
 
                 if (contactImageFileName != null) {
                     Image(
-                        painter = rememberAsyncImagePainter(model = File(LocalContext.current.filesDir, contactImageFileName)),
+                        painter = rememberAsyncImagePainter(
+                            model = File(
+                                LocalContext.current.filesDir,
+                                contactImageFileName
+                            )
+                        ),
                         contentDescription = "Immagine profilo",
                         modifier = imageModifier,
                         contentScale = androidx.compose.ui.layout.ContentScale.Crop
@@ -177,7 +198,7 @@ fun ChatTopAppBar(
                 } else {
                     Image(
                         painter = painterResource(id = R.drawable.account_circle_24px),
-                        colorFilter = ColorFilter.tint(Color.Black),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
                         contentDescription = "Immagine di default",
                         modifier = imageModifier
                     )
@@ -185,7 +206,7 @@ fun ChatTopAppBar(
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     text = title,
-                    fontSize = 20.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
@@ -195,28 +216,36 @@ fun ChatTopAppBar(
 
         },
         actions = {
-
             IconButton(
-                onClick = onCallButtonClick
+                onClick = onCallButtonClick,
+                modifier = modifier
+                    .padding(2.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Call,
-                    contentDescription = "Call",
-                    modifier = Modifier.size(25.dp)
+                    painter = painterResource(id = R.drawable.call),
+                    contentDescription = "Go back",
+                    modifier = Modifier
+                        .size(24.dp),
+                    tint = MaterialTheme.colorScheme.onSurface,
                 )
             }
+
             IconButton(
-                onClick = onInfoButtonClick
+                onClick = onInfoButtonClick,
+                modifier = modifier
+                    .padding(2.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Info,
-                    contentDescription = "Info",
-                    modifier = Modifier.size(25.dp)
+                    painter = painterResource(id = R.drawable.more),
+                    contentDescription = "Go back",
+                    modifier = Modifier
+                        .size(24.dp),
+                    tint = MaterialTheme.colorScheme.onSurface,
                 )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surfaceBright,
+            containerColor = MaterialTheme.colorScheme.surface,
         ),
         modifier = modifier
     )

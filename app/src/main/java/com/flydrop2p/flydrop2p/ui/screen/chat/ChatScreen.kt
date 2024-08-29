@@ -291,6 +291,7 @@ fun SendMessageInput(
                     onSendAudioMessage()
                     isRecording = false
                 },
+                modifier = Modifier
             )
         }
     }

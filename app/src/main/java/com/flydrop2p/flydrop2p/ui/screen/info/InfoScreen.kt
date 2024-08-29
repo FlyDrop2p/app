@@ -106,17 +106,22 @@ fun InfoScreen(
             TopAppBar(
                 title = {},
                 navigationIcon = {
-                    IconButton(onClick = {
-                        navController.popBackStack()
-                    }) {
+                    IconButton(
+                        onClick = { navController.popBackStack() },
+                        modifier = modifier
+                            .padding(8.dp)
+                    ) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Go back"
+                            painter = painterResource(id = R.drawable.back),
+                            contentDescription = "Go back",
+                            modifier = Modifier
+                                .size(24.dp),
+                            tint = MaterialTheme.colorScheme.onSurface,
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceBright,
+                    containerColor = MaterialTheme.colorScheme.surface,
                 ),
             )
         }
@@ -124,12 +129,13 @@ fun InfoScreen(
         Column(
             modifier = modifier
                 .fillMaxSize()
+                .padding(it)
                 .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(70.dp))
+            Spacer(modifier = Modifier.height(50.dp))
 
             // Sezione Immagine del profilo
             if (infoState.profile.imageFileName != null) {

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,7 +33,7 @@ fun TextMessageComponent(message: TextMessage, currentAccountId: Long) {
             modifier = Modifier
                 .widthIn(min = 100.dp, max = 300.dp)
                 .clip(RoundedCornerShape(corner = CornerSize(16.dp)))
-                .background(Color(0xFFEFEFEF))
+                .background(if (message.senderId == currentAccountId) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Row (
                 horizontalArrangement = Arrangement.Start,
@@ -42,7 +43,7 @@ fun TextMessageComponent(message: TextMessage, currentAccountId: Long) {
                 Text(
                     text = message.text,
                     fontSize = 16.sp,
-                    color = Color.Black
+                    color = if (message.senderId == currentAccountId) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface,
                 )
             }
 

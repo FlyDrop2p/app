@@ -10,6 +10,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,13 +19,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -77,15 +81,15 @@ fun TextMessageInput(
         textStyle = TextStyle(
             fontSize = 14.sp
         ),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(70.dp),
         colors = TextFieldDefaults.textFieldColors(
             cursorColor = Color.Black,
             disabledLabelColor = Color.Transparent,
-            containerColor = Color.White,
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         ),
-        // modifier = Modifier
+        modifier = modifier
     )
 
 //    BasicTextField(
@@ -120,19 +124,10 @@ fun TextMessageInput(
 //    )
 
     if (isTyping) {
-        IconButton(
-            onClick = {
-                onSendTextMessage(textFieldValue.text)
-                onValueChange(TextFieldValue())
-            },
-            modifier = Modifier.padding(start = 2.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Send,
-                contentDescription = "Send",
-                tint = Color.Black
-            )
-        }
+        SendButton(onClick = {
+            onSendTextMessage(textFieldValue.text)
+            onValueChange(TextFieldValue())
+        })
     }
 }
 
@@ -208,28 +203,30 @@ fun AudioRecordingControls(
                 )
             }
 
-            IconButton(
+            SendButton(
                 onClick = {
                     onSendAudioMessage()
-                },
-                modifier = Modifier.padding(start = 8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Send,
-                    contentDescription = "Send audio",
-                    tint = Color.Black
-                )
-            }
+                }
+            )
         }
 
     } else {
         IconButton(
             onClick = { onStartRecording() },
+            modifier = modifier
+                .size(48.dp)
+//                .background(
+//                    color = MaterialTheme.colorScheme.primary,
+//                    shape = CircleShape
+//                )
+                .padding(2.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.mic_24px),
                 contentDescription = "Start recording",
-                tint = Color.Black
+                modifier = Modifier
+                    .size(24.dp),
+                tint = MaterialTheme.colorScheme.primary,
             )
         }
     }
@@ -246,23 +243,32 @@ fun FileMessageInput(
     if (fileUri == null) {
         IconButton(
             onClick = { onClick() },
-            modifier = Modifier.padding(end = 8.dp)
+            modifier = Modifier
+//                .size(48.dp)
+//                .background(
+//                    color = MaterialTheme.colorScheme.primary,
+//                    shape = CircleShape
+//                )
+                .padding(2.dp)
         ) {
             Icon(
-                imageVector = Icons.Filled.Share,
+                painter = painterResource(id = R.drawable.add),
                 contentDescription = "Attach file",
-                tint = Color.Black
+                modifier = Modifier
+                    .size(24.dp),
+                tint = MaterialTheme.colorScheme.primary,
             )
         }
     } else {
         val context = LocalContext.current
         val mimeType = context.contentResolver.getType(fileUri) ?: "application/octet-stream"
 
-        val fileName = context.contentResolver.query(fileUri, null, null, null, null)?.use { cursor ->
-            val nameIndex = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
-            cursor.moveToFirst()
-            cursor.getString(nameIndex)
-        } ?: "Unknown"
+        val fileName =
+            context.contentResolver.query(fileUri, null, null, null, null)?.use { cursor ->
+                val nameIndex = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+                cursor.moveToFirst()
+                cursor.getString(nameIndex)
+            } ?: "Unknown"
 
         Row(
             modifier = Modifier
@@ -278,8 +284,14 @@ fun FileMessageInput(
                 mimeType.startsWith("application/pdf") -> {
                     val tempFile = getFileFromContentUri(context, fileUri)
                     val fileUriNewUri = Uri.fromFile(tempFile)
-                    PdfPreview(context, fileUriNewUri, filename = fileName)
+                    PdfPreview(
+                        context,
+                        fileUriNewUri,
+                        filename = fileName,
+                        modifier = Modifier.weight(1f)
+                    )
                 }
+
                 else -> GenericFilePreview(fileUri)
             }
 
@@ -299,17 +311,7 @@ fun FileMessageInput(
                     )
                 }
 
-                IconButton(
-                    onClick = {
-                        onSendFile(fileUri)
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Send,
-                        contentDescription = "Send",
-                        tint = Color.Black
-                    )
-                }
+                SendButton(onClick = { onSendFile(fileUri) })
             }
         }
     }
@@ -375,20 +377,26 @@ fun PdfPreview(
     context: Context,
     fileUri: Uri,
     modifier: Modifier = Modifier,
+    mine: Boolean? = false,
     filename: String? = null
 ) {
-    PdfFirstPageViewer(
-        uri = fileUri,
-        imageWidth = 50.dp,
-        imageHeight = 50.dp
-    )
-    Spacer(modifier = Modifier.size(8.dp))
-    Text(
-        text = filename ?: fileUri.lastPathSegment ?: "Unknown File",
-        color = Color.Black,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-    )
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        PdfFirstPageViewer(
+            uri = fileUri,
+            imageWidth = 50.dp,
+            imageHeight = 50.dp
+        )
+        Spacer(modifier = Modifier.size(8.dp))
+        Text(
+            text = filename ?: fileUri.lastPathSegment ?: "Unknown File",
+            color = if (mine == true) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
 }
 
 fun getFileFromContentUri(context: Context, uri: Uri): File {
@@ -400,4 +408,30 @@ fun getFileFromContentUri(context: Context, uri: Uri): File {
         }
     }
     return tempFile
+}
+
+
+@Composable
+fun SendButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    IconButton(
+        onClick = { onClick() },
+        modifier = modifier
+            .size(48.dp)
+            .background(
+                color = MaterialTheme.colorScheme.primary,
+                shape = CircleShape
+            )
+            .padding(8.dp)
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.arrow_up),
+            contentDescription = "Send",
+            modifier = Modifier
+                .size(24.dp),
+            tint = Color.White,
+        )
+    }
 }

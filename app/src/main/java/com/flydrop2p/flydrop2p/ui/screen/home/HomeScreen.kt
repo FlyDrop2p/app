@@ -3,13 +3,12 @@ package com.flydrop2p.flydrop2p.ui.screen.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -82,7 +81,7 @@ fun HomeScreen(
 
     LaunchedEffect(callResponse) {
         callResponse?.let {
-            if(it.accepted) {
+            if (it.accepted) {
                 navController.navigate("${CallDestination.route}/${it.senderId}")
             }
         }
@@ -90,23 +89,28 @@ fun HomeScreen(
 
     val homeState by homeViewModel.uiState.collectAsState()
 
-    Scaffold(topBar = {
-        FlyDropTopAppBar(
-            title = "Chat",
-            canNavigateBack = false,
-            isSettingsScreen = false,
-            onConnectionButtonClick = { homeViewModel.connect() },
-            onSettingsButtonClick = onSettingsButtonClick,
-            modifier = modifier
-        )
-    }, content = { innerPadding ->
-        ChatList(
-            chatPreviews = homeState.chatPreviews,
-            onlineChats = homeState.onlineChats,
-            onChatClick = onChatClick,
-            modifier = Modifier.padding(innerPadding)
-        )
-    })
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        topBar = {
+            FlyDropTopAppBar(
+                title = "Chat",
+                canNavigateBack = false,
+                isSettingsScreen = false,
+                onConnectionButtonClick = { homeViewModel.connect() },
+                onSettingsButtonClick = onSettingsButtonClick,
+                modifier = modifier
+            )
+        },
+        content = { innerPadding ->
+            ChatList(
+                chatPreviews = homeState.chatPreviews,
+                onlineChats = homeState.onlineChats,
+                onChatClick = onChatClick,
+                modifier = Modifier.padding(innerPadding)
+            )
+        },
+    )
 }
 
 @Composable
@@ -152,19 +156,18 @@ fun ChatItem(
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)
 
     val timeString = when {
-        // Se il messaggio è stato inviato oggi, mostra solo l'ora
         today == messageDay && currentYear == messageYear -> {
             SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(messageTime))
         }
-        // Se il messaggio è stato inviato ieri
+
         today - 1 == messageDay && currentYear == messageYear -> {
             "Yesterday"
         }
-        // Se il messaggio è stato inviato questa settimana
+
         today - messageDay in 1..6 && currentYear == messageYear -> {
-            SimpleDateFormat("EEE", Locale.getDefault()).format(Date(messageTime)) // Mostra le prime tre lettere del giorno della settimana
+            SimpleDateFormat("EEE", Locale.getDefault()).format(Date(messageTime))
         }
-        // Se il messaggio è stato inviato in un giorno qualsiasi dell'anno
+
         else -> {
             SimpleDateFormat("dd/MM", Locale.getDefault()).format(Date(messageTime))
         }
@@ -176,7 +179,8 @@ fun ChatItem(
             .fillMaxWidth()
             .clickable {
                 onChatClick(chatPreview.contact)
-            }, verticalAlignment = Alignment.Top
+            },
+        verticalAlignment = Alignment.Top
     ) {
         val imageModifier = Modifier
             .size(50.dp)
@@ -189,7 +193,6 @@ fun ChatItem(
                 }),
                 contentDescription = "Immagine profilo",
                 modifier = imageModifier.fillMaxSize(),
-
                 contentScale = androidx.compose.ui.layout.ContentScale.Crop
             )
         } else {
@@ -247,7 +250,7 @@ fun ChatItem(
                         ) {
                             Image(
                                 painter = painterResource(id = R.drawable.play_arrow_24px),
-                                contentDescription = "Audio",
+                                contentDescription = "Video",
                                 colorFilter = ColorFilter.tint(Color.Gray),
                                 modifier = Modifier.size(16.dp)
                             )
@@ -300,21 +303,22 @@ fun ChatItem(
             }
         }
         Column(
-            verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.End
+            horizontalAlignment = Alignment.End,
+            modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = timeString ?: "", fontSize = 10.sp, color = Color.Gray
+                text = timeString ?: "",
+                fontSize = 10.sp,
+                color = Color.Gray
             )
 
             if (chatPreview.unreadMessagesCount > 0) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Column(
+                Box(
                     modifier = Modifier
                         .size(20.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFF16a34a)),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .background(Color(0xFF1B72C0)),
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = chatPreview.unreadMessagesCount.toString(),
