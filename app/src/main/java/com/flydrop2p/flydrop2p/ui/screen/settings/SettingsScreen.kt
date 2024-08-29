@@ -66,9 +66,6 @@ fun SettingsScreen(
     onSettingsButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val settingsViewModelFactory = remember { SettingsViewModelFactory() }
-    val settingsViewModel: SettingsViewModel = viewModel(factory = settingsViewModelFactory)
-
     val callRequest by settingsViewModel.networkManager.callRequest.collectAsState()
 
     LaunchedEffect(callRequest) {

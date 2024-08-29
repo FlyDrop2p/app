@@ -41,14 +41,14 @@ class CallViewModel(
             }
         }
 
-        startCall(accountId)
+        startCall()
     }
 
-    fun sendCallEnd(accountId: Long) {
+    fun sendCallEnd() {
         networkManager.sendCallEnd(accountId, false)
     }
 
-    private fun startCall(accountId: Long) {
+    private fun startCall() {
         if(!isCalling.get()) {
             try {
                 callManager.startPlaying()

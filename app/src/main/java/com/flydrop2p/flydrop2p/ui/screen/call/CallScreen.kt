@@ -130,7 +130,7 @@ fun CallScreen(
             CallActionButton(
                 iconResId = R.drawable.call_end_24px,
                 contentDescription = "Metti giù",
-                onClick = { callViewModel.sendCallEnd(callState.contact.accountId) },
+                onClick = { callViewModel.sendCallEnd() },
                 buttonColor = Color.Red,
                 iconTintColor = Color.White
             )
