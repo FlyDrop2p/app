@@ -13,9 +13,11 @@ import retrofit2.http.Path
 
 private const val BASE_URL = "https://flydrop.riccardobenevelli.com/api/"
 
+private val networkJson = Json { ignoreUnknownKeys = true }
+
 private val retrofit = Retrofit.Builder()
     .baseUrl(BASE_URL)
-    .addConverterFactory(Json.asConverterFactory("application/json; charset=UTF8".toMediaType()))
+    .addConverterFactory(networkJson.asConverterFactory("application/json".toMediaType()))
     .build()
 
 @Serializable
@@ -36,7 +38,7 @@ interface BackupApiService {
     suspend fun backupMessages(@Body request: BackupRequestBody): BackupResponse
 
     @GET("backup/{userId}")
-    suspend fun getBackup(@Path("userId") userId: Long): List<MessageEntity>
+    suspend fun retrieveMessages(@Path("userId") userId: Long): List<MessageEntity>
 }
 
 

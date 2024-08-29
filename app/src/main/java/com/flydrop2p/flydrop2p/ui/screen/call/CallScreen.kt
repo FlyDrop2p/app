@@ -59,6 +59,7 @@ fun CallScreen(
             if(it.accepted) {
                 callViewModel.startCall()
             } else {
+                callViewModel.networkManager.resetCallStateFlows()
                 navController.popBackStack()
             }
         }
