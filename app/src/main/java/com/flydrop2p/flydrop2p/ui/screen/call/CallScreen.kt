@@ -57,7 +57,7 @@ fun CallScreen(
     LaunchedEffect(callResponse) {
         callResponse?.let {
             if(it.accepted) {
-                callViewModel.startCallSession()
+                callViewModel.startCall()
             } else {
                 navController.popBackStack()
             }
@@ -68,7 +68,7 @@ fun CallScreen(
 
     LaunchedEffect(callEnd) {
         callEnd?.let {
-            callViewModel.endCallSession()
+            callViewModel.endCall()
             navController.popBackStack()
         }
     }
@@ -145,7 +145,7 @@ fun CallScreen(
                         contentDescription = "Accetta chiamata",
                         onClick = {
                             callViewModel.acceptCall()
-                            callViewModel.startCallSession()
+                            callViewModel.startCall()
                         },
                         buttonColor = Color.Green,
                         iconTintColor = Color.White
@@ -183,7 +183,7 @@ fun CallScreen(
                         contentDescription = "Metti giù",
                         onClick = {
                             callViewModel.sendCallEnd()
-                            callViewModel.endCallSession()
+                            callViewModel.endCall()
                             navController.popBackStack()
                         },
                         buttonColor = Color.Red,

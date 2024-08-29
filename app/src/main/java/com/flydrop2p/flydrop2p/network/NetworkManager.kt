@@ -1,7 +1,6 @@
 package com.flydrop2p.flydrop2p.network
 
 import android.net.Uri
-import androidx.compose.runtime.MutableState
 import com.flydrop2p.flydrop2p.HandlerFactory
 import com.flydrop2p.flydrop2p.data.local.FileManager
 import com.flydrop2p.flydrop2p.domain.model.device.Account
@@ -59,9 +58,18 @@ class NetworkManager(
     val connectedDevices: StateFlow<List<NetworkDevice>>
         get() = _connectedDevices
 
-    val callRequest: MutableStateFlow<NetworkCallRequest?> = MutableStateFlow(null)
-    val callResponse: MutableStateFlow<NetworkCallResponse?> = MutableStateFlow(null)
-    val callEnd: MutableStateFlow<NetworkCallEnd?> = MutableStateFlow(null)
+    private val _callRequest: MutableStateFlow<NetworkCallRequest?> = MutableStateFlow(null)
+    val callRequest: StateFlow<NetworkCallRequest?>
+        get() = _callRequest
+
+    private val _callResponse: MutableStateFlow<NetworkCallResponse?> = MutableStateFlow(null)
+    val callResponse: StateFlow<NetworkCallResponse?>
+        get() = _callResponse
+
+    private val _callEnd: MutableStateFlow<NetworkCallEnd?> = MutableStateFlow(null)
+    val callEnd: StateFlow<NetworkCallEnd?>
+        get() = _callEnd
+
 
     private val _callFragment: MutableStateFlow<ByteArray?> = MutableStateFlow(null)
     val callFragment: StateFlow<ByteArray?>
@@ -113,6 +121,12 @@ class NetworkManager(
     fun updateConnectedDevices() {
         val currentTimestamp = System.currentTimeMillis()
         _connectedDevices.value = _connectedDevices.value.filter { currentTimestamp - it.keepalive <= 3000 }
+    }
+
+    fun resetCallStateFlows() {
+        _callRequest.value = null
+        _callResponse.value = null
+        _callEnd.value = null
     }
 
     fun sendKeepalive() {
@@ -533,16 +547,18 @@ class NetworkManager(
     }
 
     private fun handleCallRequest(networkCallRequest: NetworkCallRequest) {
-        callRequest.value = networkCallRequest
-        sendCallResponse(networkCallRequest.senderId, true)
+        resetCallStateFlows()
+        _callRequest.value = networkCallRequest
     }
 
     private fun handleCallResponse(networkCallResponse: NetworkCallResponse) {
-        callResponse.value = networkCallResponse
+        resetCallStateFlows()
+        _callResponse.value = networkCallResponse
     }
 
     private fun handleCallEnd(networkCallEnd: NetworkCallEnd) {
-        callEnd.value = networkCallEnd
+        resetCallStateFlows()
+        _callEnd.value = networkCallEnd
     }
 
     private fun handleCallFragment(callFragment: ByteArray) {

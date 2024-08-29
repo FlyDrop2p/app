@@ -43,22 +43,32 @@ class CallViewModel(
         }
     }
 
-    fun acceptCall() {
-        networkManager.sendCallResponse(accountId, true)
-    }
-
-    fun declineCall() {
-        networkManager.sendCallResponse(accountId, false)
-    }
-
     fun sendCallEnd() {
         networkManager.sendCallEnd(accountId)
     }
 
-    fun startCallSession() {
-        networkManager.callEnd.value = null
-        _uiState.value = _uiState.value.copy(callState = CallState.CALL)
+    fun acceptCall() {
+        networkManager.resetCallStateFlows()
+        networkManager.sendCallResponse(accountId, true)
+    }
 
+    fun declineCall() {
+        networkManager.resetCallStateFlows()
+        networkManager.sendCallResponse(accountId, false)
+    }
+
+    fun startCall() {
+        networkManager.resetCallStateFlows()
+        _uiState.value = _uiState.value.copy(callState = CallState.CALL)
+        startCallSession()
+    }
+
+    fun endCall() {
+        networkManager.resetCallStateFlows()
+        endCallSession()
+    }
+
+    private fun startCallSession() {
         if(!isCalling.get()) {
             try {
                 callManager.startPlaying()
@@ -75,10 +85,7 @@ class CallViewModel(
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun endCallSession() {
-        networkManager.callRequest.value = null
-        networkManager.callResponse.value = null
-
+    private fun endCallSession() {
         if(isCalling.get()) {
             GlobalScope.launch {
                 callManager.stopPlaying()
