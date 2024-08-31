@@ -17,7 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
-import com.flydrop2p.flydrop2p.network.BackupInstance
+import com.flydrop2p.flydrop2p.network.BackupApi
 import com.flydrop2p.flydrop2p.network.NetworkManager
 import com.flydrop2p.flydrop2p.ui.FlyDropApp
 import com.flydrop2p.flydrop2p.ui.theme.FlyDropTheme
@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             if(ownAccountRepository.getAccount().accountId == 0L) {
                 val id = try {
-                    BackupInstance.api.register()
+                    BackupApi.instance.register()
                 } catch (_: Exception) {
                     Random.nextLong(1000, Long.MAX_VALUE)
                 }

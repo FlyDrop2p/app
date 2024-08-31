@@ -1,6 +1,7 @@
 package com.flydrop2p.flydrop2p.ui.screen.settings
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flydrop2p.flydrop2p.data.local.FileManager
@@ -8,7 +9,7 @@ import com.flydrop2p.flydrop2p.domain.model.message.toMessage
 import com.flydrop2p.flydrop2p.domain.repository.ChatRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnAccountRepository
 import com.flydrop2p.flydrop2p.domain.repository.OwnProfileRepository
-import com.flydrop2p.flydrop2p.network.BackupInstance
+import com.flydrop2p.flydrop2p.network.BackupApi
 import com.flydrop2p.flydrop2p.network.BackupRequestBody
 import com.flydrop2p.flydrop2p.network.NetworkManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -90,9 +91,11 @@ class SettingsViewModel(
         viewModelScope.launch {
             setLoading(true)
             try {
+                Log.d("SettingsViewModel", "Backup messages")
                 val messages = chatRepository.getAllMessages().map { it.toMessageEntity() }
                 val body = BackupRequestBody(uiState.value.profile.accountId, messages)
-                BackupInstance.api.backupMessages(body)
+                BackupApi.instance.backupMessages(body)
+                Log.d("SettingsViewModel", "Backup messages success")
 
                 setSuccess(true)
             } catch (e: Exception) {
@@ -107,7 +110,7 @@ class SettingsViewModel(
         viewModelScope.launch {
             setLoading(true)
             try {
-                val messages = BackupInstance.api.retrieveMessages(uiState.value.profile.accountId)
+                val messages = BackupApi.instance.retrieveMessages(uiState.value.profile.accountId)
 
                 messages.forEach { message ->
                     if(chatRepository.getMessageByMessageId(message.messageId) == null) {
