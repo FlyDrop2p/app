@@ -19,3 +19,13 @@ As the project is still under development, installation instructions will be pro
 ## Usage
 
 Once installed, users will be able to launch the application and utilize its instant messaging features. To send a message, they can select the desired chat and type their message into the text box at the bottom. Pressing the send button will deliver the message.
+
+## Screens
+
+## Screens
+
+| **Home Screen**               | **Chat Screen**               | **Info Screen**               |
+|:-----------------------------:|:-----------------------------:|:-----------------------------:|
+| ![home screen](docs/home.jpg) | ![chat screen](docs/chat.jpg) | ![info screen](docs/info.jpg) |
+| **Settings Screen**           | **Chat Dark Screen**          | **Info Dark Screen**          |
+| ![settings screen](docs/settings.jpg) | ![chat dark screen](docs/chat-dark.jpg) | ![info dark screen](docs/info-dark.jpg) |
