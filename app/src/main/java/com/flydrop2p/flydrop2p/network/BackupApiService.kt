@@ -2,10 +2,8 @@ package com.flydrop2p.flydrop2p.network
 
 import com.flydrop2p.flydrop2p.data.local.message.MessageEntity
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
-import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -13,10 +11,6 @@ import retrofit2.http.Path
 
 private const val BASE_URL = "https://flydrop.riccardobenevelli.com/api/"
 
-private val retrofit = Retrofit.Builder()
-    .baseUrl(BASE_URL)
-    .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
-    .build()
 
 @Serializable
 data class BackupRequestBody(
@@ -39,9 +33,15 @@ interface BackupApiService {
     suspend fun retrieveMessages(@Path("userId") userId: Long): List<MessageEntity>
 }
 
+object BackupApi {
+    private val retrofit: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
 
-object BackupInstance {
-    val api: BackupApiService by lazy {
+    val instance: BackupApiService by lazy {
         retrofit.create(BackupApiService::class.java)
     }
 }
