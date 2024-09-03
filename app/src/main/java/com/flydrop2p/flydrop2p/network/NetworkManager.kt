@@ -92,6 +92,19 @@ class NetworkManager(
         }
     }
 
+    fun startDiscoverPeersHandler() {
+        val handler = handlerFactory.buildHandler()
+
+        val runnable = object : Runnable {
+            override fun run() {
+                receiver.discoverPeers()
+                handler.postDelayed(this, 5000)
+            }
+        }
+
+        handler.post(runnable)
+    }
+
     fun startSendKeepaliveHandler() {
         val handler = handlerFactory.buildHandler()
 

@@ -61,6 +61,7 @@ class MainActivity : ComponentActivity() {
             }
 
             networkManager.startConnections()
+            networkManager.startDiscoverPeersHandler()
             networkManager.startSendKeepaliveHandler()
             networkManager.startUpdateConnectedDevicesHandler()
         }
