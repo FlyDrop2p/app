@@ -340,7 +340,7 @@ fun FileMessageComponent(
 
 
 fun getMimeType(extension: String): String {
-    return when (extension) {
+    return when (extension.lowercase()) {
         "jpg", "jpeg" -> "image/jpeg"
         "png" -> "image/png"
         "gif" -> "image/gif"

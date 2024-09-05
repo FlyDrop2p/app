@@ -50,11 +50,7 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             if(ownAccountRepository.getAccount().accountId == 0L) {
-                val id = try {
-                    BackupApi.instance.register()
-                } catch (_: Exception) {
-                    Random.nextLong(1000, Long.MAX_VALUE)
-                }
+                val id = Build.MODEL.hashCode().toLong()
 
                 ownAccountRepository.setAccountId(id)
                 ownProfileRepository.setAccountId(id)

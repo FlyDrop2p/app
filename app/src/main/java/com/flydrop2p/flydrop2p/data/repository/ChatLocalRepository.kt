@@ -2,6 +2,7 @@ package com.flydrop2p.flydrop2p.data.repository
 
 import com.flydrop2p.flydrop2p.data.local.account.AccountDAO
 import com.flydrop2p.flydrop2p.data.local.message.MessageDAO
+import com.flydrop2p.flydrop2p.data.local.message.MessageEntity
 import com.flydrop2p.flydrop2p.data.local.profile.ProfileDAO
 import com.flydrop2p.flydrop2p.domain.model.chat.ChatPreview
 import com.flydrop2p.flydrop2p.domain.model.device.Contact
@@ -52,8 +53,8 @@ class ChatLocalRepository(private val accountDAO: AccountDAO, private val messag
         return messageDAO.getMessagesByReceiverAccountId(accountId).map { it.toMessage() }
     }
 
-    override suspend fun getAllMessages(): List<Message> {
-        return messageDAO.getAllMessages().map { it.toMessage() }
+    override suspend fun getAllMessages(): List<MessageEntity> {
+        return messageDAO.getAllMessages()
     }
 
     override suspend fun getMessageByMessageId(messageId: Long): Message? {
@@ -62,10 +63,6 @@ class ChatLocalRepository(private val accountDAO: AccountDAO, private val messag
 
     override suspend fun addMessage(message: Message): Long {
         return messageDAO.insertMessage(message.toMessageEntity())
-    }
-
-    override suspend fun addMessageWithId(message: Message): Long {
-        return messageDAO.insertMessage(message.toMessageEntity().copy(messageId = message.messageId))
     }
 
     override suspend fun updateMessage(message: Message) {

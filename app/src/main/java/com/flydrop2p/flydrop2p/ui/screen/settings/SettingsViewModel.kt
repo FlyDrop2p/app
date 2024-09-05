@@ -92,7 +92,7 @@ class SettingsViewModel(
             setLoading(true)
             try {
                 Log.d("SettingsViewModel", "Backup messages")
-                val messages = chatRepository.getAllMessages().map { it.toMessageEntity() }
+                val messages = chatRepository.getAllMessages()
                 val body = BackupRequestBody(uiState.value.profile.accountId, messages)
                 BackupApi.instance.backupMessages(body)
                 Log.d("SettingsViewModel", "Backup messages success")
@@ -114,7 +114,7 @@ class SettingsViewModel(
 
                 messages.forEach { message ->
                     if(chatRepository.getMessageByMessageId(message.messageId) == null) {
-                        chatRepository.addMessageWithId(message.toMessage())
+                        chatRepository.addMessage(message.toMessage())
                     }
                 }
 
