@@ -114,13 +114,13 @@ class SettingsViewModel(
 
                 messages.forEach { message ->
                     if(chatRepository.getMessageByMessageId(message.messageId) == null) {
-                        chatRepository.addMessage(message.toMessage())
+                        chatRepository.addMessageWithId(message.toMessage())
                     }
                 }
 
                 setSuccess(true)
             } catch (e: Exception) {
-                setError("Failed to retrieve backup")
+                setError("Failed to retrieve messages")
             } finally {
                 setLoading(false)
             }

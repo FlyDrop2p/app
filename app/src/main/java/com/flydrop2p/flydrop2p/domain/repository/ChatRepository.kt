@@ -20,6 +20,8 @@ interface ChatRepository {
 
     suspend fun addMessage(message: Message): Long
 
+    suspend fun addMessageWithId(message: Message): Long
+
     suspend fun updateMessage(message: Message)
     
     suspend fun updateMessageState(messageId: Long, messageState: MessageState)

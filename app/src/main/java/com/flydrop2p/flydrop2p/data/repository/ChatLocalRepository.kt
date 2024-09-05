@@ -64,6 +64,10 @@ class ChatLocalRepository(private val accountDAO: AccountDAO, private val messag
         return messageDAO.insertMessage(message.toMessageEntity())
     }
 
+    override suspend fun addMessageWithId(message: Message): Long {
+        return messageDAO.insertMessage(message.toMessageEntity().copy(messageId = message.messageId))
+    }
+
     override suspend fun updateMessage(message: Message) {
         messageDAO.updateMessage(message.toMessageEntity())
     }
